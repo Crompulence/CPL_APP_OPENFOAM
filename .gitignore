@@ -1,0 +1,5 @@
+CODE_INST_DIR
+/bin
+/lib
+*.swp
+*.pyc

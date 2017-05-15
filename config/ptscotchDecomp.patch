@@ -1,0 +1,16 @@
+--- ptscotchDecomp.C	2016-03-16 14:46:11.639209864 +0000
++++ ptscotchDecomp.C2	2016-03-16 14:46:05.079209912 +0000
+@@ -119,10 +119,12 @@
+ #include "globalIndex.H"
+ #include "SubField.H"
+ 
++// Source of trouble when compiling with mpich3.2. Throws a redefinition of MPI_Init() error.
++// The #include <mpi.h> has been moved outside the extern  block.
++#include <mpi.h>
+ extern "C"
+ {
+     #include <stdio.h>
+-    #include <mpi.h>
+     #include "ptscotch.h"
+ }
+ 
