@@ -65,6 +65,6 @@ export MPI_ROOT=$(dirname $(mpicc -show | sed -e 's/.*-I\([^ ]*\).*/\1/'))
 export MPI_ARCH_INC="-I$MPI_ROOT/include"
 export MPI_ARCH_LIBS="-L$MPI_ROOT/lib -Wl,-rpath -Wl,$MPI_ROOT/lib -Wl,--enable-new-dtags -lmpi"
 export MPI_ARCH_FLAGS=
-#export WM_MPLIB=SYSTEMMPI
+export WM_MPLIB=SYSTEMMPI
 
 # ----------------------------------------------------------------- end-of-file
