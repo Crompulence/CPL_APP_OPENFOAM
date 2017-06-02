@@ -10,11 +10,11 @@ EXE_INC = \
 
 MPILIBS = -L$(MPI_ARCH_LIBS) -lmpifort -lmpicxx
 FORTRANLIBS = -lgfortran 
-CPLLIBS = -L$(FOAM_CPL_APP_LIBBIN) -Wl,-rpath=$(FOAM_CPL_APP_LIBBIN) -lCPLSocketFOAM \
+CPLLIBS = -L$(FOAM_CPL_APP_LIBBIN) -Wl,-rpath=$(FOAM_CPL_APP_LIBBIN) -lCPLSocketFOAM\
 
 EXE_LIBS = \
+    $(CPLLIBS) \
     -lfiniteVolume \
     -lblockMesh \
     $(MPILIBS) \
-    $(CPLLIBS) \
     $(FORTRANLIBS)

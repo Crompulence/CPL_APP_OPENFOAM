@@ -37,3 +37,12 @@ if (answer == 'y' or answer == 'Y'):
         sh.rmtree(f)
 else:
     quit('Cancelled deletion.')
+
+def listdir_fullpath(d):
+        return [os.path.join(d, f) for f in os.listdir(d)]
+
+keep_files = ["0/p", "0/U", "constant/polyMesh/blockMeshDict"]
+filelist = listdir_fullpath('0') +  listdir_fullpath('constant/polyMesh')
+
+for f in  [x for x in filelist if x not in keep_files]:
+    os.remove(f)

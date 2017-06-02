@@ -37,9 +37,10 @@ Description
 
 int main(int argc, char *argv[])
 {
+// With PSTREAM
+    CPLSocketFOAM socket;
+    socket.initComms(argc, argv);
 
-
-    
     #include "setRootCase.H"
     #include "createTime.H"
     #include "createMesh.H"
@@ -48,10 +49,9 @@ int main(int argc, char *argv[])
 
     #include "createFields.H"
     #include "initContinuityErrs.H"
-   
-	// MPI_Init is called somewhere in the PStream library
-    CPLSocketFOAM socket;
-    socket.initComms(argc, argv);
+// Without PSTREAM
+//    CPLSocketFOAM socket;
+//    socket.initComms(argc, argv);
     socket.initCFD(runTime, mesh);
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

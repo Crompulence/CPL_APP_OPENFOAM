@@ -47,7 +47,7 @@ runTimeModifiable true;
 
 OptimisationSwitches
 {
-    commsType       nonBlocking;
+    commsType       blocking;
 }
 
 

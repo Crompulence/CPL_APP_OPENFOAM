@@ -13,4 +13,5 @@ EXE_INC = \
 LIB_LIBS = \
     -Wl,-rpath=$(MPI_ARCH_PATH)/lib \
 	-L$(CPL_LIBRARY_PATH) -Wl,-rpath=$(CPL_LIBRARY_PATH) \
-	-lfiniteVolume -lcpl
+	-L$(FOAM_CPL_APP_LIBBIN) -Wl,-rpath=$(FOAM_CPL_APP_LIBBIN) \
+	-lfiniteVolume -lcpl -lPstream

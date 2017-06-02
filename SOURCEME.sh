@@ -52,9 +52,9 @@ echo ""
 
 # Update paths
 export PATH=$PATH:$FOAM_CPL_APP_BIN
-#export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$FOAM_CPL_APP_LIBBIN
+export LD_LIBRARY_PATH=$FOAM_CPL_APP_LIBBIN:$LD_LIBRARY_PATH
 echo "PATH updated to:"
 echo "   $PATH:"$FOAM_CPL_APP_BIN
 echo
-#echo "LD_LIBRARY_PATH updated to: "
-#echo "   $LD_LIBRARY_PATH:"$FOAM_CPL_APP_LIBBIN
+echo "LD_LIBRARY_PATH updated to: "
+echo "  $FOAM_CPL_APP_LIBBIN:$LD_LIBRARY_PATH:"

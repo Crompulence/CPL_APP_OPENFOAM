@@ -41,11 +41,14 @@ Description
 #include "blockMesh.H"
 #include <sstream>
 #include <unistd.h>
+#include "PstreamGlobals.H" 
 
 
 // Initialise CFD realm communicator
 void CPLSocketFOAM::initComms (int& argc, char**& argv) {
+	MPI_Init(&argc, &argv);
     CPL::init (CPL::cfd_realm, realmComm);
+	Foam::PstreamGlobals::CPLRealmComm = realmComm;
     MPI_Comm_rank (realmComm, &rankRealm);
 
 }
