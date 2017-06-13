@@ -1,4 +1,4 @@
-.PHONY: all test clean
+.PHONY: all test clean clean-test
 all:
 	@wmake libso src/CPLPstream
 	@wmake libso src/CPLSocketFOAM
@@ -10,6 +10,10 @@ clean:
 	@wclean src/CPLPstream
 	rm -rf bin
 	rm -rf lib
+
+clean-test:
+	cd test/stressC-P/debug && ./clean.sh
+	cd test/velocityP-C/debug && ./clean.sh
 
 test:
 	@py.test -v ./test

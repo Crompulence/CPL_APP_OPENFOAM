@@ -5,15 +5,15 @@ EXE_INC = \
     -I$(LIB_SRC)/mesh/blockMesh/lnInclude \
     -I$(LIB_SRC)/meshTools/lnInclude \
     -I$(CONDA_PREFIX)/include/cpl \
-	$(MPI_ARCH_INC) \
+    $(MPI_ARCH_INC) \
     -I$(FOAM_CPL_APP_SRC)/CPLPstream/lnInclude \
     -I$(CPL_PATH)/include
 
 
 LIB_LIBS = \
     -Wl,-rpath=$(MPI_ARCH_PATH)/lib \
-	-L$(CPL_LIBRARY_PATH) -Wl,-rpath=$(CPL_LIBRARY_PATH) \
-	-L$(FOAM_CPL_APP_LIBBIN) -Wl,-rpath=$(FOAM_CPL_APP_LIBBIN) \
-	-lfiniteVolume \
-	-lcpl \
-	-lPstream
+    -L$(FOAM_CPL_APP_LIBBIN) -Wl,-rpath=$(FOAM_CPL_APP_LIBBIN) \
+    -lfiniteVolume \
+    -lcpl \
+    -lPstream \
+    -L$(CPL_LIBRARY_PATH) -Wl,-rpath=$(CPL_LIBRARY_PATH)
