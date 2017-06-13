@@ -6,10 +6,12 @@ EXE_INC = \
     -I$(CONDA_PREFIX)/include/cpl \
     $(MPI_ARCH_INC) \
     -I$(FOAM_CPL_APP_SRC)/CPLSocketFOAM/lnInclude \
+    -I$(CPL_PATH)/include
 
 EXE_LIBS = \
     -Wl,-rpath=$(MPI_ARCH_PATH)/lib \
     -L$(FOAM_CPL_APP_LIBBIN) -Wl,-rpath=$(FOAM_CPL_APP_LIBBIN) \
+    -L$(CPL_LIBRARY_PATH) -Wl,-rpath=$(CPL_LIBRARY_PATH) \
     -lfiniteVolume \
     -lblockMesh \
     -lCPLSocketFOAM
