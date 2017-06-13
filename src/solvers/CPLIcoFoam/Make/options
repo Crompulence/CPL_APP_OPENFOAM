@@ -1,4 +1,4 @@
-CPP_DIRECTIVE = -std=c++11
+CPP_DIRECTIVE = -w -std=c++11
 EXE_INC = \
     $(CPP_DIRECTIVE) \
     -I$(LIB_SRC)/finiteVolume/lnInclude \
@@ -8,13 +8,9 @@ EXE_INC = \
     -I$(FOAM_CPL_APP_SRC)/CPLSocketFOAM/lnInclude \
     -I$(CPL_PATH)/include
 
-MPILIBS = -L$(MPI_ARCH_LIBS) -lmpifort -lmpicxx
-FORTRANLIBS = -lgfortran 
-CPLLIBS = -L$(FOAM_CPL_APP_LIBBIN) -Wl,-rpath=$(FOAM_CPL_APP_LIBBIN) -lCPLSocketFOAM\
-
 EXE_LIBS = \
-    $(CPLLIBS) \
+	-L$(FOAM_CPL_APP_LIBBIN) -Wl,-rpath=$(FOAM_CPL_APP_LIBBIN) \
+	-L$(CPL_LIBRARY_PATH) -Wl,-rpath=$(CPL_LIBRARY_PATH) \
     -lfiniteVolume \
     -lblockMesh \
-    $(MPILIBS) \
-    $(FORTRANLIBS)
+    -lCPLSocketFOAM
