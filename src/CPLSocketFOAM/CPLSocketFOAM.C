@@ -41,6 +41,7 @@ Description
 #include "blockMesh.H"
 #include <sstream>
 #include <unistd.h>
+#include "interpolation.H"
 #include "PstreamGlobals.H" 
 
 
@@ -183,7 +184,8 @@ void CPLSocketFOAM::allocateBuffers() {
 void CPLSocketFOAM::packStress(volVectorField &U, dimensionedScalar &nu, fvMesh &mesh)
 {
     Foam::dimensionedScalar mu(CPLDensity*nu);
-	Foam::volSymmTensorField sigma(nu*2*dev(symm(fvc::grad(U))));
+	Foam::volSymmTensorField sigma_cc(nu*2*dev(symm(fvc::grad(U))));
+	Foam::surfaceSymmTensorField sigma = fvc::interpolate(sigma_cc);
 	if (CPL::is_proc_inside(cnstFPortion.data())) {
 
 		// Loop over socket cells
@@ -198,10 +200,16 @@ void CPLSocketFOAM::packStress(volVectorField &U, dimensionedScalar &nu, fvMesh 
 					glob_cell[1] = iy;
 					glob_cell[2] = iz;
 					CPL::map_glob2loc_cell(cnstFPortion.data(), glob_cell, loc_cell);
+					/**
 					globalPos = Foam::point((glob_cell[0] + 0.5) * dx,
 											(glob_cell[1] + 0.5) * dy, 
 											(glob_cell[2] + 0.5) * dz);
-					cell = meshSearcher->findNearestCell(globalPos);
+					**/
+					//cell = meshSearcher->findNearestCell(globalPos);
+					globalPos = Foam::point((glob_cell[0] + 0.5) * dx,
+											(glob_cell[1] + 1.0) * dy, 
+											(glob_cell[2] + 0.5) * dz);
+					cell = meshSearcher->findNearestFace(globalPos);
 					if (cell != -1) {
 						sendStressBuff(0,loc_cell[0],loc_cell[1],loc_cell[2]) = sigma[cell].xx();
 						sendStressBuff(1,loc_cell[0],loc_cell[1],loc_cell[2]) = sigma[cell].xy();
@@ -283,7 +291,6 @@ unpackVelocity(volVectorField &U, fvMesh &mesh) {
 			double facex = faceCenters[faceI].x();
 			double facey = faceCenters[faceI].y();
 			double facez = faceCenters[faceI].z();
-
 			// Find the cell indices for this position recvVelocity(:, ix, iy, iz)
 			int glob_cell[3];
 			CPL::map_coord2cell(facex, facey, facez, glob_cell);

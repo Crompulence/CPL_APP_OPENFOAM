@@ -7,7 +7,7 @@ EXE_INC = \
     -I$(CONDA_PREFIX)/include/cpl \
     $(MPI_ARCH_INC) \
     -I$(FOAM_CPL_APP_SRC)/CPLPstream/lnInclude \
-    -I$(CPL_PATH)/include
+    -I$(CPL_INCLUDE_PATH)
 
 
 LIB_LIBS = \
