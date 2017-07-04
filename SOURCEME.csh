@@ -35,14 +35,11 @@ echo ""
 echo "New environment variables: "
 echo ""
 
-setenv FOAM_CPL_APP $FOAM_INST_DIR/cpl-APP
+setenv FOAM_CPL_APP $CWD
 echo "    FOAM_CPL_APP = " $FOAM_CPL_APP
 
 setenv FOAM_CPL_APP_SRC $FOAM_CPL_APP/src
 echo "    FOAM_CPL_APP_SRC = " $FOAM_CPL_APP_SRC
-
-setenv FOAM_CPL_APP_UTILS $FOAM_CPL_APP_SRC/utils
-echo "    FOAM_CPL_APP_UTILS = " $FOAM_CPL_APP_UTILS
 
 setenv FOAM_CPL_APP_LIBBIN $FOAM_CPL_APP/lib
 echo "    FOAM_CPL_APP_LIBBIN = " $FOAM_CPL_APP_LIBBIN
@@ -54,9 +51,9 @@ echo ""
 
 # Update paths
 setenv PATH $PATH\:$FOAM_CPL_APP_BIN
-setenv LD_LIBRARY_PATH $LD_LIBRARY_PATH\:$FOAM_CPL_APP_LIBBIN
+setenv LD_LIBRARY_PATH $FOAM_CPL_APP_LIBBIN:$LD_LIBRARY_PATH
 echo "PATH updated to:"
 echo "   $PATH\:$FOAM_CPL_APP_BIN"
 echo
 echo "LD_LIBRARY_PATH updated to:"
-echo "   $LD_LIBRARY_PATH\:$FOAM_CPL_APP_LIBBIN"
+echo "   $FOAM_CPL_APP_LIBBIN:$LD_LIBRARY_PATH"

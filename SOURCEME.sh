@@ -57,4 +57,4 @@ echo "PATH updated to:"
 echo "   $PATH:"$FOAM_CPL_APP_BIN
 echo
 echo "LD_LIBRARY_PATH updated to: "
-echo "  $FOAM_CPL_APP_LIBBIN:$LD_LIBRARY_PATH:"
+echo "  $FOAM_CPL_APP_LIBBIN:$LD_LIBRARY_PATH"
