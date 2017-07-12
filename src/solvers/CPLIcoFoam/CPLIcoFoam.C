@@ -37,7 +37,6 @@ Description
 
 int main(int argc, char *argv[])
 {
-// With PSTREAM
     CPLSocketFOAM socket;
     socket.initComms(argc, argv);
 
@@ -49,12 +48,15 @@ int main(int argc, char *argv[])
 
     #include "createFields.H"
     #include "initContinuityErrs.H"
-// Without PSTREAM
-//    CPLSocketFOAM socket;
-//    socket.initComms(argc, argv);
     socket.initCFD(runTime, mesh);
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+	
+	// Initial communication to initialize domains
+	socket.packStress(U, nu, mesh);
+	socket.sendStress();
+	socket.recvVelocity();
+	socket.unpackVelocity(U, mesh);
 
     Info<< "\nStarting time loop\n" << endl;
     while (runTime.loop())
