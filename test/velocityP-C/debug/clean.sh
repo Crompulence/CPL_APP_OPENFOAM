@@ -1,5 +1,5 @@
 cd ./test_vels_case
-    python clean.py
+    python2 clean.py
 cd -  
 rm cpl/coupler_header cpl/map_* &> /dev/null
 rm *.dat &> /dev/null

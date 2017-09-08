@@ -23,4 +23,4 @@ clean-test:
 	cd test/velocityP-C/debug && ./clean.sh
 
 test:
-	@py.test -v ./test
+	@py.test2 -v ./test
