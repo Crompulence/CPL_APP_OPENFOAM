@@ -79,6 +79,9 @@ else:
 if NPx % 2 != 0 and my_coords[0] == 0:
     send_array = np.zeros((4,velBCncx, velBCncy, velBCncz), order='F', dtype=np.float64)
 
+cpllib.recv(recv_array, cnstFRegion)
+cpllib.send(send_array, velBCRegion)
+
 nsteps = cpllib.get("nsteps_coupled")
 for i in xrange(nsteps):
     cpllib.recv(recv_array, cnstFRegion)
