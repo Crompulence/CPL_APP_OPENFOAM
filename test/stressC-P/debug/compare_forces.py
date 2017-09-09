@@ -62,11 +62,11 @@ def compare_forces(tol, md_fname="md_forces.dat",
         try:
             print k, "--", md_cells[k], " ", openfoam_cells[k]
             diff_forces = abs(md_cells[k] - openfoam_cells[k])
-            #if (np.any(diff_forces > tol)):
-            #    print md_cells[k]
-            #    print openfoam_cells[k]
-            #    assert False
-            #    sys.exit()
+            if (np.any(diff_forces > tol)):
+                print md_cells[k]
+                print openfoam_cells[k]
+                assert False
+                sys.exit()
         except KeyError:
             print "Cell not found: cell " + str(k)
             assert False
