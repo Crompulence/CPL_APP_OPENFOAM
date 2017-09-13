@@ -75,6 +75,8 @@ bool Foam::UPstream::init(int& argc, char**& argv)
             << " myRank:" << myRank << endl;
     }
 
+/** ->Modified for CPLPstream<-
+ 
     if (numprocs <= 1)
     {
         FatalErrorIn("UPstream::init(int& argc, char**& argv)")
@@ -82,7 +84,7 @@ bool Foam::UPstream::init(int& argc, char**& argv)
                "attempt to run parallel on 1 processor"
             << Foam::abort(FatalError);
     }
-
+**/
 
     // Initialise parallel structure
     setParRun(numprocs);

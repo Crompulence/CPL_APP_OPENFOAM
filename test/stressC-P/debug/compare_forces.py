@@ -30,6 +30,7 @@ def compare_forces(tol, md_fname="md_forces.dat",
 
     # OpenFOAM data   
     s_xy = ParsedParameterFile(openfoam_dir + "/sigmaxy")["internalField"]
+    # WARNING: This wont work if the value is uniform
     s_yz = ParsedParameterFile(openfoam_dir + "/sigmayz")["internalField"]
     s_xz = ParsedParameterFile(openfoam_dir + "/sigmaxz")["internalField"]
     s_xx = ParsedParameterFile(openfoam_dir + "/sigmaxx")["internalField"]
@@ -58,14 +59,12 @@ def compare_forces(tol, md_fname="md_forces.dat",
     for l in md_lines:
         k = "{0:.5f}".format(float(l[0])), "{0:.5f}".format(float(l[1])), "{0:.5f}".format(float(l[2]))
         md_cells[k] = np.array([float(l[3]), float(l[4]), float(l[5])])
-
     for k in md_cells.keys():
         try:
-            print k, "--", md_cells[k], " ", openfoam_cells[k]
+            #print k, "--", md_cells[k], " ", openfoam_cells[k]
             diff_forces = abs(md_cells[k] - openfoam_cells[k])
             if (np.any(diff_forces > tol)):
-                print md_cells[k]
-                print openfoam_cells[k]
+                print "Cell %s value differs in md : %s and cfd: %s" % (str(k), str(md_cells[k]), str(openfoam_cells[k]))
                 assert False
                 sys.exit()
         except KeyError:

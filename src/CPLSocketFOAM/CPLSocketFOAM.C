@@ -183,7 +183,7 @@ void CPLSocketFOAM::allocateBuffers() {
 // storage.
 void CPLSocketFOAM::packStress(volVectorField &U, dimensionedScalar &nu, fvMesh &mesh)
 {
-	int mode = 1;
+	int mode = 0;
     Foam::dimensionedScalar mu(CPLDensity*nu);
 	Foam::volSymmTensorField sigma_vol(nu*2*dev(symm(fvc::grad(U))));
 	Foam::symmTensorField sigma;
@@ -306,6 +306,7 @@ unpackVelocity(volVectorField &U, fvMesh &mesh) {
 			double recvvx = recvVelocityBuff(0, loc_cell[0], loc_cell[1], loc_cell[2])/m;
 			double recvvy = recvVelocityBuff(1, loc_cell[0], loc_cell[1], loc_cell[2]) /m;
 			double recvvz = recvVelocityBuff(2, loc_cell[0], loc_cell[1], loc_cell[2])/m;
+			std::cout << "vx: " << recvvx << "vy: " << recvvy << "vz: " << recvvz << std::endl;
 
 			if (applyBCx) rvPatch[faceI].x() = recvvx;
 			if (applyBCy) rvPatch[faceI].y() = recvvy;
