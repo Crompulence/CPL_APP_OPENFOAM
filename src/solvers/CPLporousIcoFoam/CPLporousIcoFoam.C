@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 
     CPLSocketFOAM CPL;
     CPL.initComms(argc, argv);
-
+    
     #include "setRootCase.H"
     #include "createTime.H"
     #include "createMesh.H"
@@ -48,40 +48,44 @@ int main(int argc, char *argv[])
 
     #include "createFields.H"
     #include "initContinuityErrs.H"
-
+    
 	// MPI_Init is called somewhere in the PStream library
     CPL.initCFD(runTime, mesh);
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-	
-
-	// Initial communication to initialize domains
-    CPL.pack(U, p, nu, mesh, CPL.STRESS);
-    CPL.send();
-    CPL.recvVelocity();
-    CPL.unpackVelocity(U, mesh);
+    //dimensionedScalar rho("rho",  dimensionSet(1, -3, 0, 0, 0, 0, 0), 1.0);
+    scalar rho=1000.0; //Water density
 
     Info<< "\nStarting time loop\n" << endl;
     while (runTime.loop())
     {
 
-        CPL.pack(U, p, nu, mesh, CPL.STRESS);
+        //Pack data to send
+        CPL.pack(U, p, nu, mesh, CPL.VEL);
         CPL.send();
-        CPL.recvVelocity();
-        CPL.unpackVelocity(U, mesh);
 
-        Info<< "Time = " << runTime.timeName() << nl << endl;
+        //Recieve data from particle code
+        CPL.recv();
+        CPL.unpackPorousForce(F, eps, mesh);
+
+
+        //Info<< "Time = " << runTime.timeName() << nl << endl;
 
         #include "CourantNo.H"
 
-        // Momentum predictor
+        // Get momentum divided by eps
+        F = CPL.divideFieldsVectorbyScalar(F, eps, mesh);
 
+        //Main part of the NS equation with no pressure solve
         fvVectorMatrix UEqn
         (
             fvm::ddt(U)
           + fvm::div(phi, U)
           - fvm::laplacian(nu, U)
+          - F/rho               //Explciti Force
         );
+
+        F.correctBoundaryConditions();
 
         if (piso.momentumPredictor())
         {
@@ -137,7 +141,6 @@ int main(int argc, char *argv[])
             << nl << endl;
     }
     Info<< "End\n" << endl;
-	CPL::finalize();
 
     return 0;
 }

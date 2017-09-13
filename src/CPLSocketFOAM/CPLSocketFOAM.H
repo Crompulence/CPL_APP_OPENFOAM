@@ -45,10 +45,10 @@ Description
 #include "mpi.h"
 #include "fvCFD.H"
 #include "error.H"
-#include "cpl/cpl.h"
-#include "cpl/CPL_ndArray.h"
-#include "cpl/CPL_cartCreate.h"
 #include "meshSearch.H"
+
+#include "cpl/CPL_ndArray.h"
+#include "cpl/CPL.h"
 
 // Nearest integer
 int nint(double d)
@@ -56,13 +56,14 @@ int nint(double d)
     return std::floor(d+0.5);
 }
 
-class CPLSocketFOAM {   
+class CPLSocketFOAM
+{   
 
 public:
     
     // Construct from no arguments 
     CPLSocketFOAM() : olapRegion(6), velBCRegion(6), cnstFRegion(6),
-                  velBCPortion(6), cnstFPortion(6), myCoords(3) {}
+                   olapPortion(6), velBCPortion(6), cnstFPortion(6), myCoords(3) {}
     
     // Invoke CPL_Library and store CFD realm communicator
     void initComms(int& argc, char**& argv);
@@ -71,15 +72,34 @@ public:
     void initCFD (const Foam::Time &runTime, const Foam::fvMesh &mesh);
 
     void getCellTopology();
-    void allocateBuffers();
+    void allocateBuffers(int);
 
     // Pack and unpack data into CPL-Library formats
     void packStress(volVectorField &U, dimensionedScalar &nu, fvMesh &mesh);
     double unpackVelocity(volVectorField &U, fvMesh &mesh);
+    void pack(volVectorField &U, volScalarField &p, dimensionedScalar &nu, fvMesh &mesh, int);
+    double unpackPorousForce(volVectorField &F, volScalarField &eps, fvMesh &mesh);
+    volVectorField divideFieldsVectorbyScalar(volVectorField &F, volScalarField &eps, fvMesh &mesh);
 
     // Send and receive the data with CPL-Library
     void sendStress();
     void recvVelocity();
+    void send();
+    void recv();
+
+    //Bitwise mask coefficients
+    int const VEL = 1; // 2^0, bit 0
+    int const PRESSURE = 2;  // 2^1, bit 1
+    int const GRADPRESSURE = 4;  // 2^2, bit 2
+    int const STRESS = 8;  // 2^3, bit 3
+    int const DIVSTRESS = 16;  // 2^4, bit 4
+
+
+    int const DEBUG = 0;
+//    int const PACKVELONLY = 0;
+//    int const PACKSTRESSONLY = 1;
+//    int const PACKVELGRADPRESSURE = 2;
+//    int const PACKVELSTRESS = 3;
 
 	~CPLSocketFOAM() {
 		delete meshSearcher;
@@ -114,7 +134,11 @@ private:
     int rankRealm;
     int rankCart;
 
+    // Coordinates of the local processor
+    std::vector<int> myCoords;
     // Data to be sent/received with CPL-Library
+    CPL::ndArray<double> sendBuf;
+    CPL::ndArray<double> recvBuf;
     CPL::ndArray<double> sendStressBuff;
     CPL::ndArray<double> recvVelocityBuff;
 
@@ -124,18 +148,24 @@ private:
     std::vector<int> cnstFRegion;
 
     // Portions of the region in the local processor
+    std::vector<int> olapPortion;
     std::vector<int> velBCPortion;
     std::vector<int> cnstFPortion;
 
-    // Coordinates of the local processor
-    std::vector<int> myCoords;
-    
+   
     // Number of cells in the portion in a region
+    int olapCells[3];
     int velBCCells[3];
     int cnstFCells[3];
 
 	//meshSearch local search for points in a mesh
 	Foam::meshSearch* meshSearcher;
+    //Size of different possible passing variables
+    int const VELSIZE = 3;  // 3 velocity components
+    int const PRESSURESIZE = 1;  // 1 pressure
+    int const GRADPRESSURESIZE = 3;  // 3 grad(P)
+    int const STRESSSIZE = 9;  // 9 stress
+    int const DIVSTRESSSIZE = 3;  // 3 div(stress)
 
 };
 
