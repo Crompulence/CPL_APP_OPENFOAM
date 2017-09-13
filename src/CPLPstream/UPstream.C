@@ -77,10 +77,12 @@ bool Foam::UPstream::init(int& argc, char**& argv)
 
     if (numprocs <= 1)
     {
-        FatalErrorIn("UPstream::init(int& argc, char**& argv)")
-            << "bool IPstream::init(int& argc, char**& argv) : "
-               "attempt to run parallel on 1 processor"
-            << Foam::abort(FatalError);
+        Pout<< "attempt to run parallel on 1 processor" << numprocs
+            << " myRank:" << myRank << endl;
+//        FatalErrorIn("UPstream::init(int& argc, char**& argv)")
+//            << "bool IPstream::init(int& argc, char**& argv) : "
+//               "attempt to run parallel on 1 processor"
+//            << Foam::abort(FatalError);
     }
 
 
