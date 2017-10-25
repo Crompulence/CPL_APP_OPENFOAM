@@ -1,3 +1,4 @@
+#!/usr/bin/env python2
 import pytest
 import numpy as np
 from cplpy import run_test, prepare_config, parametrize_file, get_test_dir
@@ -17,7 +18,7 @@ except:
 
 MD_FNAME = "dummyMD_forces.py"
 MD_ARGS = MD_FNAME
-MD_EXEC = "python"
+MD_EXEC = "python2"
 CFD_FNAME = "test_forces_case"
 CFD_ARGS = "-parallel -case " + CFD_FNAME
 CFD_EXEC = "CPLIcoFoam"
@@ -68,8 +69,7 @@ def compare_forces(tol, cfd_params, md_fname="md_forces.dat",
         try:
             diff_forces = abs(md_cells[k] - openfoam_cells[k])
             if (np.any(diff_forces > tol)):
-                print md_cells[k]
-                print openfoam_cells[k]
+                print "Cell %s value differs in md : %s and cfd: %s" % (str(k), str(md_cells[k]), str(openfoam_cells[k]))
                 assert False
         except KeyError:
             print "Cell not found: cell " + k

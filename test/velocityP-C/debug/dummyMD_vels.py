@@ -1,3 +1,4 @@
+#!/usr/bin/env python2
 from __future__ import print_function, division
 import sys
 import cPickle
@@ -67,7 +68,6 @@ velBCPortion = cpllib.my_proc_portion(velBCRegion)
 [velBCncx, velBCncy, velBCncz] = cpllib.get_no_cells(velBCPortion)
 
 recv_array = np.zeros((9, cnstncx, cnstncy, cnstncz), order='F', dtype=np.float64)
-send_array = 5*np.array(np.random.rand(4, velBCncx, velBCncy, velBCncz), order='F', dtype=np.float64)
 
 np.random.seed(1000)
 if my_coords[0] % 2 == 0:
@@ -78,6 +78,9 @@ else:
 if NPx % 2 != 0 and my_coords[0] == 0:
     send_array = np.zeros((4,velBCncx, velBCncy, velBCncz), order='F', dtype=np.float64)
 
+
+cpllib.recv(recv_array, cnstFRegion)
+cpllib.send(send_array, velBCRegion)
 
 nsteps = cpllib.get("nsteps_coupled")
 for i in xrange(nsteps):

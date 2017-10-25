@@ -1,3 +1,4 @@
+#!/usr/bin/env python2
 import numpy as np
 import cPickle
 import sys
@@ -69,8 +70,7 @@ def compare_vels(tol, md_fname="md_vels.dat",
         try:
             diff_forces = abs(md_cells[k] - openfoam_cells[k])
             if (np.any(diff_forces > tol)):
-                print md_cells[k]
-                print openfoam_cells[k]
+                print "Cell %s value differs in md : %s and cfd: %s" % (str(k), str(md_cells[k]), str(openfoam_cells[k]))
                 assert False
                 sys.exit()
         except KeyError:
