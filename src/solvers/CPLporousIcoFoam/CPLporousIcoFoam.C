@@ -51,6 +51,7 @@ int main(int argc, char *argv[])
     
 	// MPI_Init is called somewhere in the PStream library
     CPL.initCFD(runTime, mesh);
+    //Foam::dimensionedScalar mu(CPL.CPLDensity*nu);
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
     //dimensionedScalar rho("rho",  dimensionSet(1, -3, 0, 0, 0, 0, 0), 1.0);
@@ -61,13 +62,13 @@ int main(int argc, char *argv[])
     {
 
         //Pack data to send
-        CPL.pack(U, p, nu, mesh, CPL.VEL);
+        CPL.pack(U, p, nu, mesh, CPL.VEL | CPL.GRADPRESSURE | CPL.DIVSTRESS);
         CPL.send();
 
         //Recieve data from particle code
         CPL.recv();
-        CPL.unpackPorousForce(F, eps, mesh);
-
+        //CPL.unpackPorousForce(F, eps, mesh);
+        CPL.unpackPorousVelForceCoeff(Up, F, dragCoef, eps, mesh);
 
         //Info<< "Time = " << runTime.timeName() << nl << endl;
 
@@ -75,6 +76,11 @@ int main(int argc, char *argv[])
 
         // Get momentum divided by eps
         F = CPL.divideFieldsVectorbyScalar(F, eps, mesh);
+        F.correctBoundaryConditions();
+
+        //Get Stress times grad eps term
+	    //Foam::volSymmTensorField sigma(nu*2*dev(symm(fvc::grad(U))));
+        //Foam::volVectorField sigmagradeps(CPL.divideFieldsVectorbyScalar(sigma*fvc::grad(eps), eps, mesh));
 
         //Main part of the NS equation with no pressure solve
         fvVectorMatrix UEqn
@@ -82,10 +88,8 @@ int main(int argc, char *argv[])
             fvm::ddt(U)
           + fvm::div(phi, U)
           - fvm::laplacian(nu, U)
-          - F/rho               //Explciti Force
+          - F/rho               //Explicit Force
         );
-
-        F.correctBoundaryConditions();
 
         if (piso.momentumPredictor())
         {
@@ -103,7 +107,7 @@ int main(int argc, char *argv[])
             (
                 "phiHbyA",
                 (fvc::interpolate(HbyA) & mesh.Sf())
-              + fvc::interpolate(rAU)*fvc::ddtCorr(U, phi)
+               + fvc::interpolate(rAU)*fvc::ddtCorr(U, phi)
             );
 
             adjustPhi(phiHbyA, U, p);

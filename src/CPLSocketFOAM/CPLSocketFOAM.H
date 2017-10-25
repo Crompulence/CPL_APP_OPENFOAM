@@ -79,6 +79,7 @@ public:
     double unpackVelocity(volVectorField &U, fvMesh &mesh);
     void pack(volVectorField &U, volScalarField &p, dimensionedScalar &nu, fvMesh &mesh, int);
     double unpackPorousForce(volVectorField &F, volScalarField &eps, fvMesh &mesh);
+    double unpackPorousVelForceCoeff(volVectorField &U,volVectorField &F, volScalarField &Fcoeff, volScalarField &eps, fvMesh &mesh);
     volVectorField divideFieldsVectorbyScalar(volVectorField &F, volScalarField &eps, fvMesh &mesh);
 
     // Send and receive the data with CPL-Library
@@ -93,13 +94,7 @@ public:
     int const GRADPRESSURE = 4;  // 2^2, bit 2
     int const STRESS = 8;  // 2^3, bit 3
     int const DIVSTRESS = 16;  // 2^4, bit 4
-
-
     int const DEBUG = 0;
-//    int const PACKVELONLY = 0;
-//    int const PACKSTRESSONLY = 1;
-//    int const PACKVELGRADPRESSURE = 2;
-//    int const PACKVELSTRESS = 3;
 
 	~CPLSocketFOAM() {
 		delete meshSearcher;

@@ -37,14 +37,14 @@ Description
     See CPLSocketFOAM.H 
 
 */
-#include "CPLSocketFOAM.H"
+
 #include "blockMesh.H"
 #include <sstream>
 #include <unistd.h>
 #include <bitset>
 #include "interpolation.H"
 #include "PstreamGlobals.H" 
-
+#include "CPLSocketFOAM.H"
 
 // Initialise CFD realm communicator
 void CPLSocketFOAM::initComms (int& argc, char**& argv) {
@@ -146,7 +146,7 @@ void CPLSocketFOAM::initCFD (const Foam::Time &runTime, const Foam::fvMesh &mesh
     double xyz_orig[3] = {0.0, 0.0, 0.0};
 
     // Initialise CPL library
-	//CPL::set_timing(0, nsteps, dt_cfd);
+	CPL::set_timing(0, nsteps, dt_cfd);
     CPL::setup_cfd (cartComm, xyzL, xyz_orig, ncxyz);
     getCellTopology();
 
@@ -207,7 +207,7 @@ void CPLSocketFOAM::allocateBuffers(int sendtype) {
     int sendShape[4] = {packsize, cnstFCells[0], cnstFCells[1], cnstFCells[2]};
     sendBuf.resize(4, sendShape);
 
-    if (sendtype > 16){
+    if (sendtype > 31){
         FatalErrorIn
         (
             "CPLSocketFOAM::allocateBuffers()"
@@ -232,7 +232,7 @@ void CPLSocketFOAM::pack(volVectorField &U,
     // Evaluate the stress tensor sigma at all local cells
     //if (((sendtype & STRESS) == STRESS) | 
     //    ((sendtype & DIVSTRESS) == DIVSTRESS)) {
-    Foam::dimensionedScalar mu(CPLDensity*nu);
+        Foam::dimensionedScalar mu(CPLDensity*nu);
 	    Foam::volSymmTensorField sigma(nu*2*dev(symm(fvc::grad(U))));
     //}
 
@@ -347,7 +347,8 @@ void CPLSocketFOAM::pack(volVectorField &U,
 
 // Unpacks the 3 components of the velocity-tensor from the socket's
 // recvVelocity (cpl::ndArray) storage into a boundary condition.
-double CPLSocketFOAM::unpackVelocity(volVectorField &U, fvMesh &mesh) {
+double CPLSocketFOAM::unpackVelocity(volVectorField &U, fvMesh &mesh) 
+{
 
 //    Foam::Info << " unpackVelocity " << rankRealm << " " << 
 //                CPL::is_proc_inside(velBCPortion.data()) << " " << 
@@ -442,7 +443,8 @@ double CPLSocketFOAM::unpackVelocity(volVectorField &U, fvMesh &mesh) {
 
 
 // Unpacks the components from the socket's
-double CPLSocketFOAM::unpackPorousForce(volVectorField &F, volScalarField &eps, fvMesh &mesh) {
+double CPLSocketFOAM::unpackPorousForce(volVectorField &F, volScalarField &eps, fvMesh &mesh) 
+{
 
     for (int ix=0; ix<recvBuf.shape(1); ix++) {
         for (int iy=0; iy<recvBuf.shape(2); iy++) {
@@ -468,7 +470,54 @@ double CPLSocketFOAM::unpackPorousForce(volVectorField &F, volScalarField &eps, 
 }
 
 
-volVectorField CPLSocketFOAM::divideFieldsVectorbyScalar(volVectorField &F, volScalarField &eps, fvMesh &mesh) {
+// Unpacks the components from the socket's
+double CPLSocketFOAM::unpackPorousVelForceCoeff(volVectorField &U, 
+                                                volVectorField &F, 
+                                                volScalarField &Fcoeff, 
+                                                volScalarField &eps, 
+                                                fvMesh &mesh) 
+{
+
+    for (int ix=0; ix<recvBuf.shape(1); ix++) {
+        for (int iy=0; iy<recvBuf.shape(2); iy++) {
+            for (int iz=0; iz<recvBuf.shape(3); iz++) {
+
+                double Ux = recvBuf(0, ix, iy, iz);
+                double Uy = recvBuf(1, ix, iy, iz);
+                double Uz = recvBuf(2, ix, iy, iz);
+                double Fx = recvBuf(3, ix, iy, iz);
+                double Fy = recvBuf(4, ix, iy, iz);
+                double Fz = recvBuf(5, ix, iy, iz);
+                double Cd = recvBuf(6, ix, iy, iz);
+                double e  = recvBuf(7, ix, iy, iz);
+
+                double glob_pos[3];
+                CPL::map_cell2coord(ix, iy, iz, glob_pos);
+                Foam::point closestCellCentre(glob_pos[0]+0.5*dx, glob_pos[1]+0.5*dy, glob_pos[2]+0.5*dz);
+                Foam::label cell = meshSearcher->findNearestCell(closestCellCentre);
+                eps[cell] = e;
+                Fcoeff[cell] = Cd;
+                F[cell].x() = Fx;
+                F[cell].y() = Fy;
+                F[cell].z() = Fz;
+                U[cell].x() = Ux;
+                U[cell].y() = Uy;
+                U[cell].z() = Uz;
+
+//                Foam::Info << "recvBuf " << ix << " " << iy << " " << iz << " " 
+//                            << F[cell].x() << " " << F[cell].y() << " " << F[cell].z() << " "
+//                            << U[cell].x() << " " << U[cell].y() << " " << U[cell].z() << " "
+//                            << eps[cell] << " " << Fcoeff[cell] << Foam::endl;
+
+
+            }
+        }
+    }
+}
+
+
+volVectorField CPLSocketFOAM::divideFieldsVectorbyScalar(volVectorField &V, volScalarField &S, fvMesh &mesh) 
+{
 
     for (int ix=0; ix<recvBuf.shape(1); ix++) {
         for (int iy=0; iy<recvBuf.shape(2); iy++) {
@@ -481,24 +530,24 @@ volVectorField CPLSocketFOAM::divideFieldsVectorbyScalar(volVectorField &F, volS
 
 //                Foam::Info << "Divide F " << cell << " " << F[cell].x()
 //                           << " " << F[cell].y() << " " << F[cell].z() 
-//                           << " " << eps[cell] << Foam::endl;
+//                           << " " << S[cell] << Foam::endl;
 
-                if (eps[cell] > 1e-6) {
-                    F[cell].x() = F[cell].x()/eps[cell];
-                    F[cell].y() = F[cell].y()/eps[cell];
-                    F[cell].z() = F[cell].z()/eps[cell];
+                if (S[cell] > 1e-6) {
+                    V[cell].x() = V[cell].x()/S[cell];
+                    V[cell].y() = V[cell].y()/S[cell];
+                    V[cell].z() = V[cell].z()/S[cell];
                 } else {
 		            FatalErrorIn ( "CPLSocketFOAM::divideFieldsVectorbyScalar()")
-		                     << "Porosity is zero "<< cell << " " << eps[cell] 
-                            << " " << F[cell].x() << " " << F[cell].y() 
-                            << " " << F[cell].z() << exit(FatalError);
+		                     << "Divide by approx zero "<< cell << " " << S[cell] 
+                            << " " << V[cell].x() << " " << V[cell].y() 
+                            << " " << V[cell].z() << exit(FatalError);
                 }
 
             }
         }
     }
 
-    return F;
+    return V;
 }
 
 
@@ -512,17 +561,25 @@ void CPLSocketFOAM::send()
 void CPLSocketFOAM::recv()
 {
     // LAMMPS olap size field
-    int recvShape[4] = {4, olapCells[0], olapCells[1], olapCells[2]};
+    int recvShape[4] = {8, olapCells[0], olapCells[1], olapCells[2]};
     recvBuf.resize(4, recvShape);
 
     CPL::recv(recvBuf.data(), recvBuf.shapeData(), olapPortion.data());
+
+//    for (int ix=0; ix<recvBuf.shape(1); ix++) {
+//    for (int iy=0; iy<recvBuf.shape(2); iy++) {
+//    for (int iz=0; iz<recvBuf.shape(3); iz++) {
+//    for (int n = 0; n < 8; n++) {
+//        std::cout << "RECV " << ix << " " << iy << " " << iz << " " << n << " " 
+//                  << recvBuf(n, ix, iy, iz) << std::endl;
+//    }}}}
+
 }
 
 // Sends 9 components of the stress-tensor to overlapping MD processes.
 void CPLSocketFOAM::sendStress() 
 {
-        CPL::send (sendStressBuff.data(), sendStressBuff.shapeData(),
-                   cnstFRegion.data());
+    CPL::send (sendStressBuff.data(), sendStressBuff.shapeData(), cnstFRegion.data());
 }
 
 // Receives 3 components of the velocity vector from overlapping MD processes.

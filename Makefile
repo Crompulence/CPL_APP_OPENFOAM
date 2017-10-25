@@ -8,6 +8,17 @@ all:
 	@wmake libso src/CPLSocketFOAM
 	@wmake src/solvers/CPLIcoFoam
 	@wmake src/solvers/CPLporousIcoFoam
+
+sedifoam:
+	@wmake libso src/CPLPstream
+	@wmake libso src/CPLSocketFOAM
+	@wmakeLnInclude src/solvers/CPLSediFoam/dragModels
+	@wmake libso src/solvers/CPLSediFoam/dragModels
+	@wmakeLnInclude src/solvers/CPLSediFoam/chPressureGrad
+	@wmake libso src/solvers/CPLSediFoam/chPressureGrad
+	@wmakeLnInclude src/solvers/CPLSediFoam/lammpsFoamTurbulenceModels
+	@wmake libso src/solvers/CPLSediFoam/lammpsFoamTurbulenceModels
+	@wmake src/solvers/CPLSediFoam
 	
 patch-openfoam:
 	cp ./config/pref.sh $(OpenFOAM_ETC_DIR)/config/
@@ -17,6 +28,7 @@ clean:
 	@wclean src/solvers/CPLIcoFoam
 	@wclean src/solvers/CPLporousIcoFoam
 	@wclean src/CPLPstream
+	@wclean src/CPLSediFoam
 	rm -rf bin
 	rm -rf lib
 

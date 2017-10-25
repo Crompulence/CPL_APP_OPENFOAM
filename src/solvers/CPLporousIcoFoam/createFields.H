@@ -75,6 +75,35 @@
         mesh
     );
 
+    Info<< "Setting up place-holder for Up\n" << endl;
+    volVectorField Up
+    (
+        IOobject
+        (
+            "Up",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+         ),
+        U - U
+    );
+
+    Info<< "Setting up place-holder for Up\n" << endl;
+    volScalarField dragCoef
+    (
+        IOobject
+        (
+            "dragCoef",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        eps - eps
+    );
+
+
 //    Info<< "Setup identity matix\n" << endl;
 //    volVectorField Ei
 //    (
