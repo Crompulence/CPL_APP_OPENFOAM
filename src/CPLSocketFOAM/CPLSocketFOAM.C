@@ -46,6 +46,8 @@ Description
 #include "PstreamGlobals.H" 
 #include "CPLSocketFOAM.H"
 
+#include "cpl/CPL_cartCreate.h"
+
 // Initialise CFD realm communicator
 void CPLSocketFOAM::initComms (int& argc, char**& argv) {
 

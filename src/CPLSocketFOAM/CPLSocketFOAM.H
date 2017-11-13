@@ -48,7 +48,8 @@ Description
 #include "meshSearch.H"
 
 #include "cpl/CPL_ndArray.h"
-#include "cpl/CPL.h"
+#include "cpl/cpl.h"
+
 
 // Nearest integer
 int nint(double d)
