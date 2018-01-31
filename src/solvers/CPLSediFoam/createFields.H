@@ -249,9 +249,9 @@
     volScalarField gh("gh", g & mesh.C());
 
     // Adding pressure gradient to drive fluid flow
-    chPressureGrad::initPressureGrad(transportProperties);
+    //chPressureGrad::initPressureGrad(transportProperties);
 
-    chPressureGrad gradP(Ub, alpha, "gradP", "LAMMPS");
+    //chPressureGrad gradP(Ub, alpha, "gradP", "LAMMPS");
 
     label pRefCell = 0;
     scalar pRefValue = 0.0;

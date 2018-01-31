@@ -76,7 +76,7 @@ https://www.cfd-online.com/Forums/openfoam-solving/58178-twophaseeulerfoam-docum
 #include "CPLSocketFOAM.H"
 
 //#include "enhancedCloud.H"
-#include "chPressureGrad.H"
+//#include "chPressureGrad.H"
 
 // #define RANDOM_TURB
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
     scalar t0 = runTime.elapsedCpuTime();
     //#include "createParticles.H"
     // Also update/create MD-related fields.
-    beta = 1.0 - alpha;
+    beta = scalar(1) - alpha;
     volScalarField dragCoef = alpha*dimensionedScalar("dum", dimensionSet(1, -3, -1, 0, 0), 0.0);
     // Lift (place holder only. Changed in fluid loop)
     volVectorField liftCoeff = Cl*beta*rhob*(Ub ^ fvc::curl(U));
@@ -127,10 +127,6 @@ int main(int argc, char *argv[])
         CPL.unpackPorousVelForceCoeff(Ua, F, dragCoef, beta, mesh);
         alpha = scalar(1) - beta;
 
-        // Correct the kinetic viscosity
-        // not applicable in Newtonian flow
-        continuousPhaseTransport.correct();
-
         #include "readPISO.H"
         #include "CourantNo.H"
         #include "alphaEqn.H"
@@ -139,49 +135,21 @@ int main(int argc, char *argv[])
         betaf = fvc::interpolate(beta);
         betaPhib = betaf*phib;
 
-        #ifdef RANDOM_TURB
-            #include "calcDNSForce.H"
-        #endif
-
+        // See H. Xiao and J. Sun / Commun. Comput. Phys., 9 (2011), pp. 297-323 
+        // For explaination of various terms omega and A from Cloud
+        // \sum DragCoef*U_b where U_b is fluid velocity 
         {
             UbEqn =
             (
                 fvm::ddt(beta, Ub)
               + fvm::div(betaPhib, Ub, "div(phib,Ub)")
               - fvm::Sp(fvc::ddt(beta) + fvc::div(betaPhib), Ub)
-              + (Cvm*rhob*alpha*beta/rhob)*
-                (
-                    fvm::ddt(Ub)
-                  + fvm::div(phib, Ub, "div(phib,Ub)")
-                  - fvm::Sp(fvc::div(phib), Ub)
-                )
-
-                // divDevReff(U) = - laplacian(beta*U)
-              + continuousPhaseTurbulence->divDevReff(Ub)
-              + continuousPhaseTurbulence->nuEff()*(fvc::grad(beta) & fvc::grad(Ub))
+              // This term is different in Anderson & Jackson or Kafui et al
+              - fvm::laplacian(nub*beta, Ub)
              ==
-            //  g                                 // Buoyancy term transfered to p-equation
-            // See H. Xiao and J. Sun / Commun. Comput. Phys., 9 (2011), pp. 297-323 
-            // For explaination of various terms omega and A from Cloud
-            // DragCoef*U_b where U_b is fluid velocity 
               - beta*fvm::Sp(dragCoef/rhob, Ub)   // Implicit drag transfered to p-equation
-            //+ alpha/rhob*dragCoef*Ub             // Explicit drag transfered to p-equation
-	        + beta*alpha/rhob*(liftCoeff + Cvm*rhob*DDtUa)
-            //  + beta*alpha/rhob*liftCoeff
-            //  + beta*alpha*Cvm*rhob*DDtUa
-              + fvc::average(beta)*gradP.flowDirection()*gradP.value() // Adding pressure gradient
-            #ifdef RANDOM_TURB
-              + fvc::average(beta)*turbulenceForce // Adding DNS force
-            #endif
             );
-
-            if (addIBMForce)
-            {
-                UbEqn -= fvm::Sp(-ibmIndicatorPtr()/ibmRelaxTime, Ub);
-            }
-
             UbEqn.relax();
-
         }
 
         // --- PISO loop
@@ -193,9 +161,9 @@ int main(int argc, char *argv[])
             surfaceScalarField betaf = scalar(1) - alphaf;
             surfaceScalarField rUbAf = fvc::interpolate(rUbA);
             Ub = rUbA*UbEqn.H()/beta;
-            surfaceScalarField phiDragb =
-                fvc::interpolate(rUbA/rhob)*(fvc::interpolate(F) & mesh.Sf())
-              + rUbAf*(g & mesh.Sf());
+            surfaceScalarField phiDragb = fvc::interpolate(rUbA/rhob) 
+                                         *(fvc::interpolate(F) & mesh.Sf())
+                                         + rUbAf*(g & mesh.Sf());   //This term here applies gravity!!
 
             forAll(p.boundaryField(), patchi)
             {
@@ -216,50 +184,30 @@ int main(int argc, char *argv[])
 
             surfaceScalarField Dp("(rho*(1|A(U)))", betaf*rUbAf/rhob);
 
-            for (int nonOrth = 0; nonOrth <= nNonOrthCorr; nonOrth++)
-            {
-                fvScalarMatrix pEqn
-                (
-                    fvm::laplacian(Dp, p) == fvc::div(phi)
-                );
+            //Assume a uniform grid so non-othogonal corrections    
+            fvScalarMatrix pEqn
+            (
+                fvm::laplacian(Dp, p) == fvc::div(phi)
+            );
 
-                pEqn.setReference(pRefCell, pRefValue);
+            pEqn.setReference(pRefCell, pRefValue);
+            pEqn.solve();
 
-                pEqn.solve();
-                // Not completely clear about how the nonOrth correction
-                // should be modified. Need more thinking.
-                if (nonOrth == nNonOrthCorr)
-                {
-                    // Info<< "Dp: " << Dp << endl;
-                    surfaceScalarField SfGradp = pEqn.flux()/Dp;
+            surfaceScalarField SfGradp = pEqn.flux()/Dp;
 
-                    // phia -= rUaAf*SfGradp/rhoa;
-                    phib -= rUbAf*SfGradp/rhob;
-                    phi = alphaf*phia + betaf*phib;
+            phib -= rUbAf*SfGradp/rhob;
+            phi = alphaf*phia + betaf*phib;
 
-                    p.relax();
-                    SfGradp = pEqn.flux()/Dp;
-                    Ub += (fvc::reconstruct(phiDragb - rUbAf*SfGradp/rhob));
-                    Ub.correctBoundaryConditions();
-                    U = alpha*Ua + beta*Ub;
-                }
-            }
+            p.relax();
+            SfGradp = pEqn.flux()/Dp;
+            Ub += (fvc::reconstruct(phiDragb - rUbAf*SfGradp/rhob));
+            Ub.correctBoundaryConditions();
+            U = alpha*Ua + beta*Ub;
         }
-
-        gradP.adjust(rUbA);
 
         Ub.correctBoundaryConditions();
 
-        volTensorField gradUb("gradUb",fvc::grad(Ub));
-        volScalarField nuEff("nuEff",continuousPhaseTurbulence->nuEff());
-        volScalarField k("k",continuousPhaseTurbulence->k());
-
-        B = ((2.0/3.0)*I)*k - nuEff*(twoSymm(gradUb));
-
-        // update the turbulence viscosity
-        continuousPhaseTurbulence->correct();
-
-        {
+       {
             DDtUa =
                 fvc::ddt(Ua)
               + fvc::div(phia, Ua)
@@ -273,10 +221,6 @@ int main(int argc, char *argv[])
 
         splitTime[0] += runTime.elapsedCpuTime() - t0;
         t0 = runTime.elapsedCpuTime();
-
-        // get drag from latest velocity fields and evolve particles.
-        //#include "moveParticles.H"
-
         splitTime[1] += runTime.elapsedCpuTime() - t0;
         t0 = runTime.elapsedCpuTime();
 
@@ -288,12 +232,6 @@ int main(int argc, char *argv[])
 
         #include "writeCPUTime.H"
 
-//        if (runTime.outputTime())
-//        {
-//            // TODO: for debugging
-//            volVectorField ggradp("gradp",fvc::grad(p));
-//            ggradp.write();
-//        }
     }
 
     Info<< "End\n" << endl;
