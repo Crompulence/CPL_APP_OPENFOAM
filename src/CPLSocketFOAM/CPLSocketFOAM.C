@@ -506,10 +506,12 @@ double CPLSocketFOAM::unpackPorousVelForceCoeff(volVectorField &U,
                 U[cell].y() = Uy;
                 U[cell].z() = Uz;
 
-//                Foam::Info << "recvBuf " << ix << " " << iy << " " << iz << " " 
-//                            << F[cell].x() << " " << F[cell].y() << " " << F[cell].z() << " "
-//                            << U[cell].x() << " " << U[cell].y() << " " << U[cell].z() << " "
-//                            << eps[cell] << " " << Fcoeff[cell] << Foam::endl;
+//                if (eps[cell] == 0.26){
+//                    Foam::Info << "recvBuf " << ix << " " << iy << " " << iz << " " 
+//                                << F[cell].x() << " " << F[cell].y() << " " << F[cell].z() << " "
+//                                << U[cell].x() << " " << U[cell].y() << " " << U[cell].z() << " "
+//                                << eps[cell] << " " << Fcoeff[cell] << Foam::endl;
+//                }
 
 
             }
