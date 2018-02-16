@@ -40,8 +40,8 @@ formulation of the momentum equation, you can read the following paper:
 
 
 The details of the implementation in OpenFOAM(r) are described in an internal 
-report of OpenCFD(r) and are summed up in Henrik Rusche PhD thesis, where you 
-can also find the reference to the internal report I am referring to.
+report of OpenCFD (NOT AVAILABLE ANYWHERE - GREAT SCIENCE!) and are summed
+up in Henrik Rusche PhD thesis.
 
 The basic ideas behind the solution algorithm are the following
 
@@ -138,19 +138,17 @@ int main(int argc, char *argv[])
         // See H. Xiao and J. Sun / Commun. Comput. Phys., 9 (2011), pp. 297-323 
         // For explaination of various terms omega and A from Cloud
         // \sum DragCoef*U_b where U_b is fluid velocity 
-        {
-            UbEqn =
-            (
-                fvm::ddt(beta, Ub)
-              + fvm::div(betaPhib, Ub, "div(phib,Ub)")
-              - fvm::Sp(fvc::ddt(beta) + fvc::div(betaPhib), Ub)
-              // This term is different in Anderson & Jackson or Kafui et al
-              - fvm::laplacian(nub*beta, Ub)
-             ==
-              - beta*fvm::Sp(dragCoef/rhob, Ub)   // Implicit drag transfered to p-equation
-            );
-            UbEqn.relax();
-        }
+        UbEqn =
+        (
+            fvm::ddt(beta, Ub)
+          + fvm::div(betaPhib, Ub, "div(phib,Ub)")
+          - fvm::Sp(fvc::ddt(beta) + fvc::div(betaPhib), Ub)
+          // This term is different in Anderson & Jackson or Kafui et al: e*du VS. d(e*u)
+          - fvm::laplacian(nub*beta, Ub)
+         ==
+          - beta*fvm::Sp(dragCoef/rhob, Ub)   // Implicit drag transfered to p-equation
+        );
+        UbEqn.relax();
 
         // --- PISO loop
         volScalarField rUbA = 1.0/UbEqn.A()*beta;

@@ -19,6 +19,9 @@ sedifoam:
 	@wmakeLnInclude src/solvers/CPLSediFoam/lammpsFoamTurbulenceModels
 	@wmake libso src/solvers/CPLSediFoam/lammpsFoamTurbulenceModels
 	@wmake src/solvers/CPLSediFoam
+
+icofoam:
+	@wmake src/solvers/IcoFoam
 	
 patch-openfoam:
 	cp ./config/pref.sh $(OpenFOAM_ETC_DIR)/config/

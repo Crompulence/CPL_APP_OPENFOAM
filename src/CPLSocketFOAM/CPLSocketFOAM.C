@@ -148,7 +148,7 @@ void CPLSocketFOAM::initCFD (const Foam::Time &runTime, const Foam::fvMesh &mesh
     double xyz_orig[3] = {0.0, 0.0, 0.0};
 
     // Initialise CPL library
-	CPL::set_timing(0, nsteps, dt_cfd);
+	//CPL::set_timing(0, nsteps, dt_cfd);
     CPL::setup_cfd (cartComm, xyzL, xyz_orig, ncxyz);
     getCellTopology();
 
@@ -181,7 +181,6 @@ void CPLSocketFOAM::getCellTopology() {
     // Processor cell bounds for the constrained region
     CPL::get_cnst_limits(cnstFRegion.data());
     CPL::my_proc_portion(cnstFRegion.data(), cnstFPortion.data());
-
     CPL::get_no_cells(cnstFPortion.data(), cnstFCells);
 }
 

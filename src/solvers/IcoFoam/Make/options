@@ -1,0 +1,10 @@
+EXE_INC = \
+    -I$(LIB_SRC)/finiteVolume/lnInclude \
+    -I$(LIB_SRC)/meshTools/lnInclude \
+    $(MPI_ARCH_INC)
+
+EXE_LIBS = \
+    -Wl,-rpath=$(MPI_ARCH_PATH)/lib \
+    -L$(FOAM_CPL_APP_LIBBIN) -Wl,-rpath=$(FOAM_CPL_APP_LIBBIN) \
+    -lfiniteVolume \
+    -lmeshTools

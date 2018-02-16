@@ -31,58 +31,37 @@ Description
 
 #include "fvCFD.H"
 #include "pisoControl.H"
-#include "CPLSocketFOAM.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 int main(int argc, char *argv[])
 {
-
-    CPLSocketFOAM CPL;
-    CPL.initComms(argc, argv);
-
     #include "setRootCase.H"
     #include "createTime.H"
     #include "createMesh.H"
+
     pisoControl piso(mesh);
 
     #include "createFields.H"
     #include "initContinuityErrs.H"
 
-	// MPI_Init is called somewhere in the PStream library
-    CPL.initCFD(runTime, mesh);
-
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-	
-
-	// Initial communication to initialize domains
-    CPL.pack(U, p, nu, mesh, CPL.STRESS);
-    CPL.send();
-    CPL.recvVelocity();
-    CPL.unpackVelocity(U, mesh);
 
     Info<< "\nStarting time loop\n" << endl;
+
     while (runTime.loop())
     {
-
-        std::cout << "CPL.VEL on " << std::endl;
-        CPL.pack(U, p, nu, mesh, CPL.VEL);
-        //CPL.pack(U, p, nu, mesh, CPL.STRESS);
-        CPL.send();
-        CPL.recvVelocity();
-        CPL.unpackVelocity(U, mesh);
-
         Info<< "Time = " << runTime.timeName() << nl << endl;
 
         #include "CourantNo.H"
 
-        // Momentum predictor
-
+        // Momentum predictor       
         fvVectorMatrix UEqn
         (
             fvm::ddt(U)
           + fvm::div(phi, U)
           - fvm::laplacian(nu, U)
+//          - dV*g
         );
 
         if (piso.momentumPredictor())
@@ -102,6 +81,8 @@ int main(int argc, char *argv[])
                 "phiHbyA",
                 (fvc::interpolate(HbyA) & mesh.Sf())
               + fvc::interpolate(rAU)*fvc::ddtCorr(U, phi)
+                //This term is based on the one which applies gravity in SediFOAM
+//              + fvc::interpolate(rAU)*(g & mesh.Sf())   
             );
 
             adjustPhi(phiHbyA, U, p);
@@ -138,8 +119,8 @@ int main(int argc, char *argv[])
             << "  ClockTime = " << runTime.elapsedClockTime() << " s"
             << nl << endl;
     }
+
     Info<< "End\n" << endl;
-	CPL::finalize();
 
     return 0;
 }
