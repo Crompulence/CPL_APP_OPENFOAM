@@ -3,7 +3,7 @@ MYPWD=${PWD}
 ROOTDIR=../../../
 CPL_DIR=/home/es205/codes/cpl/cpl-library/
 LAMMPS_DIR=${ROOTDIR}/LAMMPS-dev_coupled/CPL_APP_LAMMPS-DEV/
-OPENFOAM_DIR=${ROOTDIR}/OpenFOAM-3.0.1_coupled/CPL_APP_OPENFOAM-3.0.1/
+OPENFOAM_DIR=${ROOTDIR}/CPL_APP_OPENFOAM-3.0.1/
 
 if [ "$1" -eq "0" ]
 then

@@ -63,8 +63,8 @@ class CPLSocketFOAM
 public:
     
     // Construct from no arguments 
-    CPLSocketFOAM() : olapRegion(6), velBCRegion(6), cnstFRegion(6),
-                   olapPortion(6), velBCPortion(6), cnstFPortion(6), myCoords(3) {}
+    CPLSocketFOAM() : olapRegion(6),  velBCRegion(6),  cnstFRegion(6),
+                      olapPortion(6), velBCPortion(6), cnstFPortion(6), myCoords(3) {}
     
     // Invoke CPL_Library and store CFD realm communicator
     void initComms(int& argc, char**& argv);
@@ -147,6 +147,12 @@ private:
     std::vector<int> olapPortion;
     std::vector<int> velBCPortion;
     std::vector<int> cnstFPortion;
+
+//    int writetime;
+//    int packcount=0;
+//    void createFields(const Foam::Time &runTime, 
+//                      const Foam::fvMesh &mesh);
+//    std::shared_ptr<Foam::volVectorField> dPdr;
 
    
     // Number of cells in the portion in a region

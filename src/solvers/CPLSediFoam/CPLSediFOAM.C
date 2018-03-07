@@ -84,7 +84,7 @@ https://www.cfd-online.com/Forums/openfoam-solving/58178-twophaseeulerfoam-docum
 int main(int argc, char *argv[])
 {
 
-    Info<< "start main = " << endl;
+    Info << "start main = " << endl;
     CPLSocketFOAM CPL;
     CPL.initComms(argc, argv);
 
@@ -93,6 +93,7 @@ int main(int argc, char *argv[])
     #include "createMesh.H"
     #include "readEnvironmentalProperties.H"
     #include "createFields.H"
+
     scalar t0 = runTime.elapsedCpuTime();
     //#include "createParticles.H"
     // Also update/create MD-related fields.
@@ -205,7 +206,7 @@ int main(int argc, char *argv[])
 
         Ub.correctBoundaryConditions();
 
-       {
+        {
             DDtUa =
                 fvc::ddt(Ua)
               + fvc::div(phia, Ua)
@@ -217,6 +218,10 @@ int main(int argc, char *argv[])
               - fvc::div(phib)*Ub;
         }
 
+
+        //Define dPdr to write out
+        dPdr = fvc::grad(p);
+        
         splitTime[0] += runTime.elapsedCpuTime() - t0;
         t0 = runTime.elapsedCpuTime();
         splitTime[1] += runTime.elapsedCpuTime() - t0;

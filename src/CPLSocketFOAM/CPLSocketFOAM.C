@@ -160,6 +160,27 @@ void CPLSocketFOAM::initCFD (const Foam::Time &runTime, const Foam::fvMesh &mesh
 
 }
 
+//void CPLSocketFOAM::createFields(const Foam::Time &runTime, 
+//                                 const Foam::fvMesh &mesh)
+//{
+
+//    dPdr = std::make_shared<Foam::volVectorField>
+//    (
+////    std::make_shared Foam::volVectorField dPdr
+////    (
+//        Foam::IOobject
+//        (
+//            "dPdr",
+//            runTime.timeName(),
+//            mesh,
+//            Foam::IOobject::NO_READ,
+//            Foam::IOobject::AUTO_WRITE
+//        ),
+//        mesh
+//    );
+
+//}
+
 void CPLSocketFOAM::getCellTopology() {                                                                                                                                                                                                                       
     // Cell sizes
     dx = CPL::get<double> ("dx");
@@ -226,9 +247,14 @@ void CPLSocketFOAM::pack(volVectorField &U,
                          fvMesh &mesh, 
                          int sendtype)
 {
+
+    // It would be nice to write these CPL fields directly here
+    // but write interval is not accessible from Foam::Time
+    // object and 
+
     // Evaluate gradient of pressure
     //if ((sendtype & GRADPRESSURE) == GRADPRESSURE)
-        Foam::volVectorField gradP(fvc::grad(p));
+        Foam::volVectorField gradP("gradP", fvc::grad(p));
 
     // Evaluate the stress tensor sigma at all local cells
     //if (((sendtype & STRESS) == STRESS) | 

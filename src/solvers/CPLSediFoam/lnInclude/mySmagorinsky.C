@@ -1,1 +1,0 @@
-../lammpsFoamTurbulenceModels/LES/mySmagorinsky/mySmagorinsky.C

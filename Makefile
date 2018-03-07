@@ -30,8 +30,8 @@ clean:
 	@wclean src/CPLSocketFOAM
 	@wclean src/solvers/CPLIcoFoam
 	@wclean src/solvers/CPLporousIcoFoam
+	@wclean src/solvers/CPLSediFoam
 	@wclean src/CPLPstream
-	@wclean src/CPLSediFoam
 	rm -rf bin
 	rm -rf lib
 

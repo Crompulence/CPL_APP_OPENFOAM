@@ -42,7 +42,6 @@ xyzL = np.array([2., 2., 2.], order='F', dtype=np.float64)
 xyz_orig = np.array([0.0, 0.0, 0.0], order='F', dtype=np.float64)
 
 
-
 #initialise CPL
 CPL = CPL()
 MD_COMM = CPL.init(CPL.MD_REALM)
@@ -143,7 +142,7 @@ for time in range(1000):
             ax.plot(u_anal[:],y_anal, 'k.-', label="Analytical Solution")
 
             y_p, u_p = CApObj.get_vprofile(time*dt)
-            ax.plot(u_p,y_p, 'kx--', label="Analytical Solution porous")
+            ax.plot(u_p, y_p, 'kx--', label="Analytical Solution porous")
 
 
             error = (u_p[::2] - ur[pcell+3:])/u_p[::2]
@@ -168,8 +167,8 @@ for time in range(1000):
 
 
 print(l2)
-import cPickle as pickle
-pickle.dump(l2, open("eps"+str(eps)+".p", "w+"))
+#import cPickle as pickle
+#pickle.dump(l2, open("eps"+str(eps)+".p", "w+"))
 
 CPL.finalize()
 MPI.Finalize()

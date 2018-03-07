@@ -232,6 +232,20 @@
         dimensionedSymmTensor("B", sqr(Ub.dimensions()), symmTensor::zero)
     );
 
+    volVectorField dPdr
+    (
+        IOobject
+        (
+            "dPdr",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        fvc::grad(p)
+    );
+
+
     Info<< "Calculating field DDtUa and DDtUb\n" << endl;
 
     volVectorField DDtUa =
