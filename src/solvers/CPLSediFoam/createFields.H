@@ -151,18 +151,16 @@
 //    }
 
     // default max alpha if not defined in dictionary
-    scalar maxPossibleAlpha = 0.7;
-//        cloudProperties.lookupOrDefault<scalar>("maxPossibleAlpha", 0.70);
-//    if (!cloudProperties.found("maxPossibleAlpha"))
-//    {
-//        Info<< "*** Max possible alpha set to 0.70 by default"
-//            << endl;
-//    }
-//    else
-//    {
-//        Info<< "*** Max possible alpha set to " << maxPossibleAlpha
-//            << endl;
-//    }
+    scalar maxPossibleAlpha = 0.99;
+    transportProperties.lookupOrDefault<scalar>("maxPossibleAlpha", 0.99);
+    if (!transportProperties.found("maxPossibleAlpha"))
+    {
+        Info<< "*** Max possible alpha set to 0.99 by default" << endl;
+    }
+    else
+    {
+        Info<< "*** Max possible alpha set to " << maxPossibleAlpha << endl;
+    }
 
     // default diffusion steps if not defined in dictionary
     label diffusionSteps = 6;

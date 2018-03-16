@@ -509,27 +509,59 @@ double CPLSocketFOAM::unpackPorousVelForceCoeff(volVectorField &U,
         for (int iy=0; iy<recvBuf.shape(2); iy++) {
             for (int iz=0; iz<recvBuf.shape(3); iz++) {
 
-                double Ux = recvBuf(0, ix, iy, iz);
-                double Uy = recvBuf(1, ix, iy, iz);
-                double Uz = recvBuf(2, ix, iy, iz);
-                double Fx = recvBuf(3, ix, iy, iz);
-                double Fy = recvBuf(4, ix, iy, iz);
-                double Fz = recvBuf(5, ix, iy, iz);
-                double Cd = recvBuf(6, ix, iy, iz);
-                double e  = recvBuf(7, ix, iy, iz);
+                //The recieved values are the raw sums collected by particle solver
+                double Uxsum = recvBuf(0, ix, iy, iz);
+                double Uysum = recvBuf(1, ix, iy, iz);
+                double Uzsum = recvBuf(2, ix, iy, iz);
+                double Fxsum = recvBuf(3, ix, iy, iz);
+                double Fysum = recvBuf(4, ix, iy, iz);
+                double Fzsum = recvBuf(5, ix, iy, iz);
+                double Cdsum = recvBuf(6, ix, iy, iz);
+                double volSum  = recvBuf(7, ix, iy, iz);
 
+                //Get OpenFOAM cell corresponding to CPL grid
                 double glob_pos[3];
                 CPL::map_cell2coord(ix, iy, iz, glob_pos);
                 Foam::point closestCellCentre(glob_pos[0]+0.5*dx, glob_pos[1]+0.5*dy, glob_pos[2]+0.5*dz);
                 Foam::label cell = meshSearcher->findNearestCell(closestCellCentre);
-                eps[cell] = e;
-                Fcoeff[cell] = Cd;
-                F[cell].x() = Fx;
-                F[cell].y() = Fy;
-                F[cell].z() = Fz;
-                U[cell].x() = Ux;
-                U[cell].y() = Uy;
-                U[cell].z() = Uz;
+                double Vcell = mesh.V()[cell]
+                double phi = volSum/Vcell;
+                if (phi > 1.) {
+                    //Default value set in createFields or read from transportProperties
+                    eps[cell] = 1.0 - maxPossibleAlpha;
+                } else {
+                    eps[cell] = 1.0 - phi;
+                }
+                Fcoeff[cell] = Cdsum/Vcell;
+                F[cell].x() = Fxsum/Vcell;
+                F[cell].y() = Fysum/Vcell;
+                F[cell].z() = Fzsum/Vcell;
+                U[cell].x() = Uxsum/(eps[cell]*Vcell);
+                U[cell].y() = Uysum/(eps[cell]*Vcell);
+                U[cell].z() = Uzsum/(eps[cell]*Vcell);
+
+
+//                double Ux = recvBuf(0, ix, iy, iz);
+//                double Uy = recvBuf(1, ix, iy, iz);
+//                double Uz = recvBuf(2, ix, iy, iz);
+//                double Fx = recvBuf(3, ix, iy, iz);
+//                double Fy = recvBuf(4, ix, iy, iz);
+//                double Fz = recvBuf(5, ix, iy, iz);
+//                double Cd = recvBuf(6, ix, iy, iz);
+//                double e  = recvBuf(7, ix, iy, iz);
+
+//                double glob_pos[3];
+//                CPL::map_cell2coord(ix, iy, iz, glob_pos);
+//                Foam::point closestCellCentre(glob_pos[0]+0.5*dx, glob_pos[1]+0.5*dy, glob_pos[2]+0.5*dz);
+//                Foam::label cell = meshSearcher->findNearestCell(closestCellCentre);
+//                eps[cell] = e;
+//                Fcoeff[cell] = Cd;
+//                F[cell].x() = Fx;
+//                F[cell].y() = Fy;
+//                F[cell].z() = Fz;
+//                U[cell].x() = Ux;
+//                U[cell].y() = Uy;
+//                U[cell].z() = Uz;
 
 //                if (eps[cell] == 0.26){
 //                    Foam::Info << "recvBuf " << ix << " " << iy << " " << iz << " " 
