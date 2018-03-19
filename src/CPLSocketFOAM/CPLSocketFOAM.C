@@ -501,7 +501,8 @@ double CPLSocketFOAM::unpackPorousForce(volVectorField &F, volScalarField &eps, 
 double CPLSocketFOAM::unpackPorousVelForceCoeff(volVectorField &U, 
                                                 volVectorField &F, 
                                                 volScalarField &Fcoeff, 
-                                                volScalarField &eps, 
+                                                volScalarField &eps,
+                                                scalar maxPossibleAlpha,
                                                 fvMesh &mesh) 
 {
 
@@ -524,7 +525,14 @@ double CPLSocketFOAM::unpackPorousVelForceCoeff(volVectorField &U,
                 CPL::map_cell2coord(ix, iy, iz, glob_pos);
                 Foam::point closestCellCentre(glob_pos[0]+0.5*dx, glob_pos[1]+0.5*dy, glob_pos[2]+0.5*dz);
                 Foam::label cell = meshSearcher->findNearestCell(closestCellCentre);
-                double Vcell = mesh.V()[cell]
+                double Vcell = mesh.V()[cell];
+
+//                Foam::Info << "recvBuf " << ix << " " << iy << " " << iz << " " << cell << " "
+//                            << Fxsum << " " << Fysum << " " << Fzsum << " "
+//                            << Uxsum << " " << Uysum << " " << Uzsum << " "
+//                            << Cdsum << " " << volSum << " " << maxPossibleAlpha << Foam::endl;
+
+                //N.B we use phi instead of alpha and eps instead of beta here (in keeping with granular literature)
                 double phi = volSum/Vcell;
                 if (phi > 1.) {
                     //Default value set in createFields or read from transportProperties
@@ -539,6 +547,7 @@ double CPLSocketFOAM::unpackPorousVelForceCoeff(volVectorField &U,
                 U[cell].x() = Uxsum/(eps[cell]*Vcell);
                 U[cell].y() = Uysum/(eps[cell]*Vcell);
                 U[cell].z() = Uzsum/(eps[cell]*Vcell);
+
 
 
 //                double Ux = recvBuf(0, ix, iy, iz);
@@ -568,7 +577,7 @@ double CPLSocketFOAM::unpackPorousVelForceCoeff(volVectorField &U,
 //                                << F[cell].x() << " " << F[cell].y() << " " << F[cell].z() << " "
 //                                << U[cell].x() << " " << U[cell].y() << " " << U[cell].z() << " "
 //                                << eps[cell] << " " << Fcoeff[cell] << Foam::endl;
-//                }
+ //               }
 
 
             }

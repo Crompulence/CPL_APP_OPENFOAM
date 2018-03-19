@@ -124,8 +124,10 @@ int main(int argc, char *argv[])
 
         //Recieve and unpack particle velocity, force, 
         //sum of force weightings and porosity
+        Info<< "maxPossibleAlpha " <<  maxPossibleAlpha << endl;
         CPL.recv();
-        CPL.unpackPorousVelForceCoeff(Ua, F, dragCoef, beta, mesh);
+
+        CPL.unpackPorousVelForceCoeff(Ua, F, dragCoef, beta, maxPossibleAlpha, mesh);
         alpha = scalar(1) - beta;
 
         #include "readPISO.H"

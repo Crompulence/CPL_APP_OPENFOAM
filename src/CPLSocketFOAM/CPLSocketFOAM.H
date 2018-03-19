@@ -80,7 +80,9 @@ public:
     double unpackVelocity(volVectorField &U, fvMesh &mesh);
     void pack(volVectorField &U, volScalarField &p, dimensionedScalar &nu, fvMesh &mesh, int);
     double unpackPorousForce(volVectorField &F, volScalarField &eps, fvMesh &mesh);
-    double unpackPorousVelForceCoeff(volVectorField &U,volVectorField &F, volScalarField &Fcoeff, volScalarField &eps, fvMesh &mesh);
+    double unpackPorousVelForceCoeff(volVectorField &U,volVectorField &F, 
+                                     volScalarField &Fcoeff, volScalarField &eps, 
+                                     scalar maxPossibleAlpha, fvMesh &mesh);
     volVectorField divideFieldsVectorbyScalar(volVectorField &F, volScalarField &eps, fvMesh &mesh);
 
     // Send and receive the data with CPL-Library
