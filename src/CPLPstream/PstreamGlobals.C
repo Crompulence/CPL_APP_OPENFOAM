@@ -87,7 +87,7 @@ void PstreamGlobals::checkCommunicator
 }
 
 // MPI realm communicator for the continuum
-MPI_Comm PstreamGlobals::CPLRealmComm = MPI_COMM_NULL;
+MPI_Comm PstreamGlobals::CPLRealmComm = MPI_COMM_WORLD; //MPI_COMM_NULL;
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
