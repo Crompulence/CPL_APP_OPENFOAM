@@ -81,20 +81,6 @@
         alpha*Ua + beta*Ub
     );
 
-    // Ua*alpha (sediment flux)
-    volVectorField Uc
-    (
-        IOobject
-        (
-            "Uc",
-            runTime.timeName(),
-            mesh,
-            IOobject::NO_READ,
-            IOobject::AUTO_WRITE
-        ),
-        alpha*Ua
-    );
-
     Info<< "Reading field F\n" << endl;
     volVectorField F
     (
@@ -124,35 +110,10 @@
         )
     );
 
-    dimensionedScalar nu
-    (
-        transportProperties.lookup("nu")
-    );
-
-
-//    IOdictionary cloudProperties
-//    (
-//        IOobject
-//        (
-//            "cloudProperties",
-//            U.time().constant(),
-//            U.db(),
-//            IOobject::MUST_READ,
-//            IOobject::NO_WRITE
-//        )
-//    );
-
-    // default diffusion band width if not defined in dictionary
-    scalar diffusionBandWidth = 0.006;
-//        cloudProperties.lookupOrDefault<scalar>("diffusionBandWidth", 0.006);
-//    if (!cloudProperties.found("diffusionBandWidth"))
-//    {
-//        Info<< "Diffusion band width set to 0.006 by default" << endl;
-//    }
 
     // default max alpha if not defined in dictionary
     scalar maxPossibleAlpha = 0.99;
-    transportProperties.lookupOrDefault<scalar>("maxPossibleAlpha", 0.99);
+    maxPossibleAlpha = transportProperties.lookupOrDefault<scalar>("maxPossibleAlpha", 0.99);
     if (!transportProperties.found("maxPossibleAlpha"))
     {
         Info<< "*** Max possible alpha set to 0.99 by default" << endl;
@@ -161,20 +122,6 @@
     {
         Info<< "*** Max possible alpha set to " << maxPossibleAlpha << endl;
     }
-
-    // default diffusion steps if not defined in dictionary
-    label diffusionSteps = 6;
-//        cloudProperties.lookupOrDefault("diffusionSteps", 6);
-//    if (!cloudProperties.found("diffusionSteps"))
-//    {
-//        Info<< "*** Diffusion steps set to 6 by default"
-//            << endl;
-//    }
-//    else
-//    {
-//        Info<< "*** Diffusion steps set to " << diffusionSteps
-//            << endl;
-//    }
 
     dimensionedScalar rhob
     (
@@ -186,20 +133,6 @@
         transportProperties.lookup("nub")
     );
 
-    dimensionedScalar Cvm
-    (
-        transportProperties.lookup("Cvm")
-    );
-
-    dimensionedScalar Cl
-    (
-        transportProperties.lookup("Cl")
-    );
-
-    dimensionedScalar Ct
-    (
-        transportProperties.lookup("Ct")
-    );
 
 #   include "createPhia.H"
 #   include "createPhib.H"
@@ -210,24 +143,12 @@
         (
             "phi",
             runTime.timeName(),
-            mesh
+            mesh,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
         ),
         fvc::interpolate(alpha)*phia
       + fvc::interpolate(beta)*phib
-    );
-
-    volSymmTensorField B
-    (
-        IOobject
-        (
-            "B",
-            runTime.timeName(),
-            mesh,
-            IOobject::NO_READ,
-            IOobject::AUTO_WRITE
-        ),
-        mesh,
-        dimensionedSymmTensor("B", sqr(Ub.dimensions()), symmTensor::zero)
     );
 
     volVectorField dPdr
@@ -243,35 +164,10 @@
         fvc::grad(p)
     );
 
-
-    Info<< "Calculating field DDtUa and DDtUb\n" << endl;
-
-    volVectorField DDtUa =
-        fvc::ddt(Ua)
-      + fvc::div(phia, Ua)
-      - fvc::div(phia)*Ua;
-
-    volVectorField DDtUb =
-        fvc::ddt(Ub)
-      + fvc::div(phib, Ub)
-      - fvc::div(phib)*Ub;
-
-
-    Info<< "Calculating field g.h\n" << endl;
-    volScalarField gh("gh", g & mesh.C());
-
-    // Adding pressure gradient to drive fluid flow
-    //chPressureGrad::initPressureGrad(transportProperties);
-
-    //chPressureGrad gradP(Ub, alpha, "gradP", "LAMMPS");
-
     label pRefCell = 0;
     scalar pRefValue = 0.0;
     setRefCell(p, mesh.solutionDict().subDict("PISO"), pRefCell, pRefValue);
 
-    // Adding the continuous phase information
-    singlePhaseTransportModel continuousPhaseTransport(Ub, phib);
+    surfaceScalarField betaf("betaf", fvc::interpolate(beta));
+    surfaceScalarField betaPhib("betaPhib", betaf*phib);
 
-#   include "createIBMForce.H"
-
-#   include "createTurbulence.H"

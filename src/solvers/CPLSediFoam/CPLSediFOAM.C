@@ -40,7 +40,7 @@ formulation of the momentum equation, you can read the following paper:
 
 
 The details of the implementation in OpenFOAM(r) are described in an internal 
-report of OpenCFD (NOT AVAILABLE ANYWHERE - GREAT SCIENCE!) and are summed
+report of OpenCFD (NOT AVAILABLE ANYWHERE) but are apparently summed
 up in Henrik Rusche PhD thesis.
 
 The basic ideas behind the solution algorithm are the following
@@ -65,74 +65,58 @@ https://www.cfd-online.com/Forums/openfoam-solving/58178-twophaseeulerfoam-docum
 \*---------------------------------------------------------------------------*/
 
 #include "fvCFD.H"
-#include "Kmesh.H"
-#include "UOprocess.H"
-#include "fft.H"
-#include "singlePhaseTransportModel.H"
-#include "PhaseIncompressibleTurbulenceModel.H"
-#include "nearWallDist.H"
-#include "wallFvPatch.H"
-#include "Switch.H"
 #include "CPLSocketFOAM.H"
-
-//#include "enhancedCloud.H"
-//#include "chPressureGrad.H"
-
-// #define RANDOM_TURB
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 int main(int argc, char *argv[])
 {
 
-    Info << "start main = " << endl;
+    //This Command turns off solver output 
+    solverPerformance::debug=0;
+
+    // Create a CPL object (not used if uncoupled)
+    // and intialise MPI
     CPLSocketFOAM CPL;
-    CPL.initComms(argc, argv);
+    MPI_Init(&argc, &argv);
 
     #include "setRootCase.H"
     #include "createTime.H"
     #include "createMesh.H"
     #include "readEnvironmentalProperties.H"
     #include "createFields.H"
+    #include "readPISO.H"
+    #include "initContinuityErrs.H"
 
-    scalar t0 = runTime.elapsedCpuTime();
-    //#include "createParticles.H"
+    if (coupled)
+        CPL.initComms(argc, argv);
+
     // Also update/create MD-related fields.
     beta = scalar(1) - alpha;
     volScalarField dragCoef = alpha*dimensionedScalar("dum", dimensionSet(1, -3, -1, 0, 0), 0.0);
-    // Lift (place holder only. Changed in fluid loop)
-    volVectorField liftCoeff = Cl*beta*rhob*(Ub ^ fvc::curl(U));
-    #include "initContinuityErrs.H"
 
 	// MPI_Init is called somewhere in the PStream library
-    CPL.initCFD(runTime, mesh);
-    scalarList splitTime(5,0.0);
+    if (coupled)
+        CPL.initCFD(runTime, mesh);
 
     Info<< "\nStarting time loop\n" << endl;
-    #include "liftDragCoeffs.H"
-
-    splitTime[1] += runTime.elapsedCpuTime() - t0;
 
     while (runTime.run())
     {
-        t0 = runTime.elapsedCpuTime();
         runTime++;
-        Info<< "Time = " << runTime.timeName() << nl << endl;
+        
+        if (runTime.outputTime())
+            Info<< "Time = " << runTime.timeName() << endl;
 
-        //Packup and send velocity, gradident of pressure and divergence of stress
-        CPL.pack(Ub, p, nu, mesh, CPL.VEL | CPL.GRADPRESSURE | CPL.DIVSTRESS);
-        CPL.send();
+        if (coupled){
+            //Packup and send velocity, gradident of pressure and divergence of stress
+            CPL.pack(Ub, p, nub, mesh, CPL.VEL | CPL.GRADPRESSURE | CPL.DIVSTRESS);
+            CPL.send();
 
-        //Recieve and unpack particle velocity, force, 
-        //sum of force weightings and porosity
-        Info<< "maxPossibleAlpha " <<  maxPossibleAlpha << endl;
-        CPL.recv();
-
-        CPL.unpackPorousVelForceCoeff(Ua, F, dragCoef, beta, maxPossibleAlpha, mesh);
-        alpha = scalar(1) - beta;
-
-        #include "readPISO.H"
-        #include "CourantNo.H"
-        #include "alphaEqn.H"
+            //Recieve and unpack particle velocity, force, 
+            //sum of force weightings and porosity
+            CPL.recv();
+            CPL.unpackPorousVelForceCoeff(Ua, F, dragCoef, beta, maxPossibleAlpha, mesh);
+            alpha = scalar(1) - beta;
+        }
 
         fvVectorMatrix UbEqn(Ub, Ub.dimensions()*dimVol/dimTime);
         betaf = fvc::interpolate(beta);
@@ -151,91 +135,64 @@ int main(int argc, char *argv[])
          ==
           - beta*fvm::Sp(dragCoef/rhob, Ub)   // Implicit drag transfered to p-equation
         );
-        UbEqn.relax();
+
+
+        // E.S. A full solve seems to be needed here in place of relax to give correct answer
+        // for plain Couette flow solver
+        solve(UbEqn == -fvc::grad(p));
+
+        // Only a Jacobi iteration is done to find a guess of the velocity 
+        // before solving for the pressure equation based on the mixture
+        //UbEqn.relax();
 
         // --- PISO loop
         volScalarField rUbA = 1.0/UbEqn.A()*beta;
 
+        // Iterate over number of nCorr specified by PISO input
         for (int corr = 0; corr < nCorr; corr++)
         {
             surfaceScalarField alphaf = fvc::interpolate(alpha);
             surfaceScalarField betaf = scalar(1) - alphaf;
             surfaceScalarField rUbAf = fvc::interpolate(rUbA);
             Ub = rUbA*UbEqn.H()/beta;
+
+            // The gravity and explicit part of drag are moved to the
+            // pressure equation (this is known as semi-implicit coupling)
             surfaceScalarField phiDragb = fvc::interpolate(rUbA/rhob) 
                                          *(fvc::interpolate(F) & mesh.Sf())
-                                         + rUbAf*(g & mesh.Sf());   //This term here applies gravity!!
-
+                                         + rUbAf*(g & mesh.Sf());  
             forAll(p.boundaryField(), patchi)
             {
                 if (isA<zeroGradientFvPatchScalarField>(p.boundaryField()[patchi]))
-                {
                     phiDragb.boundaryField()[patchi] = 0.0;
-                }
             }
-
             Ua.correctBoundaryConditions();
 
+            // Solve the pressure equation to enforce mass conservation for the mixture
             phia = (fvc::interpolate(Ua) & mesh.Sf());
             phib = (fvc::interpolate(Ub) & mesh.Sf())
                   + rUbAf*fvc::ddtCorr(Ub, phib)
                   + phiDragb;
-
             phi = alphaf*phia + betaf*phib;
-
-            surfaceScalarField Dp("(rho*(1|A(U)))", betaf*rUbAf/rhob);
-
-            //Assume a uniform grid so non-othogonal corrections    
-            fvScalarMatrix pEqn
-            (
-                fvm::laplacian(Dp, p) == fvc::div(phi)
-            );
-
+            surfaceScalarField Dp("(rhob*(1|A(U)))", betaf*rUbAf/rhob);
+            fvScalarMatrix pEqn(fvm::laplacian(Dp, p) == fvc::div(phi));
             pEqn.setReference(pRefCell, pRefValue);
             pEqn.solve();
 
+            // Do not correct the velocity field directly, instead correct the flux
             surfaceScalarField SfGradp = pEqn.flux()/Dp;
-
             phib -= rUbAf*SfGradp/rhob;
             phi = alphaf*phia + betaf*phib;
-
             p.relax();
             SfGradp = pEqn.flux()/Dp;
             Ub += (fvc::reconstruct(phiDragb - rUbAf*SfGradp/rhob));
             Ub.correctBoundaryConditions();
             U = alpha*Ua + beta*Ub;
+    
         }
-
         Ub.correctBoundaryConditions();
 
-        {
-            DDtUa =
-                fvc::ddt(Ua)
-              + fvc::div(phia, Ua)
-              - fvc::div(phia)*Ua;
-
-            DDtUb =
-                fvc::ddt(Ub)
-              + fvc::div(phib, Ub)
-              - fvc::div(phib)*Ub;
-        }
-
-
-        //Define dPdr to write out
-        dPdr = fvc::grad(p);
-        
-        splitTime[0] += runTime.elapsedCpuTime() - t0;
-        t0 = runTime.elapsedCpuTime();
-        splitTime[1] += runTime.elapsedCpuTime() - t0;
-        t0 = runTime.elapsedCpuTime();
-
-        #include "liftDragCoeffs.H"
         #include "write.H"
-
-        splitTime[2] += runTime.elapsedCpuTime() - t0;
-        t0 = runTime.elapsedCpuTime();
-
-        #include "writeCPUTime.H"
 
     }
 

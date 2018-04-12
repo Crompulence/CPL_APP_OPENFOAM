@@ -1,6 +1,6 @@
 {
-    volVectorField Ur = Ua - Ub;
-    volScalarField magUr = mag(Ur);
+//    volVectorField Ur = Ua - Ub;
+//    volScalarField magUr = mag(Ur);
 
 
 

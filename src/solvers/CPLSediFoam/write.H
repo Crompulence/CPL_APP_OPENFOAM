@@ -1,5 +1,11 @@
-// if (runTime.outputTime())
+ if (runTime.outputTime())
 {
+    #include "CourantNo.H"
+    #include "alphaEqn.H"
+
+    //Update dPdr to write out
+    dPdr = fvc::grad(p);
+
     volVectorField Ur
     (
         IOobject
@@ -14,4 +20,7 @@
     );
 
     runTime.write();
+
+    Info << "ExecutionTime = " << runTime.elapsedCpuTime() << " s"
+         << "  ClockTime = "   << runTime.elapsedClockTime() << " s" << endl;
 }

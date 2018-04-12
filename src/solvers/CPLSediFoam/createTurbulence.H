@@ -11,8 +11,8 @@
     );
 
     surfaceScalarField betaf("betaf", fvc::interpolate(beta));
-
     surfaceScalarField betaPhib("betaPhib", betaf*phib);
+
     autoPtr<PhaseIncompressibleTurbulenceModel<singlePhaseTransportModel> >
     continuousPhaseTurbulence
     (

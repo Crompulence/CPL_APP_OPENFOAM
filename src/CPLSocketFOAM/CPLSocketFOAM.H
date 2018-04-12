@@ -91,6 +91,9 @@ public:
     void send();
     void recv();
 
+	//meshSearch local search for points in a mesh
+	Foam::meshSearch* meshSearcher;
+
     //Bitwise mask coefficients
     int const VEL = 1; // 2^0, bit 0
     int const PRESSURE = 2;  // 2^1, bit 1
@@ -162,8 +165,6 @@ private:
     int velBCCells[3];
     int cnstFCells[3];
 
-	//meshSearch local search for points in a mesh
-	Foam::meshSearch* meshSearcher;
     //Size of different possible passing variables
     int const VELSIZE = 3;  // 3 velocity components
     int const PRESSURESIZE = 1;  // 1 pressure

@@ -34,19 +34,19 @@ IOdictionary environmentalProperties
 );
 dimensionedVector g(environmentalProperties.lookup("g"));
 
-Info<< "Reading field gh\n" << endl;
-volVectorField gh
-(
-    IOobject
-    (
-        "gh",
-        runTime.timeName(),
-        mesh,
-        IOobject::MUST_READ,
-        IOobject::NO_WRITE
-    ),
-    mesh
-);
+//Info<< "Reading field gh\n" << endl;
+//volVectorField gh
+//(
+//    IOobject
+//    (
+//        "gh",
+//        runTime.timeName(),
+//        mesh,
+//        IOobject::MUST_READ,
+//        IOobject::NO_WRITE
+//    ),
+//    mesh
+//);
 
 
 Info<< "Reading field p\n" << endl;
