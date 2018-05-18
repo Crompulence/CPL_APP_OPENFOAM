@@ -42,9 +42,11 @@ clean-test:
 test:
 	@py.test2 -v ./test
 
+test-hydrostatic:
+	py.test -sv ./examples/hydrostatic
 
-examples:
-	py.test -v ./examples
+test-fcc_dummy:
+	py.test -sv ./examples/fcc_dummy
 
 #.PHONY: all test clean clean-test
 #all: background CPLIcoFOAM CPLporousIcoFoam

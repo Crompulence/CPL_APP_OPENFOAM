@@ -4,6 +4,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import sys
 import os
+import subprocess as sp
 
 #Run simulation
 fDir = os.path.dirname(os.path.abspath(__file__))
@@ -11,9 +12,15 @@ os.chdir(fDir)
 os.system('./run.sh')
 
 #Add pyDataView to system path
-ppdir = '/home/asufian/Programs/coupled_LAMMPS_OpenFOAM/pyDataView'
-sys.path.append(ppdir)
-import postproclib as ppl
+sys.path.insert(0, "./pyDataView/")
+try:
+    import postproclib as ppl
+except ImportError:
+    cmd = "git clone https://github.com/edwardsmith999/pyDataView.git ./pyDataView"
+    downloadout = sp.check_output(cmd, shell=True)
+    print(downloadout)
+    sys.path.insert(0, "./pyDataView")
+    import postproclib as ppl
 
 #Get post-processing object
 OPEN_FOAM_CASE = './openfoam/'

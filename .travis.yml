@@ -63,6 +63,7 @@ install:
     #Build CPL library using conda version of code
     - cd ./cpl-library
     - make PLATFORM=gcc
+    - ldd lib/*
 #    - cp lib/* $PREFIX/lib
     - source SOURCEME.sh
     - cd ../
@@ -82,15 +83,19 @@ install:
     - wmake libso src/CPLPstream
     - mv $FOAM_LIBBIN/$FOAM_MPI/libPstream.so $FOAM_LIBBIN/$FOAM_MPI/libPstream.so.orig
     - cp lib/libPstream.so $FOAM_LIBBIN/$FOAM_MPI/
-    - make sedifoam
+    - make 2>&1 | tee openfoam_build.log | grep -i -B10 'error'
+    - ldd bin/*
+    - ldd lib/*
     - cp lib/* $PREFIX/lib
     - cp bin/* $PREFIX/bin
 
 script:
-    - make test-all
+    - make test-hydrostatic
+    - make test-fcc_dummy
 
 after_success:
      - echo "Build Success"
 
-
+after_failure:
+    - cat /home/travis/build/Crompulence/CPL_APP_OPENFOAM-3.0.1/openfoam_build.log
                                                               

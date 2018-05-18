@@ -27,35 +27,14 @@ gradSchemes
 
 divSchemes
 {
-    default         none;
-    div(phi,U)      Gauss linear;
-    div(phia,Ua)    Gauss linear;
-    div(phib,Ub)    Gauss linear;
+    default         Gauss linear;
     div(phib,k)      Gauss limitedLinear 1;
     div(phi,alpha)  Gauss limitedLinear01 1;
-    div((-nuEffa*grad(Ua).T())) Gauss linear;
-    div((-nuEffb*grad(Ub).T())) Gauss linear;
-    div(((nu*2)*dev(symm(grad(Ub))))) Gauss linear;
-    div(((beta*nuEff)*dev2(T(grad(Ub))))) Gauss linear;
-    div(betaPhib,k) Gauss linear;
-    div(((nu*2)*dev(symm(grad(U))))) Gauss linear;
-
 }
 
 laplacianSchemes
 {
-    default         none;
-    laplacian(nu,U) Gauss linear corrected;
-    laplacian(nuEffa,Ua) Gauss linear corrected;
-    laplacian(nuEffb,Ub) Gauss linear corrected;
-    laplacian((rho*(1|A(U))),p) Gauss linear corrected;
-    laplacian(1,alpha) Gauss linear corrected;
-    laplacian(DT,tempDiffScalar) Gauss linear corrected;
-    laplacian(DT,tempDiffVector) Gauss linear corrected;
-    laplacian((beta*nuEff),Ub) Gauss linear corrected;
-    laplacian((beta*DkEff),k) Gauss linear corrected;
-    laplacian((nub*beta),Ub) Gauss linear corrected;
-    laplacian((1|A(U)),p) Gauss linear corrected;
+    default         Gauss linear corrected;
 }
 
 interpolationSchemes

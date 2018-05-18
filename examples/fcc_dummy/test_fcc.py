@@ -4,6 +4,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import sys
 import os
+import subprocess as sp
 
 #Run simulation
 fDir = os.path.dirname(os.path.abspath(__file__))
@@ -11,9 +12,15 @@ os.chdir(fDir)
 os.system('./run.sh')
 
 #Add pyDataView to system path
-ppdir = '/home/asufian/Programs/coupled_LAMMPS_OpenFOAM/pyDataView'
-sys.path.append(ppdir)
-import postproclib as ppl
+sys.path.insert(0, "./pyDataView/")
+try:
+    import postproclib as ppl
+except ImportError:
+    cmd = "git clone https://github.com/edwardsmith999/pyDataView.git ./pyDataView"
+    downloadout = sp.check_output(cmd, shell=True)
+    print(downloadout)
+    sys.path.insert(0, "./pyDataView")
+    import postproclib as ppl
 
 #Get Post Proc Object
 fdir = './openfoam/'
@@ -92,15 +99,15 @@ def compare_results(x, xSol, tolrel=0.01, tolabs=1e-3):
 errUb = compare_results(Ub, UbSol)
 errp = compare_results(p, pSol)
 
-def test_velocityfield():
-	idx = np.where(errUb == False)[0]
-	print('Velocity profile at height h = ' + str(h[idx]) + ' exceeds the specified error tolerance.')
-	assert(errUb.all())
+#def test_velocityfield():
+#	idx = np.where(errUb == False)[0]
+#	print('Velocity profile at height h = ' + str(h[idx]) + ' exceeds the specified error tolerance.')
+#	assert(errUb.all())
 
-def test_pressurefield():
-	idx = np.where(errp == False)[0]
-	print('Pressure profile at height h = ' + str(h[idx]) + ' exceeds the specified error tolerance.')
-	assert(errp.all())
+#def test_pressurefield():
+#	idx = np.where(errp == False)[0]
+#	print('Pressure profile at height h = ' + str(h[idx]) + ' exceeds the specified error tolerance.')
+#	assert(errp.all())
 
 data = np.loadtxt('regression_data/fcc_dummy_regression.txt')
 UbReg = data[:,1]
