@@ -532,11 +532,11 @@ double CPLSocketFOAM::unpackPorousVelForceCoeff(volVectorField &U,
 //                            << Uxsum << " " << Uysum << " " << Uzsum << " "
 //                            << Cdsum << " " << volSum << " " << maxPossibleAlpha << Foam::endl;
 
-                //N.B we use phi instead of alpha and eps instead of beta here (in keeping with granular literature)
+                //N.B we use phi/eps instead of alpha/beta instead here (in keeping with granular literature)
                 double phi = volSum/Vcell;
 //                Foam::Info << "recvBuf " << ix << " " << iy << " " << iz << " " << cell << " "
 //                            << phi << " " << volSum << " " << Vcell << " " << maxPossibleAlpha << Foam::endl;
-                if (1.0 - phi < maxPossibleAlpha) {
+                if (phi > maxPossibleAlpha) {
                     //Default value set in createFields or read from transportProperties
                     eps[cell] = 1.0 - maxPossibleAlpha;
                 } else {
@@ -549,6 +549,11 @@ double CPLSocketFOAM::unpackPorousVelForceCoeff(volVectorField &U,
                 U[cell].x() = Uxsum/(eps[cell]*Vcell);
                 U[cell].y() = Uysum/(eps[cell]*Vcell);
                 U[cell].z() = Uzsum/(eps[cell]*Vcell);
+
+//                Foam::Info << "returned unpack " << ix << " " << iy << " " << iz << " " << cell << " "
+//                            << F[cell].x() << " " << F[cell].y() << " " << F[cell].z() << " "
+//                            << U[cell].x() << " " << U[cell].y() << " " << U[cell].z() << " "
+//                            << Fcoeff[cell] << " " << eps[cell] << " " << maxPossibleAlpha << Foam::endl;
 
 
 

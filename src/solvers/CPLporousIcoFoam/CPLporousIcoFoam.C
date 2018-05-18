@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
         //Recieve data from particle code
         CPL.recv();
         //CPL.unpackPorousForce(F, eps, mesh);
-        CPL.unpackPorousVelForceCoeff(Up, F, dragCoef, eps, mesh);
+        CPL.unpackPorousVelForceCoeff(Ua, F, dragCoef, beta, maxPossibleAlpha, mesh);
 
         //Info<< "Time = " << runTime.timeName() << nl << endl;
 

@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 	
 
 	// Initial communication to initialize domains
-    CPL.pack(U, p, nu, mesh, CPL.STRESS);
+    CPL.pack(U, p, nu, mesh, CPL.VEL);
     CPL.send();
     CPL.recvVelocity();
     CPL.unpackVelocity(U, mesh);
