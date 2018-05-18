@@ -549,7 +549,6 @@ double CPLSocketFOAM::unpackPorousVelForceCoeff(volVectorField &U,
                 U[cell].x() = Uxsum/(eps[cell]*Vcell);
                 U[cell].y() = Uysum/(eps[cell]*Vcell);
                 U[cell].z() = Uzsum/(eps[cell]*Vcell);
-
 //                Foam::Info << "returned unpack " << ix << " " << iy << " " << iz << " " << cell << " "
 //                            << F[cell].x() << " " << F[cell].y() << " " << F[cell].z() << " "
 //                            << U[cell].x() << " " << U[cell].y() << " " << U[cell].z() << " "

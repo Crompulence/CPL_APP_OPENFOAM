@@ -42,6 +42,10 @@ clean-test:
 test:
 	@py.test2 -v ./test
 
+
+examples:
+	py.test -v ./examples
+
 #.PHONY: all test clean clean-test
 #all: background CPLIcoFOAM CPLporousIcoFoam
 #	@echo "Building everything"
