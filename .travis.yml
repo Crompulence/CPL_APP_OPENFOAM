@@ -11,19 +11,8 @@ matrix:
   include:
     #Build for 14.04
     - dist: trusty
-      compiler: gcc
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-6 gcc-6 libstdc++-6-dev gfortran-6
-      # change default compiler to newer gcc-6
       env:
         - GCC_VERSION=7.2_conda
-        - CXX_COMPILER=g++
-        - C_COMPILER=gcc
-        - F_COMPILER=gfortran
         - MPI=mpich3_conda 
 
 branches:
@@ -41,7 +30,7 @@ before_install:
     #Get miniconda
     - wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh
     - bash Miniconda2-latest-Linux-x86_64.sh -bf -p ./miniconda
-    - export PATH=$PATH:./miniconda/bin
+    - export PATH=$PATH:$MYPWD/miniconda/bin
 
     #Get openfoam, mpich, gcc, etc
     - conda create -n cplrun python=2.7 --no-default-packages -y
