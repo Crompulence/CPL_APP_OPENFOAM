@@ -1,7 +1,4 @@
 import numpy as np 
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
 import sys
 import os
 import subprocess as sp
@@ -126,19 +123,27 @@ def test_regression_pressurefield():
 	print('Pressure profile at height h = ' + str(h[idx]) + ' fails the regression test.')
 	assert(errRegp.all())
 
-#Plot velocity and pressure profile
-plt.plot(h, Ub, 'r-')
-plt.plot(h, UbSol, 'k--')
-plt.xlabel('Height (cm)')
-plt.ylabel('Velocity (cm/s)')
-plt.legend(('Numerical', 'Expected Solution'))
-plt.savefig('fig_velocityfield.png')
-plt.close()
+try:
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
 
-plt.plot(h, p, 'r-')
-plt.plot(h, pSol, 'k--')
-plt.xlabel('Height (cm)')
-plt.ylabel('Pressure (Ba = 0.1Pa)')
-plt.legend(('Numerical', 'Expected Solution'))
-plt.savefig('fig_pressurefield.png')
-plt.close()
+    #Plot velocity and pressure profile
+    plt.plot(h, Ub, 'r-')
+    plt.plot(h, UbSol, 'k--')
+    plt.xlabel('Height (cm)')
+    plt.ylabel('Velocity (cm/s)')
+    plt.legend(('Numerical', 'Expected Solution'))
+    plt.savefig('fig_velocityfield.png')
+    plt.close()
+
+    plt.plot(h, p, 'r-')
+    plt.plot(h, pSol, 'k--')
+    plt.xlabel('Height (cm)')
+    plt.ylabel('Pressure (Ba = 0.1Pa)')
+    plt.legend(('Numerical', 'Expected Solution'))
+    plt.savefig('fig_pressurefield.png')
+    plt.close()
+
+except ImportError:
+    pass

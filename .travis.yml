@@ -80,7 +80,7 @@ install:
     - echo "$PREFIX/opt" > CODE_INST_DIR
     - source SOURCEME.sh
     #We need to make Pstream and patch the OpenFOAM version
-    - wmake libso src/CPLPstream
+    - wmake libso src/CPLPstream 2>&1 | tee PStream_build.log | grep -i -B10 'error'
     - mv $FOAM_LIBBIN/$FOAM_MPI/libPstream.so $FOAM_LIBBIN/$FOAM_MPI/libPstream.so.orig
     - cp lib/libPstream.so $FOAM_LIBBIN/$FOAM_MPI/
     - make 2>&1 | tee openfoam_build.log | grep -i -B10 'error'

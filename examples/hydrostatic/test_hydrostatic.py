@@ -1,7 +1,4 @@
 import numpy as np
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
 import sys
 import os
 import subprocess as sp
@@ -75,11 +72,18 @@ def test_hydrostatic_average():
 	assert(err.all())
 	print(str(ny - np.count_nonzero(err)) + ' of ' + str(ny) + ' averaged layers exceed the specified error tolerance of ' + str(tol*100) + '%')
 
-#Plot comparison of numerical and analytical solution
-plt.plot(h, pMean, 'r-', linewidth=3.0)
-plt.plot(h, pSolMean, 'k--')
-plt.xlabel('Depth (cm)')
-plt.ylabel('Pressure (gcm$^{-1}$s$^{-2}$)')
-plt.legend(('Numerical', 'Analytical'))
-plt.savefig('fig_hydrostatic.png')
-plt.close()
+try:
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+    #Plot comparison of numerical and analytical solution
+    plt.plot(h, pMean, 'r-', linewidth=3.0)
+    plt.plot(h, pSolMean, 'k--')
+    plt.xlabel('Depth (cm)')
+    plt.ylabel('Pressure (gcm$^{-1}$s$^{-2}$)')
+    plt.legend(('Numerical', 'Analytical'))
+    plt.savefig('fig_hydrostatic.png')
+    plt.close()
+
+except ImportError:
+    pass
