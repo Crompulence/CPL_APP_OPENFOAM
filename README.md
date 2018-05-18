@@ -12,10 +12,6 @@
 
 # CPL APP for LAMMPS [![Build Status](https://travis-ci.org/Crompulence/CPL_APP_OPENFOAM-3.0.1.svg?branch=master)](https://travis-ci.org/Crompulence/CPL_APP_OPENFOAM-3.0.1/)
 
-
-CPL Library socket 
-==================
-
 This directory is where the source code, libraries and binaries are stored for
 the CPL Library socket. The source code is located in ./src/ and the
 dynamic-link library binaries are created in a new folder ./lib/. 
@@ -35,15 +31,13 @@ file SOURCEME, which may be found in the level above this README file:
     $  cd -
 
 
-Compilation:
-============
+## Compilation:
 
     $  ./Allwmake
 
 N.B.: warnings from the included MPI headers may be ignored. 
 
-Overview of subdirectories in this folder:
-==========================================
+## Overview of subdirectories in this folder:
 
 CPLPstream:
 
