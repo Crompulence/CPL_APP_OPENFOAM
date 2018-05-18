@@ -10,6 +10,9 @@
             _______\/////////__\///______________\///////////////__
 ~~~
 
+# CPL APP for LAMMPS [![Build Status](https://travis-ci.org/Crompulence/CPL_APP_OPENFOAM-3.0.1.svg?branch=master)](https://travis-ci.org/Crompulence/CPL_APP_OPENFOAM-3.0.1/)
+
+
 CPL Library socket 
 ==================
 
