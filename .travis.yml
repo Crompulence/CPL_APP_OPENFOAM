@@ -22,18 +22,12 @@ branches:
 cache:
   apt: true
 
-before_install:
-
-    - unset LD_LIBRARY_PATH
+install:
 
     #Get miniconda
     - wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
     - bash miniconda.sh -b -p $HOME/miniconda
     - export PATH="$HOME/miniconda/bin:$PATH"
-
-    #Get openfoam, mpich, gcc, etc
-    - conda create -n cplrun python=2.7 --no-default-packages -y
-    - source activate cplrun
     - hash -r
     - conda config --set always_yes yes --set changeps1 no
     - conda update -q conda
@@ -41,7 +35,7 @@ before_install:
     - conda info -a
 
     #Create environment
-    - conda create -q -n cplrun python=$TRAVIS_PYTHON_VERSION --no-default-packages -y
+    - conda create -q -n cplrun python=$TRAVIS_PYTHON_VERSION --no-default-packages
     - source activate cplrun
     - conda config --add channels edu159
 
@@ -77,8 +71,6 @@ before_install:
     - git clone https://github.com/Crompulence/cpl_conda_builds.git ./cpl_conda_builds
     - RECIPE_DIR=$PREFIX/cpl_conda_builds/cplapp-openfoam3.0.1/
     - cp -Rf ${RECIPE_DIR}/linux64Gcc $PREFIX/opt/$FOAM_DIR_NAME/wmake/rules
-
-install:
 
     #Get all of CPL APP
 #    - git clone https://github.com/Crompulence/CPL_APP_OPENFOAM-3.0.1.git ./CPL_APP_OPENFOAM-3.0.1
