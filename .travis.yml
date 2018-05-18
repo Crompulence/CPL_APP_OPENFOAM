@@ -25,7 +25,6 @@ cache:
 before_install:
 
     - unset LD_LIBRARY_PATH
-    - MYPWD=${PWD}
 
     #Get miniconda
   - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
@@ -65,7 +64,7 @@ before_install:
     #Setup aliases
     - FOAM_VERSION=3.0.1
     - FOAM_DIR_NAME=OpenFOAM-$FOAM_VERSION
-    - PREFIX=$MYPWD/miniconda/envs/cplrun
+    - PREFIX=$HOME/miniconda/envs/cplrun
 
     #Go to virtual enviroment directory
     - cd $PREFIX
