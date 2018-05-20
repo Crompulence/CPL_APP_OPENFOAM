@@ -22,14 +22,14 @@ branches:
 cache:
   apt: true
 
-#virtualenv:
-#    system_site_packages: true
+virtualenv:
+    system_site_packages: true
 
-#before_install:
+before_install:
 
- #   #Needed steps to get out opf virtualenv and get Scipy working
- #   - SITE_PKG_DIR=$VIRTUAL_ENV/lib/python$TRAVIS_PYTHON_VERSION/site-packages
- #   - rm -f $VIRTUAL_ENV/lib/python$TRAVIS_PYTHON_VERSION/no-global-site-packages.txt
+    #Needed steps to get out opf virtualenv and get Scipy working
+    - SITE_PKG_DIR=$VIRTUAL_ENV/lib/python$TRAVIS_PYTHON_VERSION/site-packages
+    - rm -f $VIRTUAL_ENV/lib/python$TRAVIS_PYTHON_VERSION/no-global-site-packages.txt
 
 install:
 
@@ -90,11 +90,11 @@ install:
     - echo "$ENVPREFIX/opt" > CODE_INST_DIR
     - source SOURCEME.sh
     #We need to make Pstream and patch the OpenFOAM version
-    - wmake libso src/CPLPstream
+    - wmake libso src/CPLPstream > openfoam_build.log
 #    - wmake libso src/CPLPstream 2>&1 | tee PStream_build.log | grep -i -B10 'error'
     - mv $FOAM_LIBBIN/$FOAM_MPI/libPstream.so $FOAM_LIBBIN/$FOAM_MPI/libPstream.so.orig
     - cp lib/libPstream.so $FOAM_LIBBIN/$FOAM_MPI/
-    - make
+     - make >> openfoam_build.log
 #    - make 2>&1 | tee openfoam_build.log | grep -i -B10 'error'
 #    - ldd bin/*
 #    - ldd lib/*
@@ -108,6 +108,6 @@ script:
 after_success:
      - echo "Build Success"
 
-#after_failure:
-#    - cat /home/travis/build/Crompulence/CPL_APP_OPENFOAM-3.0.1/openfoam_build.log
+after_failure:
+    - cat /home/travis/build/Crompulence/CPL_APP_OPENFOAM-3.0.1/openfoam_build.log
                                                               
