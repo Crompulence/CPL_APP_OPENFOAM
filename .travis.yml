@@ -44,7 +44,7 @@ install:
     - conda info -a
 
     #Create environment
-    - conda create -q -n cplrun python=$TRAVIS_PYTHON_VERSION --no-default-packages
+    - conda create -q -n cplrun python=$TRAVIS_PYTHON_VERSION numpy scipy 
     - source activate cplrun
     - conda config --add channels edu159
 
@@ -57,8 +57,6 @@ install:
     - conda install -c edu159 -y openfoam
 
     #Numpy and mpi4py
-    - conda install -y numpy
-    - conda install -y scipy
     - conda install -c edu159 -y mpi4py
 
     #Setup aliases
