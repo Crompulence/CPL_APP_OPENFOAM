@@ -3,15 +3,10 @@ OpenFOAM_SRC_DIR=$(OpenFOAM_SRC_DIR)/src
 OpenFOAM_ETC_DIR=$(OpenFOAM_ETC_DIR)/etc
 
 .PHONY: all test clean clean-test
-all: sedifoam
+all:
 	@wmake libso src/CPLPstream
 	@wmake libso src/CPLSocketFOAM
 	@wmake src/solvers/CPLIcoFoam
-#	@wmake src/solvers/CPLporousIcoFoam
-
-sedifoam:
-	@wmake libso src/CPLPstream
-	@wmake libso src/CPLSocketFOAM
 	@wmakeLnInclude src/solvers/CPLSediFoam/dragModels
 	@wmake libso src/solvers/CPLSediFoam/dragModels
 	@wmakeLnInclude src/solvers/CPLSediFoam/chPressureGrad
