@@ -11,4 +11,4 @@ cd ../
 
 #Run job
 CFD_EXE=$(which CPLSediFOAM)
-cplexec -c 1 "${CFD_EXE} -case ${OPEN_FOAM_CASE} -parallel > log.openfoam" -m 1 "./MD_dummy_fcc.py"
+cplexec -c 1 "${CFD_EXE} -case ${OPEN_FOAM_CASE} -parallel > log.openfoam" -m 1 "./MD_dummy_fcc.py" -p
