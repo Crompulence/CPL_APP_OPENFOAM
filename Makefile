@@ -2,17 +2,19 @@ OpenFOAM_DIR=`cat CODE_INST_DIR`
 OpenFOAM_SRC_DIR=$(OpenFOAM_SRC_DIR)/src
 OpenFOAM_ETC_DIR=$(OpenFOAM_ETC_DIR)/etc
 
-.PHONY: all test clean clean-test socket cplicofoam cplsedifoam 
-all: socket cplicofoam cplsedifoam
+.PHONY: all test clean clean-test pstream socket cplicofoam cplsedifoam 
+all: cplicofoam cplsedifoam
 
-socket:
+pstream:
 	@wmake libso src/CPLPstream
+
+socket: pstream
 	@wmake libso src/CPLSocketFOAM
 
-cplicofoam:
+cplicofoam: socket
 	@wmake src/solvers/CPLIcoFoam
 
-cplsedifoam:
+cplsedifoam: socket
 	@wmakeLnInclude src/solvers/CPLSediFoam/dragModels
 	@wmake libso src/solvers/CPLSediFoam/dragModels
 	@wmakeLnInclude src/solvers/CPLSediFoam/chPressureGrad
@@ -28,10 +30,10 @@ patch-openfoam:
 	cp ./config/pref.sh $(OpenFOAM_ETC_DIR)/config/
 
 clean:
-	@wclean src/CPLSocketFOAM
 	@wclean src/solvers/CPLIcoFoam
 	@wclean src/solvers/CPLporousIcoFoam
 	@wclean src/solvers/CPLSediFoam
+	@wclean src/CPLSocketFOAM
 	@wclean src/CPLPstream
 	rm -rf bin
 	rm -rf lib
