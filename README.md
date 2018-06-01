@@ -1,5 +1,5 @@
 
-# CPL APP for LAMMPS [![Build Status](https://travis-ci.org/Crompulence/CPL_APP_OPENFOAM-3.0.1.svg?branch=master)](https://travis-ci.org/Crompulence/CPL_APP_OPENFOAM-3.0.1/)
+# CPL APP for OpenFOAM [![Build Status](https://travis-ci.org/Crompulence/CPL_APP_OPENFOAM-3.0.1.svg?branch=master)](https://travis-ci.org/Crompulence/CPL_APP_OPENFOAM-3.0.1/)
 
 This directory is where the source code, libraries and binaries are stored for
 the CPL Library socket. The source code is located in ./src/ and the
@@ -16,13 +16,13 @@ to be found by the ld linker. They are conveniently defined in the config
 file SOURCEME, which may be found in the level above this README file: 
 
     $  cd ../
-    $  source SOURCEME
+    $  source SOURCEME.sh
     $  cd -
 
 
 ## Compilation:
 
-    $  ./Allwmake
+    $  make
 
 N.B.: warnings from the included MPI headers may be ignored. 
 
