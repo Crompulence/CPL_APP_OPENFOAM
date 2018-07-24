@@ -60,4 +60,6 @@ RUN /bin/bash -c "source SOURCEME.sh && \
     cp lib/libPstream.so $FOAM_SRC_DIR/platforms/linux64GccDPInt32Opt/lib/mpi-system/ && \
     make"
 
- 
+#Add sourceme to bashrc
+RUN echo "source /OpenFOAM/CPL_APP_OPENFOAM-3.0.1/SOURCEME.sh" >> ~/.bashrc
+

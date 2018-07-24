@@ -14,6 +14,8 @@
 
 # Environment variable for install directory
 export FOAM_CPL_VERSION=3.0.1
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+cd $DIR
 export CWD=`pwd`
 export FOAM_INST_DIR=$(cat CODE_INST_DIR)
 # Source the other environment variables
