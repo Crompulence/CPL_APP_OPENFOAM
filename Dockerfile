@@ -3,7 +3,7 @@
 # This is needed as OpenFOAM takes 8+ hours to build and dockerhub
 # does not seem to allow caching
 
-FROM cpllibrary/cplopenfoam
+FROM cpllibrary/mpich-openfoam
 MAINTAINER Edward Smith <edward.smith05@imperial.ac.uk>
 
 # Check if CPL library needs to be updated, this is required as cplopenfoam 
