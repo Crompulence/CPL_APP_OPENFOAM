@@ -62,5 +62,115 @@ RUN /bin/bash -c "source SOURCEME.sh && \
     make"
 
 #Add sourceme to bashrc
-RUN echo "source /OpenFOAM/CPL_APP_OPENFOAM-3.0.1/SOURCEME.sh" >> ~/.bashrc
+#RUN echo "source /OpenFOAM/CPL_APP_OPENFOAM-3.0.1/SOURCEME.sh" >> ~/.bashrc
 
+
+# Note Bashrc will not work in singularity and it's a poor solution for Docker.
+# Instead, we try to ENV everything here
+ENV THIRD_PARTY_DIR=$FOAM_INST_DIR/ThirdParty-$FOAM_VERSION \
+    PLATFORM=/platforms/linux64GccDPInt32Opt
+
+ENV FOAM_CPL_APP=$APP_DIR \
+    FOAM_CPL_APP_SRC=$APP_DIR/src \
+    FOAM_CPL_APP_LIBBIN=$APP_DIR/lib \
+    FOAM_CPL_APP_BIN=$APP_DIR/bin
+
+ENV PATH=$FOAM_SRC_DIR/$PLATFORM/bin:$FOAM_SRC_DIR/bin:$FOAM_SRC_DIR/wmake:$APP_DIR/bin:$PATH
+
+ENV LD_LIBRARY_PATH=$APP_DIR/lib:$FOAM_SRC_DIR/$PLATFORM/lib:$THIRD_PARTY_DIR/$PLATFORM/lib:$FOAM_SRC_DIR/$PLATFORM/lib/dummy:$LD_LIBRARY_PATH
+
+#Essential Libraries in addition to path and LD library path from
+# https://www.cfd-online.com/Forums/openfoam-solving/69561-foam-fatal-error-foam-findetcfile-could-not-find-mandatory-file.html
+# include: WM_PROJECT_DIR WM_PROJECT_INST_DIR WM_OPTIONS FOAM_LIBBIN FOAM_APPBIN FOAM_USER_APPBIN MPI_BUFFER_SIZE
+ENV WM_PROJECT_DIR=$FOAM_SRC_DIR \
+    WM_PROJECT_INST_DIR=$FOAM_INST_DIR \
+    WM_OPTIONS=linux64GccDPInt32Opt \
+    FOAM_LIBBIN=$FOAM_SRC_DIR/$PLATFORM/lib \
+    FOAM_APPBIN=$FOAM_SRC_DIR/$PLATFORM/bin \
+    FOAM_USER_APPBIN=/root/$FOAM_INST_DIR/$PLATFORM/bin \
+    MPI_BUFFER_SIZE=20000000
+
+ENTRYPOINT ["/bin/bash"]
+
+# All variables taken from what bashrc sets
+#ENV WM_ARCH=linux64 \
+#    WM_OSTYPE=POSIX \
+#    WM_CXXFLAGS="-m64 -fPIC" \
+#    WM_CFLAGS="-m64 -fPIC" \
+#    WM_PROJECT_VERSION=3.0.1 \
+#    WM_LINK_LANGUAGE=c++ \
+#    WM_CXX=g++ \
+#    WM_LABEL_OPTION=Int32 \
+#    WM_ARCH_OPTION=64 \
+#    WM_COMPILER_LIB_ARCH=64 \
+#    WM_LDFLAGS=-m64 \
+#    WM_CC=gcc \
+#    WM_COMPILER=Gcc \
+#    WM_MPLIB=SYSTEMMPI \
+#    WM_COMPILE_OPTION=Opt \
+#    WM_LABEL_SIZE=32 \
+#    WM_OPTIONS=linux64GccDPInt32Opt \
+#    WM_PRECISION_OPTION=DP \
+#    WM_PROJECT=OpenFOAM \
+#    WM_PROJECT_INST_DIR=$FOAM_INST_DIR \
+#    WM_THIRD_PARTY_DIR=$THIRD_PARTY_DIR \
+#    WM_PROJECT_DIR=$FOAM_SRC_DIR \
+#    WM_DIR=$FOAM_SRC_DIR/wmake \
+#    FOAM_VERSION=3.0.1 \
+#    FOAM_SOLVERS=$FOAM_SRC_DIR/applications/solvers \
+#    FOAM_EXT_LIBBIN=/$THIRD_PARTY_DIR/$PLATFORM/lib \
+#    FOAM_APPBIN=$FOAM_SRC_DIR/$PLATFORM/bin \
+#    FOAM_TUTORIALS=$FOAM_SRC_DIR/tutorials \
+#    FOAM_JOB_DIR=/OpenFOAM//jobControl \
+#    FOAM_SITE_APPBIN=/OpenFOAM//site/3.0.1/$PLATFORM/bin \
+#    FOAM_SITE_LIBBIN=/OpenFOAM//site/3.0.1/$PLATFORM/lib \
+#    FOAM_APP=$FOAM_SRC_DIR/applications \
+#    FOAM_SRC=$FOAM_SRC_DIR/src \
+#    FOAM_UTILITIES=$FOAM_SRC_DIR/applications/utilities \
+#    FOAM_ETC=$FOAM_SRC_DIR/etc \
+#    FOAM_MPI=mpi-system \
+#    FOAM_LIBBIN=$FOAM_SRC_DIR/$PLATFORM/lib \
+#    FOAM_SETTINGS= \
+#    WM_PROJECT_USER_DIR=/root/OpenFOAM/-3.0.1 \
+#    FOAM_RUN=/root/OpenFOAM/-3.0.1/run \
+#    FOAM_USER_LIBBIN=/root/OpenFOAM/-3.0.1/$PLATFORM/lib \
+#    FOAM_USER_APPBIN=/root/OpenFOAM/-3.0.1/$PLATFORM/bin \
+#    MPI_ROOT=/usr \
+#    MPI_ARCH_PATH=/usr \
+#    MPI_ARCH_LIBS="-Wl,-Bsymbolic-functions -Wl,-z,relro  -L/usr/lib/x86_64-linux-gnu -lmpich" \
+#    MPI_ARCH_INC=-I/usr/include/mpich \
+#    MPI_ARCH_FLAGS= \
+#    MPI_BUFFER_SIZE=20000000 \
+#    CGAL_ARCH_PATH=/$THIRD_PARTY_DIR/platforms/linux64Gcc/CGAL-4.7 \
+#    BOOST_ARCH_PATH=/$THIRD_PARTY_DIR/platforms/linux64Gcc/boost-system \
+#    ParaView_INCLUDE_DIR=/$THIRD_PARTY_DIR/platforms/linux64Gcc/ParaView-4.4.0/include/paraview-4.4 \
+#    ParaView_DIR=/$THIRD_PARTY_DIR/platforms/linux64Gcc/ParaView-4.4.0 \
+#    ParaView_VERSION=4.4.0 \
+#    ParaView_MAJOR=4.4 \
+#    PV_PLUGIN_PATH=$FOAM_SRC_DIR/$PLATFORM/lib/paraview-4.4
+
+#ENV alias app='cd $FOAM_APP' \
+#    alias foam='cd $WM_PROJECT_DIR' \
+#    alias foam3rdParty='cd $WM_THIRD_PARTY_DIR' \
+#    alias foamApps='cd $FOAM_APP' \
+#    alias foamSite='cd $WM_PROJECT_INST_DIR/site' \
+#    alias foamSol='cd $FOAM_SOLVERS' \
+#    alias foamTuts='cd $FOAM_TUTORIALS' \
+#    alias foamUtils='cd $FOAM_UTILITIES' \
+#    alias foamfv='cd $FOAM_SRC/finiteVolume' \
+#    alias foamsrc='cd $FOAM_SRC/$WM_PROJECT' \
+#    alias lib='cd $FOAM_LIBBIN' \
+#    alias run='cd $FOAM_RUN' \
+#    alias sol='cd $FOAM_SOLVERS' \
+#    alias src='cd $FOAM_SRC' \
+#    alias tut='cd $FOAM_TUTORIALS' \
+#    alias util='cd $FOAM_UTILITIES' \
+#    alias wm32='wmSET WM_ARCH_OPTION=32' \
+#    alias wm64='wmSET WM_ARCH_OPTION=64' \
+#    alias wmDP='wmSET WM_PRECISION_OPTION=DP' \
+#    alias wmREFRESH='wmSET $FOAM_SETTINGS' \
+#    alias wmSET='. $WM_PROJECT_DIR/etc/bashrc' \
+#    alias wmSP='wmSET WM_PRECISION_OPTION=SP' \
+#    alias wmSchedOFF='unset WM_SCHEDULER' \
+#    alias wmSchedON='export WM_SCHEDULER=$WM_PROJECT_DIR/wmake/wmakeScheduler' \
+#    alias wmUNSET='. $WM_PROJECT_DIR/etc/config/unset.sh'
