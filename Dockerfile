@@ -10,8 +10,8 @@ MAINTAINER Edward Smith <edward.smith05@imperial.ac.uk>
 # will contain an old version of CPL library and this can easily be updated
 WORKDIR /cpl-library
 RUN git pull && \
-    make clean && \ 
-    make
+    make PLATFORM=gcc clean && \ 
+    make PLATFORM=gcc
 
 #We need to update the app to the latest code, patch OpenFOAM and build solvers
 WORKDIR $APP_DIR
