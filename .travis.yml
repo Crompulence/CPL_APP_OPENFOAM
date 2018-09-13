@@ -49,8 +49,8 @@ install:
     - conda config --add channels edu159
 
     #We need to explicitly get gcc/gfortran as miniconda is not available for 5+ yet
-    - conda install -y gxx_linux-64
-    - conda install -y gfortran_linux-64
+    - conda install -y gxx_linux-64=7.2
+    - conda install -y gfortran_linux-64=7.2
 
     #Here we install openfoam
     - conda install -c edu159 -y mpich
