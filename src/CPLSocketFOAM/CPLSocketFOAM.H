@@ -42,6 +42,11 @@ Description
 
 #include <vector>
 #include <memory>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <string>
+
+
 #include "mpi.h"
 #include "fvCFD.H"
 #include "error.H"
@@ -50,6 +55,11 @@ Description
 #include "cpl/CPL_ndArray.h"
 #include "cpl/cpl.h"
 
+//Check if file exists
+inline bool file_exists (const std::string& name) {
+  struct stat buffer;   
+  return (stat (name.c_str(), &buffer) == 0); 
+}
 
 // Nearest integer
 int nint(double d)
@@ -68,6 +78,7 @@ public:
     
     // Invoke CPL_Library and store CFD realm communicator
     void initComms(int& argc, char**& argv);
+    void finalize();
 
     // Analyse topology and perform CFD-side initialisation
     void initCFD (const Foam::Time &runTime, const Foam::fvMesh &mesh);
@@ -78,6 +89,7 @@ public:
     // Pack and unpack data into CPL-Library formats
     void packStress(volVectorField &U, dimensionedScalar &nu, fvMesh &mesh);
     double unpackVelocity(volVectorField &U, fvMesh &mesh);
+    double unpackVelocityPressure(volVectorField &U, volScalarField &p, fvMesh &mesh);
     void pack(volVectorField &U, volScalarField &p, dimensionedScalar &nu, fvMesh &mesh, int);
     double unpackPorousForce(volVectorField &F, volScalarField &eps, fvMesh &mesh);
     double unpackPorousVelForceCoeff(volVectorField &U,volVectorField &F, 
@@ -88,6 +100,7 @@ public:
     // Send and receive the data with CPL-Library
     void sendStress();
     void recvVelocity();
+    void recvVelocityPressure();
     void send();
     void recv();
 
