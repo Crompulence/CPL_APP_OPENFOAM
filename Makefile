@@ -51,6 +51,9 @@ test-hydrostatic:
 test-fcc_dummy:
 	py.test -sv ./examples/fcc_dummy
 
+test-couette:
+	cd test/pytest_example/granular && ./run.sh
+
 #.PHONY: all test clean clean-test
 #all: background CPLIcoFOAM CPLporousIcoFoam
 #	@echo "Building everything"
@@ -84,4 +87,10 @@ test-fcc_dummy:
 
 #patch-scotch:                                                                                                                                                                                                                                    
 #	patch $(FOAM_SRC)/parallel/decompose/ptscotchDecomp/ptscotchDecomp.C ./config/ptscotchDecomp.patch
+
+#patch-pstream:
+#	mv $FOAM_LIBBIN/$FOAM_MPI/libPstream.so $FOAM_LIBBIN/$FOAM_MPI/libPstream.so.orig
+#	cp lib/libPstream.so $FOAM_LIBBIN/$FOAM_MPI
+#	mv $FOAM_LIBBIN/$FOAM_MPI/libPstream.so.orig $FOAM_LIBBIN/$FOAM_MPI/libPstream.so
+#	mv lib/libPstream.so $FOAM_LIBBIN/$FOAM_MPI/libPstream.so.cpl
 
