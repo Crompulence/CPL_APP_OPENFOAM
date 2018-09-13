@@ -73,10 +73,21 @@ int main(int argc, char *argv[])
     //This Command turns off solver output 
     solverPerformance::debug=0;
 
-    // Create a CPL object (not used if uncoupled)
-    // and intialise MPI
+    //Check if coupled based on cpl/COUPLER.in input file
+    bool coupled;
+    if (file_exists("./cpl/COUPLER.in")) {
+        Info<< "Assuming coupled run as cpl/COUPLER.in exists\n" << endl;
+        coupled=true;
+    } else {
+        Info<< "Assuming uncoupled run as cpl/COUPLER.in does not exist\n" << endl;
+        coupled=false;
+    }
+
+    // Create a CPL object (not used if uncoupled) and intialise MPI
     CPLSocketFOAM CPL;
     MPI_Init(&argc, &argv);
+    if (coupled)
+        CPL.initComms(argc, argv);
 
     #include "setRootCase.H"
     #include "createTime.H"
@@ -85,9 +96,6 @@ int main(int argc, char *argv[])
     #include "createFields.H"
     #include "readPISO.H"
     #include "initContinuityErrs.H"
-
-    if (coupled)
-        CPL.initComms(argc, argv);
 
     // Also update/create MD-related fields.
     beta = scalar(1) - alpha;
@@ -198,6 +206,7 @@ int main(int argc, char *argv[])
 
     Info<< "End\n" << endl;
 
+    CPL.finalize();
     if (! Pstream::parRun())  MPI_Finalize();
     return(0);
 }
