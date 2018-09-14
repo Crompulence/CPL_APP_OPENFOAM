@@ -65,6 +65,12 @@ void CPLSocketFOAM::initComms (int& argc, char**& argv) {
 
 }
 
+void CPLSocketFOAM::finalize() {
+
+   CPL::finalize();
+
+}
+
 // Analyse mesh topology and perform CFD-side CPL_init.
 void CPLSocketFOAM::initCFD (const Foam::Time &runTime, const Foam::fvMesh &mesh) {
 
@@ -381,7 +387,7 @@ double CPLSocketFOAM::unpackVelocity(volVectorField &U, fvMesh &mesh)
 //                CPL::is_proc_inside(velBCPortion.data()) << " " << 
 //                velBCPortion.data() << Foam::endl;
 
-	if (CPL::is_proc_inside(velBCPortion.data())) { 
+	if (CPL::is_proc_inside(velBCPortion.data())) {
 
 		// TODO: Make this a utility general function that can be used on buffers
 		if (CPL::get<int>("cpl_cfd_bc_slice")) {
@@ -658,7 +664,7 @@ void CPLSocketFOAM::sendStress()
     CPL::send (sendStressBuff.data(), sendStressBuff.shapeData(), cnstFRegion.data());
 }
 
-// Receives 3 components of the velocity vector from overlapping MD processes.
+// Receives 3 components of the velocity vector & 1 no. of particles from overlapping MD processes.
 void CPLSocketFOAM::recvVelocity()
 {
     // LAMMPS computed fields
@@ -668,3 +674,13 @@ void CPLSocketFOAM::recvVelocity()
               velBCPortion.data());
 }
   
+// Receives 3 components of the velocity vector, 1 no. partciles and 1 pressure from overlapping MD processes.
+void CPLSocketFOAM::recvVelocityPressure()
+{
+    // LAMMPS computed fields
+    int recvVelocityShape[4] = {5, velBCCells[0], velBCCells[1], velBCCells[2]};
+    recvVelocityBuff.resize(4, recvVelocityShape);
+    CPL::recv(recvVelocityBuff.data(), recvVelocityBuff.shapeData(), 
+              velBCPortion.data());
+}
+
