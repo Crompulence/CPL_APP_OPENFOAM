@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-import matplotlib.pyplot as plt
 import numpy as np
-from CouetteAnalytical import CouetteAnalytical as CA
 import pytest
+
+from CouetteAnalytical import CouetteAnalytical as CA
 
 @pytest.fixture(scope="module")
 def setup():
