@@ -30,7 +30,7 @@ def setup():
 
     #Analytical solution
     dt = 0.05
-    U = 1.
+    U = 1.0
     nu = 1.004e-2
     Re = xyzL[1]/nu   #Note Reynolds in independent of velocity in analytical fn
     ncx = CPL.get("ncx")
@@ -69,17 +69,17 @@ def test_loop(setup, time):
     error = np.sum(np.abs(100*(u_anal[1:-1:2] - ur)/U))
     print(time, "Error = ", error)
     if time < 10:
-        assert error < 20.
+        assert error < 20., "Error in inital 10 steps greater than 20%"
     elif time < 30:
-        assert error < 10.
+        assert error < 10., "Error between 10 and 30 steps greater than 10%"
     elif time < 50:
-        assert error < 5.
+        assert error < 5., "Error between 30 and 50 steps greater than 5%"
     elif time < 300:
-        assert error < 3.
+        assert error < 3., "Error between 50 and 300 steps greater than 3%"
     elif time < 500:
-        assert error < 2.
+        assert error < 2., "Error between 300 and 500 steps greater than 2%"
     else:
-        assert error < 1.
+        assert error < 1., "Error after 500 steps greater than 1%"
 
 
 
