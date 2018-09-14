@@ -56,8 +56,9 @@ install:
     - conda install -c edu159 -y mpich
     - conda install -c edu159 -y openfoam
 
-    #Numpy and mpi4py
+    #pytest and mpi4py
     - conda install -c edu159 -y mpi4py
+    - conda install -y pytest
 
     #Setup aliases
     - FOAM_VERSION=3.0.1
