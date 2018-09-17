@@ -52,7 +52,8 @@ test-fcc_dummy:
 	py.test -sv ./examples/fcc_dummy
 
 test-couette:
-	cd test/pytest_example/granular && ./run.sh
+	cd test/pytest_example/coupled_to_pytest && ./run.sh
+	cd test/pytest_example/pytest_runs_subprocess && py.test -v test_couette.py
 
 #.PHONY: all test clean clean-test
 #all: background CPLIcoFOAM CPLporousIcoFoam
