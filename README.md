@@ -2,9 +2,9 @@
 # CPL APP for OpenFOAM [![Build Status](https://travis-ci.org/Crompulence/CPL_APP_OPENFOAM-3.0.1.svg?branch=master)](https://travis-ci.org/Crompulence/CPL_APP_OPENFOAM-3.0.1/)
 
 This directory is where the source code, libraries and binaries are stored for
-the CPL Library socket. The source code is located in ./src/ and the
-dynamic-link library binaries are created in a new folder ./lib/. 
-Executable solver applications are created in the a folder ./bin.
+the CPL Library socket. The source code is located in `./src/` and the
+dynamic-link library binaries are created in a new folder `./lib/`. 
+Executable solver applications are created in the a folder `./bin`.
 
 The following environnment variables:
 
