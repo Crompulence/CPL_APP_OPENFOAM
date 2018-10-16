@@ -1,7 +1,16 @@
 import numpy as np
 import sys
-sys.path.append("/home/es205/codes/python/pyDataView")
-import postproclib as ppl
+import subprocess as sp
+
+# Import symwraplib
+sys.path.insert(0, "./pyDataView/")
+try:
+    import postproclib as ppl
+except ImportError:
+    cmd = "git clone https://github.com/edwardsmith999/pyDataView.git ./pyDataView"
+    downloadout = sp.check_output(cmd, shell=True)
+    sys.path.insert(0, "./pyDataView")
+    import postproclib as ppl
 
 sys.path.append("/home/es205/codes/cpl/cpl-library/utils/")
 from CouetteAnalytical import CouetteAnalytical as CA
