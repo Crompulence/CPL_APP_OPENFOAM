@@ -37,7 +37,7 @@ if (comm.Get_size() != 1):
     MPI.Abort(errorcode=1)
 
 # Parameters of the cpu topology (cartesian grid)
-npxyz = np.array([1, 1, 1], order='F', dtype=np.int32)
+npxyz = [1, 1, 1]
 xyzL = np.array([2., 2., 2.], order='F', dtype=np.float64)
 xyz_orig = np.array([0.0, 0.0, 0.0], order='F', dtype=np.float64)
 
