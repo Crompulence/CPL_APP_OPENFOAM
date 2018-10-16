@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
         coupled=false;
     }
 
-    // Create a CPL object (not used if uncoupled) and intialise MPI
+    // Create a CPL object (not used if uncoupled) and intialises MPI
     CPLSocketFOAM CPL;
     MPI_Init(&argc, &argv);
     if (coupled)

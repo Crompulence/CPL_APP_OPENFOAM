@@ -38,8 +38,21 @@ Description
 int main(int argc, char *argv[])
 {
 
+    //Check if coupled based on cpl/COUPLER.in input file
+    bool coupled;
+    if (file_exists("./cpl/COUPLER.in")) {
+        Info<< "Assuming coupled run as cpl/COUPLER.in exists\n" << endl;
+        coupled=true;
+    } else {
+        Info<< "Assuming uncoupled run as cpl/COUPLER.in does not exist\n" << endl;
+        coupled=false;
+    }
+
+
+    // Create a CPL object (not used if uncoupled) and intialises MPI
     CPLSocketFOAM CPL;
-    CPL.initComms(argc, argv);
+    if (coupled)
+        CPL.initComms(argc, argv);
 
     #include "setRootCase.H"
     #include "createTime.H"
@@ -50,7 +63,8 @@ int main(int argc, char *argv[])
     #include "initContinuityErrs.H"
 
 	// MPI_Init is called somewhere in the PStream library
-    CPL.initCFD(runTime, mesh);
+    if (coupled)
+        CPL.initCFD(runTime, mesh);
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 	
@@ -58,19 +72,23 @@ int main(int argc, char *argv[])
 	// Initial communication to initialize domains
     CPL.pack(U, p, nu, mesh, CPL.VEL);
     CPL.send();
-    CPL.recvVelocity();
-    CPL.unpackVelocity(U, mesh);
+//    CPL.recvVelocity();
+//    CPL.unpackVelocity(U, mesh);
+    CPL.recvVelocityPressure();
+    CPL.unpackVelocityPressure(U, p, mesh);
 
     Info<< "\nStarting time loop\n" << endl;
     while (runTime.loop())
     {
 
-        std::cout << "CPL.VEL on " << std::endl;
+        //std::cout << "CPL.VEL on " << std::endl;
         CPL.pack(U, p, nu, mesh, CPL.VEL);
         //CPL.pack(U, p, nu, mesh, CPL.STRESS);
         CPL.send();
-        CPL.recvVelocity();
-        CPL.unpackVelocity(U, mesh);
+//        CPL.recvVelocity();
+//        CPL.unpackVelocity(U, mesh);
+        CPL.recvVelocityPressure();
+        CPL.unpackVelocityPressure(U, p, mesh);
 
         Info<< "Time = " << runTime.timeName() << nl << endl;
 
@@ -93,8 +111,8 @@ int main(int argc, char *argv[])
         // --- PISO loop
         while (piso.correct())
         {
-            volScalarField rAU(1.0/UEqn.A());
 
+            volScalarField rAU(1.0/UEqn.A());
             volVectorField HbyA("HbyA", U);
             HbyA = rAU*UEqn.H();
             surfaceScalarField phiHbyA
@@ -117,7 +135,6 @@ int main(int argc, char *argv[])
                 );
 
                 pEqn.setReference(pRefCell, pRefValue);
-
                 pEqn.solve(mesh.solver(p.select(piso.finalInnerIter())));
 
                 if (piso.finalNonOrthogonalIter())
