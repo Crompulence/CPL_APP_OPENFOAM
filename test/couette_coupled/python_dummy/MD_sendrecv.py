@@ -27,7 +27,7 @@ rank = MD_COMM.Get_rank()
 nprocs_realm = MD_COMM.Get_size()
 
 # Parameters of the cpu topology (cartesian grid)
-npxyz = np.array([1, 1, 1], order='F', dtype=np.int32)
+npxyz = [1, 1, 1]
 NProcs = np.product(npxyz)
 xyzL = np.array([195.2503206, 18.62550553, 133.3416884], order='F', dtype=np.float64)
 xyz_orig = np.array([0.0, 0.0, 0.0], order='F', dtype=np.float64)

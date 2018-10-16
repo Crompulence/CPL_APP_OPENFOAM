@@ -67,7 +67,7 @@ def test_newtest(wallvel):
 
         #Run the case
         run.setup()
-        run.execute(blocking=True, print_output=True, extra_cmds="-Mp")
+        run.execute(blocking=True, print_output=True, extra_cmds="-M")
 
         #Check results are correct
         check_OpenFOAM_vs_Analytical(rundir)
