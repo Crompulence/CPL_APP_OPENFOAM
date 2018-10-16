@@ -16,11 +16,11 @@ sys.path.append("/home/es205/codes/cpl/cpl-library/utils/")
 from CouetteAnalytical import CouetteAnalytical as CA
 
 def test_error(error, time):
-    if time < 350:
-        assert error < 8., "Error in inital 350 steps greater than 8%"
-    elif time < 600:
-        assert error < 1., "Error between 350 and 600 steps greater than 1%"
-    elif time < 1000:
+    if time < 35:
+        assert error < 25., "Error in inital 30 steps greater than 25"
+    elif time < 60:
+        assert error < 1., "Error between 30 and 60 steps greater than 1%"
+    elif time > 60:
         assert error < 0.1, "Error after 1000 steps greater than 0.1%"
 
 def check_OpenFOAM_vs_Analytical(fdir, plotstuff = False):
@@ -103,3 +103,6 @@ def check_OpenFOAM_vs_Analytical(fdir, plotstuff = False):
                 print("Error result missing", time, OpenFOAMuObj.maxrec, rec)
                 raise
 
+
+if __name__ == "__main__":
+    check_OpenFOAM_vs_Analytical("./run1.0/", plotstuff=True)
