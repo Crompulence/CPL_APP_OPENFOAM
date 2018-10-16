@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import sys
 sys.path.append("/home/es205/codes/python/pyDataView")
 import postproclib as ppl
@@ -48,6 +47,7 @@ def check_OpenFOAM_vs_Analytical(fdir, plotstuff = False):
     CAObj = CA(Re=Re, U=U, Lmin=0.-dy/2., Lmax=xyzL[1], npoints=2*ncy+2)
 
     if plotstuff:
+        import matplotlib.pyplot as plt
         fig, ax = plt.subplots(1,1)
     n = 0
     for time in range(enditer):
