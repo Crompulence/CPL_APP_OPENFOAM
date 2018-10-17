@@ -44,8 +44,6 @@ for i in list(itertools.combinations_with_replacement(range(1,4), 4)):
 @pytest.mark.parametrize("nx, nz, px, pz", params)
 def test_newtest(nx, nz, px, pz):
 
-    quit()
-
     # Inputs that are the same for every thread
     basedir = TEST_DIR
     srcdir = None
