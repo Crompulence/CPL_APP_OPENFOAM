@@ -54,8 +54,8 @@ test-fcc_dummy:
 test-couette:
 	cd test/pytest_example/coupled_to_pytest && ./run.sh
 	cd test/pytest_example/pytest_runs_subprocess && py.test -v test_couette.py
-	cd test/couette_coupled && py.test -vs test_couette.py
-	cd test/couette_coupled && py.test -vs test_couette_parallel.py
+	cd test/couette_coupled && py.test -v test_couette.py
+	cd test/couette_coupled && py.test -v test_couette_parallel.py
 #.PHONY: all test clean clean-test
 #all: background CPLIcoFOAM CPLporousIcoFoam
 #	@echo "Building everything"
