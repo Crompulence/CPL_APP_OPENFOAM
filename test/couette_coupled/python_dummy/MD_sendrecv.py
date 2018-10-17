@@ -3,10 +3,6 @@ from mpi4py import MPI
 import sys
 
 from cplpy import CPL
-sys.path.append("/home/es205/codes/python/pyDataView")
-import postproclib as ppl
-sys.path.append("/home/es205/codes/cpl/cpl-library/utils/")
-from CouetteAnalytical import CouetteAnalytical as CA
 
 #initialise MPI and CPL
 comm = MPI.COMM_WORLD
