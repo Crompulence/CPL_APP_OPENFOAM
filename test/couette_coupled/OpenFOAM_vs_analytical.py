@@ -12,7 +12,6 @@ except ImportError:
     sys.path.insert(0, "./pyDataView")
     import postproclib as ppl
 
-sys.path.append("/home/es205/codes/cpl/cpl-library/utils/")
 from CouetteAnalytical import CouetteAnalytical as CA
 
 def test_error(error, time):
@@ -68,6 +67,7 @@ def check_OpenFOAM_vs_Analytical(fdir, plotstuff = False):
                 OpenFOAMuObj = ppl.OpenFOAM_vField(OpenFOAMfdir, parallel_run=True)
                 y, u = OpenFOAMuObj.profile(1,startrec=rec,endrec=rec)
                 halou = OpenFOAMuObj.read_halo(startrec=rec,endrec=rec, haloname="CPLReceiveMD")
+                print(halou.shape, halou[...,0].min(),halou[...,0].max())
                 halout = OpenFOAMuObj.read_halo(startrec=rec,endrec=rec, haloname="movingWall")
                 y_anal, u_anal = CAObj.get_vprofile(time*dt, flip=True)
                 error = (u_anal[2:-1:2] - u[:,0])/u_anal[2:-1:2]
