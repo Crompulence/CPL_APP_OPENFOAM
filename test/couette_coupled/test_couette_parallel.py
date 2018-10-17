@@ -37,7 +37,7 @@ TEST_DIR = os.path.dirname(os.path.realpath(__file__))
 nx = 6; nz = 6
 px = 1; pz = 1
 params = []
-for i in list(itertools.combinations_with_replacement(range(1,4), 4)):
+for i in list(itertools.combinations_with_replacement(range(1,3), 4)):
     params.append([nx*i[2], nz*i[3], px*i[0], pz*i[1]])
 
 
