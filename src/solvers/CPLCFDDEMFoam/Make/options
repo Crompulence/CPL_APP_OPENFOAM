@@ -1,0 +1,18 @@
+CPP_DIRECTIVE = -std=c++11 \
+    -Wno-old-style-cast
+EXE_INC = \
+    $(CPP_DIRECTIVE) \
+    -I$(LIB_SRC)/finiteVolume/lnInclude \
+    -I$(LIB_SRC)/meshTools/lnInclude \
+    -I$(CONDA_PREFIX)/include/cpl \
+    $(MPI_ARCH_INC) \
+    -I$(FOAM_CPL_APP_SRC)/CPLSocketFOAM/lnInclude \
+    -I$(CPL_INCLUDE_PATH)
+
+EXE_LIBS = \
+    -Wl,-rpath=$(MPI_ARCH_PATH)/lib \
+    -L$(FOAM_CPL_APP_LIBBIN) -Wl,-rpath=$(FOAM_CPL_APP_LIBBIN) \
+    -L$(CPL_LIBRARY_PATH) -Wl,-rpath=$(CPL_LIBRARY_PATH) \
+    -lfiniteVolume \
+    -lblockMesh \
+    -lCPLSocketFOAM

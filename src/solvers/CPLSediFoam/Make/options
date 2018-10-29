@@ -33,7 +33,6 @@ EXE_LIBS = \
     -lfiniteVolume \
     -lblockMesh \
     -lCPLSocketFOAM \
-    -L$(FOAM_USER_LIBBIN) \
     -lfiniteVolume \
     -lrandomProcesses \
     -lmeshTools  \
