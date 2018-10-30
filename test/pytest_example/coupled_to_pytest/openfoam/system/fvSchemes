@@ -32,6 +32,8 @@ divSchemes
     div(phib,Ub)    Gauss linear;
     div(((nub*2)*dev(symm(grad(Ub))))) Gauss linear;
 
+    div(((nub*beta)*dev2(grad(Ub).T())))  Gauss linear;
+    div(betaPhib,Ub) Gauss linear;
 }
 
 laplacianSchemes
@@ -39,6 +41,8 @@ laplacianSchemes
     default         none;
     laplacian((rhob*(1|A(U))),p) Gauss linear corrected;
     laplacian((nub*beta),Ub) Gauss linear corrected;
+
+    laplacian(((1|A(Ub))*beta),p) Gauss linear corrected;
 }
 
 interpolationSchemes

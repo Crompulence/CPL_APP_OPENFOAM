@@ -2,8 +2,8 @@ OpenFOAM_DIR=`cat CODE_INST_DIR`
 OpenFOAM_SRC_DIR=$(OpenFOAM_SRC_DIR)/src
 OpenFOAM_ETC_DIR=$(OpenFOAM_ETC_DIR)/etc
 
-.PHONY: all test clean clean-test pstream socket cplicofoam cplsedifoam  cplcfddemfoam
-all: cplicofoam cplsedifoam
+.PHONY: all test clean clean-test pstream socket cplicofoam cplsedifoam cplcfddemfoam
+all: cplicofoam cplsedifoam cplcfddemfoam
 
 pstream:
 	@wmake libso src/CPLPstream
@@ -15,12 +15,6 @@ cplicofoam: socket
 	@wmake src/solvers/CPLIcoFoam
 
 cplsedifoam: socket
-	#@wmakeLnInclude src/solvers/CPLSediFoam/dragModels
-	#@wmake libso src/solvers/CPLSediFoam/dragModels
-	#@wmakeLnInclude src/solvers/CPLSediFoam/chPressureGrad
-	#@wmake libso src/solvers/CPLSediFoam/chPressureGrad
-	#@wmakeLnInclude src/solvers/CPLSediFoam/lammpsFoamTurbulenceModels
-	#@wmake libso src/solvers/CPLSediFoam/lammpsFoamTurbulenceModels
 	@wmake src/solvers/CPLSediFoam
 
 cplcfddemfoam: socket
@@ -56,7 +50,8 @@ test-fcc_dummy:
 	py.test -sv ./examples/fcc_dummy
 
 test-couette:
-	cd test/pytest_example/coupled_to_pytest && ./run.sh
+	cd test/pytest_example/coupled_to_pytest && ./run.sh CPLSediFOAM
+	cd test/pytest_example/coupled_to_pytest && ./run.sh CPLCFDDEMFoam
 	cd test/pytest_example/pytest_runs_subprocess && py.test -v test_couette.py
 	cd test/couette_coupled && py.test -v test_couette.py
 	cd test/couette_coupled && py.test -v test_couette_parallel.py

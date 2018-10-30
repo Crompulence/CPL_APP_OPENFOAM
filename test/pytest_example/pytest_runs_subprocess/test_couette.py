@@ -27,22 +27,22 @@ except ImportError:
     sys.path.insert(0, "./SimWrapPy")
     import simwraplib as swl
 
-#sys.path.append("/home/es205/codes/python/SimWrapPy/")
-#import simwraplib as swl
-
 #Define test directory based on script file
 TEST_DIR = os.path.dirname(os.path.realpath(__file__))
 
-
 #Parameterise range of cases
-params = [0.2, 0.5, 1.0, 2.0]
-@pytest.mark.parametrize("wallvel", params)
-def test_newtest(wallvel):
+params = []
+Uwall = [0.2, 0.5, 1.0, 2.0]
+for exe in ["CPLSediFOAM", "CPLCFDDEMFoam"]:
+    for u in Uwall:
+        params.append([u, exe])
+@pytest.mark.parametrize("wallvel, executable", params)
+def test_newtest(wallvel, executable):
 
     # Inputs that are the same for every thread
     basedir = TEST_DIR
     srcdir = None
-    executable = "CPLSediFOAM"
+    #executable = "CPLSediFOAM"
     inputfile = "/openfoam"
     rundir = TEST_DIR + "/run" + str(wallvel)
 
