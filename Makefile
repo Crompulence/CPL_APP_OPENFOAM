@@ -15,12 +15,12 @@ cplicofoam: socket
 	@wmake src/solvers/CPLIcoFoam
 
 cplsedifoam: socket
-	@wmakeLnInclude src/solvers/CPLSediFoam/dragModels
-	@wmake libso src/solvers/CPLSediFoam/dragModels
-	@wmakeLnInclude src/solvers/CPLSediFoam/chPressureGrad
-	@wmake libso src/solvers/CPLSediFoam/chPressureGrad
-	@wmakeLnInclude src/solvers/CPLSediFoam/lammpsFoamTurbulenceModels
-	@wmake libso src/solvers/CPLSediFoam/lammpsFoamTurbulenceModels
+	#@wmakeLnInclude src/solvers/CPLSediFoam/dragModels
+	#@wmake libso src/solvers/CPLSediFoam/dragModels
+	#@wmakeLnInclude src/solvers/CPLSediFoam/chPressureGrad
+	#@wmake libso src/solvers/CPLSediFoam/chPressureGrad
+	#@wmakeLnInclude src/solvers/CPLSediFoam/lammpsFoamTurbulenceModels
+	#@wmake libso src/solvers/CPLSediFoam/lammpsFoamTurbulenceModels
 	@wmake src/solvers/CPLSediFoam
 
 cplcfddemfoam: socket
