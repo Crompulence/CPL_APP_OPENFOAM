@@ -255,8 +255,8 @@ void CPLSocketFOAM::pack(volVectorField &U,
 {
 
     // It would be nice to write these CPL fields directly here
-    // but write interval is not accessible from Foam::Time
-    // object and 
+    // but write interval is not accessible from Foam::Time object
+    // So instead I've added all of them to fields
 
     // Evaluate gradient of pressure
     //if ((sendtype & GRADPRESSURE) == GRADPRESSURE)
@@ -296,8 +296,6 @@ void CPLSocketFOAM::pack(volVectorField &U,
 											(glob_cell[2] + 0.5) * dz);
 					cell = meshSearcher->findNearestCell(globalPos);
 
-//                    printf("vel %d %d %d %4.2f %4.2f %4.2f  \n", loc_cell[0],loc_cell[1],loc_cell[2], 
-//                            globalPos[0], globalPos[1], globalPos[2]);
 					if (cell != -1) {
                         int npack = 0;
                         if ((sendtype & VEL) == VEL)
@@ -307,6 +305,12 @@ void CPLSocketFOAM::pack(volVectorField &U,
 				            sendBuf(npack+1,loc_cell[0],loc_cell[1],loc_cell[2]) = U[cell].y();
 				            sendBuf(npack+2,loc_cell[0],loc_cell[1],loc_cell[2]) = U[cell].z();
                             npack += VELSIZE;
+
+			                Foam::Info << "CPLSocketFOAM::pack vel " << ix << " " << iy << " " << iz
+                                       << " " << cell << " " << " " << globalPos << " " <<
+                                       sendBuf(npack-3,loc_cell[0],loc_cell[1],loc_cell[2]) << " " <<
+                                       sendBuf(npack-2,loc_cell[0],loc_cell[1],loc_cell[2]) << " " <<
+                                       sendBuf(npack-1,loc_cell[0],loc_cell[1],loc_cell[2]) << " " << Foam::endl;
 				        }
 
                         if ((sendtype & PRESSURE) == PRESSURE)
@@ -657,8 +661,8 @@ double CPLSocketFOAM::unpackPorousVelForceCoeff(volVectorField &U,
 
                 //N.B we use phi/eps instead of alpha/beta instead here (in keeping with granular literature)
                 double phi = volSum/Vcell;
-//                Foam::Info << "recvBuf " << ix << " " << iy << " " << iz << " " << cell << " "
-//                            << phi << " " << volSum << " " << Vcell << " " << maxPossibleAlpha << Foam::endl;
+                //Foam::Info << "CPLSocketFOAM::unpackPorousVelForceCoeff recvBuf " << ix << " " << iy << " " << iz << " " << cell << " "
+                //            << phi << " " << volSum << " " << Vcell << " " << maxPossibleAlpha << Foam::endl;
                 if (phi > maxPossibleAlpha) {
                     //Default value set in createFields or read from transportProperties
                     eps[cell] = 1.0 - maxPossibleAlpha;
@@ -672,11 +676,13 @@ double CPLSocketFOAM::unpackPorousVelForceCoeff(volVectorField &U,
                 U[cell].x() = Uxsum/(eps[cell]*Vcell);
                 U[cell].y() = Uysum/(eps[cell]*Vcell);
                 U[cell].z() = Uzsum/(eps[cell]*Vcell);
-//                Foam::Info << "returned unpack " << ix << " " << iy << " " << iz << " " << cell << " "
-//                            << F[cell].x() << " " << F[cell].y() << " " << F[cell].z() << " "
-//                            << U[cell].x() << " " << U[cell].y() << " " << U[cell].z() << " "
-//                            << Fcoeff[cell] << " " << eps[cell] << " " << maxPossibleAlpha << Foam::endl;
 
+                if (eps[cell] != 1){
+                    Foam::Info << "CPLSocketFOAM::unpackPorousVelForceCoeff recv " << ix << " " << iy << " " << iz << " " << cell << " "
+                            << F[cell].x() << " " << F[cell].y() << " " << F[cell].z() << " "
+                            << U[cell].x() << " " << U[cell].y() << " " << U[cell].z() << " "
+                            << Fcoeff[cell] << " " << eps[cell] << " " << maxPossibleAlpha << Foam::endl;
+                }
 
 
 //                double Ux = recvBuf(0, ix, iy, iz);
