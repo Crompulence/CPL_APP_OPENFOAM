@@ -306,11 +306,13 @@ void CPLSocketFOAM::pack(volVectorField &U,
 				            sendBuf(npack+2,loc_cell[0],loc_cell[1],loc_cell[2]) = U[cell].z();
                             npack += VELSIZE;
 
+#if DEBUG
 			                Foam::Info << "CPLSocketFOAM::pack vel " << ix << " " << iy << " " << iz
                                        << " " << cell << " " << " " << globalPos << " " <<
                                        sendBuf(npack-3,loc_cell[0],loc_cell[1],loc_cell[2]) << " " <<
                                        sendBuf(npack-2,loc_cell[0],loc_cell[1],loc_cell[2]) << " " <<
                                        sendBuf(npack-1,loc_cell[0],loc_cell[1],loc_cell[2]) << " " << Foam::endl;
+#endif
 				        }
 
                         if ((sendtype & PRESSURE) == PRESSURE)
@@ -677,12 +679,14 @@ double CPLSocketFOAM::unpackPorousVelForceCoeff(volVectorField &U,
                 U[cell].y() = Uysum/(eps[cell]*Vcell);
                 U[cell].z() = Uzsum/(eps[cell]*Vcell);
 
+#if DEBUG
                 if (eps[cell] != 1){
                     Foam::Info << "CPLSocketFOAM::unpackPorousVelForceCoeff recv " << ix << " " << iy << " " << iz << " " << cell << " "
                             << F[cell].x() << " " << F[cell].y() << " " << F[cell].z() << " "
                             << U[cell].x() << " " << U[cell].y() << " " << U[cell].z() << " "
                             << Fcoeff[cell] << " " << eps[cell] << " " << maxPossibleAlpha << Foam::endl;
                 }
+#endif
 
 
 //                double Ux = recvBuf(0, ix, iy, iz);
