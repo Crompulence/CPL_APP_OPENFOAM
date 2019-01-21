@@ -42,7 +42,6 @@ def test_newtest(wallvel, executable):
     # Inputs that are the same for every thread
     basedir = TEST_DIR
     srcdir = None
-    #executable = "CPLSediFOAM"
     inputfile = "/openfoam"
     rundir = TEST_DIR + "/run" + str(wallvel)
 
