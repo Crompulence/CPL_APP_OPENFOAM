@@ -1,7 +1,7 @@
 # Example uses of pytest
 
 These two folders give an example of the two possible ways to test coupled simulations, 
-using Python to drive the testing of OpenFOAM with (pytest)[https://docs.pytest.org/en/latest/].
+using Python to drive the testing of OpenFOAM with [pytest][https://docs.pytest.org/en/latest/].
 The two methods are:
 
     1) coupled_to_pytest - Running an instance of pytest AND an instance of OpenFOAM with information exchange.
@@ -48,7 +48,7 @@ The next test must take this into account.
 
 In option 2), a far more flexible testing method is put forward, using multiple instances of OpenFOAM and a dummy MD script to be started by pytest as subprocesses. 
 This allows the dummy MD script, the input for OpenFOAM and the processor topology to be adjusted and a wide range of cases explored.
-The parameter space is navigated using (SimWrapLib)[https://github.com/edwardsmith999/SimWrapPy] to change script and OpenFOAM input values.
+The parameter space is navigated using [SimWrapLib][https://github.com/edwardsmith999/SimWrapPy] to change script and OpenFOAM input values.
 
 The disadvantage of this approach is the coupled run is a subprocess so the actual driving pytest does not have any access to information generated during the simulation. 
 Writing to disk and reading at the end (or during) the run is the only way to assert the coupled run is working as expected.
