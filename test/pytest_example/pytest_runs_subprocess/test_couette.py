@@ -3,6 +3,8 @@ import os
 import sys
 import numpy as np
 import subprocess as sp
+from OpenFOAM_vs_analytical import check_OpenFOAM_vs_Analytical
+
 
 class cd:
     """Context manager for changing the current working directory"""
@@ -78,5 +80,8 @@ def test_newtest(wallvel, executable):
         #Run the case
         run.setup()
         run.execute(blocking=True, print_output=True, extra_cmds="-Mp")
+
+        #Check results are correct
+        check_OpenFOAM_vs_Analytical(rundir)
 
             
