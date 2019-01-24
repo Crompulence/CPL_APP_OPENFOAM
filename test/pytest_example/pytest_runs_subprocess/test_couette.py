@@ -79,11 +79,11 @@ def test_newtest(wallvel, executable):
 
         #Run the case
         run.setup()
-        run.execute(blocking=True, print_output=True)#, extra_cmds="-Mp")
+        run.execute(blocking=True, print_output=True, extra_cmds="-M")
 
         #Seems that blocking is not working correctly, add a wait here to see if the problem is simply this
-        import time
-        time.sleep(10)
+        #import time
+        #time.sleep(10)
 
         #Check results are correct
         check_OpenFOAM_vs_Analytical(rundir)
