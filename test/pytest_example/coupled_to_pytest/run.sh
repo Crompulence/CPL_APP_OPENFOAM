@@ -10,5 +10,5 @@ blockMesh
 decomposePar
 cd ../
 
-mpiexec -n 1 $exe -case ./openfoam -parallel : -n 1 py.test -v ./python_dummy/test_vs_couette_analytical_aspytest.py
+mpiexec -n 1 $exe -case ./openfoam -parallel : -n 1 pytest -v ./python_dummy/test_vs_couette_analytical_aspytest.py
 

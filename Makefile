@@ -44,17 +44,17 @@ test:
 	@py.test2 -v ./test
 
 test-hydrostatic:
-	py.test -sv ./examples/hydrostatic
+	pytest -sv ./examples/hydrostatic
 
 test-fcc_dummy:
-	py.test -sv ./examples/fcc_dummy
+	pytest -sv ./examples/fcc_dummy
 
 test-couette:
 	cd test/pytest_example/coupled_to_pytest && ./run.sh CPLSediFOAM
 	cd test/pytest_example/coupled_to_pytest && ./run.sh CPLCFDDEMFoam
-	cd test/pytest_example/pytest_runs_subprocess && py.test -v test_couette.py
-	cd test/couette_coupled && py.test -v test_couette.py
-	cd test/couette_coupled && py.test -v test_couette_parallel.py
+	cd test/pytest_example/pytest_runs_subprocess && pytest -v test_couette.py
+	cd test/couette_coupled && pytest -v test_couette.py
+	cd test/couette_coupled && pytest -v test_couette_parallel.py
 
 #.PHONY: all test clean clean-test
 #all: background CPLIcoFOAM CPLporousIcoFoam
