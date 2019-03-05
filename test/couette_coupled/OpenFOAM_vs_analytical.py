@@ -57,6 +57,10 @@ def check_OpenFOAM_vs_Analytical(fdir, plotstuff = False):
     if plotstuff:
         import matplotlib.pyplot as plt
         fig, ax = plt.subplots(1,1)
+        if "dynamic" in plotstuff:
+            recds = range(enditer)
+        elif "summary" in plotstuff:
+            recds = [5, int(0.1*enditer), int(0.25*enditer), enditer-1]
     n = 0
     for time in range(enditer):
 
@@ -73,21 +77,23 @@ def check_OpenFOAM_vs_Analytical(fdir, plotstuff = False):
                 error = (u_anal[2:-1:2] - u[:,0])/u_anal[2:-1:2]
 
                 if plotstuff:
-                    l, = ax.plot(u[:,0], y, 'ro-', label="OpenFOAM domain from file")
-                    ax.plot(np.mean(halou[:,:,:,:,0],(0,2)), y[0]-0.5*dy, 'bs',ms=10, label="OpenFOAM halo from file")
-                    ax.plot(np.mean(halout[:,:,:,:,0],(0,2)), y[-1]+0.5*dy, 'bs',ms=10, label="OpenFOAM halo fixed")
-                    ax.plot(u_anal,y_anal, 'k.-', label="Analytical Solution")
+                    if time in recds:
+                        l, = ax.plot(u[:,0], y, 'ro-', label="OpenFOAM domain from file")
+                        ax.plot(np.mean(halou[:,:,:,:,0],(0,2)), y[0]-0.5*dy, 'bs',ms=10, label="OpenFOAM halo from file")
+                        ax.plot(np.mean(halout[:,:,:,:,0],(0,2)), y[-1]+0.5*dy, 'bs',ms=10, label="OpenFOAM halo fixed")
+                        ax.plot(u_anal,y_anal, 'k.-', label="Analytical Solution")
 
                     #ax.plot(10.*(u[:,0]-u_anal[-2:0:-2]),y,'y--')
-                    ax.set_xlim([-0.1,U*1.1])
-                    ax.set_xlabel("$u$",fontsize=24)
-                    ax.set_ylabel("$y$",fontsize=24)
+                    if "dynamic" in plotstuff:
+                        ax.set_xlim([-0.1,U*1.1])
+                        ax.set_xlabel("$u$",fontsize=24)
+                        ax.set_ylabel("$y$",fontsize=24)
 
-                    plt.legend(loc=1)
-                    plt.pause(0.001)
-                    plt.savefig('out{:05}.png'.format(n)); n+=1
+                        plt.legend(loc=1)
+                        plt.pause(0.001)
+                        plt.savefig('out{:05}.png'.format(n)); n+=1
 
-                    ax.cla()
+                        ax.cla()
 
             
                 l2 = np.sqrt(np.sum(error[1:]**2))
@@ -103,6 +109,14 @@ def check_OpenFOAM_vs_Analytical(fdir, plotstuff = False):
                 print("Error result missing", time, OpenFOAMuObj.maxrec, rec)
                 raise
 
+    if "summary" in plotstuff:
+        ax.set_xlim([-0.1,U*1.1])
+        ax.set_xlabel("$u$",fontsize=24)
+        ax.set_ylabel("$y$",fontsize=24)
+
+        #plt.legend(loc=1)
+        plt.savefig('summary.png')
+
 
 if __name__ == "__main__":
-    check_OpenFOAM_vs_Analytical("./run1.0/", plotstuff=True)
+    check_OpenFOAM_vs_Analytical("./run1.0/", plotstuff="summary")
