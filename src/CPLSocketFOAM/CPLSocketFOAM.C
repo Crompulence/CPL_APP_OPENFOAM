@@ -464,14 +464,24 @@ double CPLSocketFOAM::unpackVelocity(volVectorField &U, fvMesh &mesh)
 				double recvvy = recvVelocityBuff(1, loc_cell[0], loc_cell[1], loc_cell[2])/m;
 				double recvvz = recvVelocityBuff(2, loc_cell[0], loc_cell[1], loc_cell[2])/m;
 
+                bool interp_BC = false;
+
+
                 //Note here velocity is set straight to MD average value
-		        //which may be correct or you may need to use interpolation
-                // with something like (recvvx + U[cell].x()) / 2.0; where
-		        //cell = mesh.findCell (closestCellCentre);
-//				if (applyBCx) rvPatch[faceI].x() = recvvx;
-//				if (applyBCy) rvPatch[faceI].y() = recvvy;
-//				if (applyBCz) rvPatch[faceI].z() = recvvz;
-//                if (interp_BC) {
+                if (interp_BC == false) {
+				    if (applyBCx) rvPatch[faceI].x() = recvvx;
+				    if (applyBCy) rvPatch[faceI].y() = recvvy;
+				    if (applyBCz) rvPatch[faceI].z() = recvvz;
+
+//                    Foam::Info << "recvBuf with no interp " << interp_BC << " " << facex << " " << facey << " " << facez << " " << cell << " "
+//                                << recvvx << " " << recvvy << " " << recvvz << " "
+//                                << rvPatch[faceI].x() << " " << rvPatch[faceI].y() << " " << rvPatch[faceI].z() << " "
+//                                << rvPatchP[faceI] << " " << Foam::endl;
+
+
+		        //or use interpolation assuming specified cell is the one outside the domain
+                } else {
+
                     Foam::point closestCellCentre((glob_cell[0]+0.5)*dx, 
                                                   (glob_cell[1]+0.5)*dy, 
                                                   (glob_cell[2]+0.5)*dz);
@@ -480,6 +490,30 @@ double CPLSocketFOAM::unpackVelocity(volVectorField &U, fvMesh &mesh)
                     if (applyBCx) rvPatch[faceI].x() = (recvvx + U[cell].x()) / 2.0;
                     if (applyBCy) rvPatch[faceI].y() = (recvvy + U[cell].y()) / 2.0;
                     if (applyBCz) rvPatch[faceI].z() = (recvvz + U[cell].z()) / 2.0;
+
+//                    Foam::Info << "recvBuf " << facex << " " << facey << " " << facez << " " << cell << " "
+//                                << recvvx << " " << recvvy << " " << recvvz << " "
+//                                << rvPatch[faceI].x() << " " << rvPatch[faceI].y() << " " << rvPatch[faceI].z() << " "
+//                                << rvPatchP[faceI] << " " << Foam::endl;
+
+                }
+
+                //Note here velocity is set straight to MD average value
+		        //which may be correct or you may need to use interpolation
+                // with something like (recvvx + U[cell].x()) / 2.0; where
+		        //cell = mesh.findCell (closestCellCentre);
+//				if (applyBCx) rvPatch[faceI].x() = recvvx;
+//				if (applyBCy) rvPatch[faceI].y() = recvvy;
+//				if (applyBCz) rvPatch[faceI].z() = recvvz;
+//                if (interp_BC) {
+//                    Foam::point closestCellCentre((glob_cell[0]+0.5)*dx, 
+//                                                  (glob_cell[1]+0.5)*dy, 
+//                                                  (glob_cell[2]+0.5)*dz);
+//                    Foam::label cell = meshSearcher->findNearestCell(closestCellCentre);
+//                    //Foam::label cell = mesh.findCell(closestCellCentre);
+//                    if (applyBCx) rvPatch[faceI].x() = (recvvx + U[cell].x()) / 2.0;
+//                    if (applyBCy) rvPatch[faceI].y() = (recvvy + U[cell].y()) / 2.0;
+//                    if (applyBCz) rvPatch[faceI].z() = (recvvz + U[cell].z()) / 2.0;
 
 
 //                    Foam::Info << "recvBuf " << facex << " " << facey << " " << facez << " " << cell << " "

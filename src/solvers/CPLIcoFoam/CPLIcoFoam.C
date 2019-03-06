@@ -72,23 +72,23 @@ int main(int argc, char *argv[])
 	// Initial communication to initialize domains
     CPL.pack(U, p, nu, mesh, CPL.VEL);
     CPL.send();
-//    CPL.recvVelocity();
-//    CPL.unpackVelocity(U, mesh);
-    CPL.recvVelocityPressure();
-    CPL.unpackVelocityPressure(U, p, mesh);
+    CPL.recvVelocity();
+    CPL.unpackVelocity(U, mesh);
+//    CPL.recvVelocityPressure();
+//    CPL.unpackVelocityPressure(U, p, mesh);
 
     Info<< "\nStarting time loop\n" << endl;
     while (runTime.loop())
     {
 
-        //std::cout << "CPL.VEL on " << std::endl;
+        std::cout << "CPL.VEL is on " << std::endl;
         CPL.pack(U, p, nu, mesh, CPL.VEL);
         //CPL.pack(U, p, nu, mesh, CPL.STRESS);
         CPL.send();
-//        CPL.recvVelocity();
-//        CPL.unpackVelocity(U, mesh);
-        CPL.recvVelocityPressure();
-        CPL.unpackVelocityPressure(U, p, mesh);
+        CPL.recvVelocity();
+        CPL.unpackVelocity(U, mesh);
+//        CPL.recvVelocityPressure();
+//        CPL.unpackVelocityPressure(U, p, mesh);
 
         Info<< "Time = " << runTime.timeName() << nl << endl;
 
