@@ -45,7 +45,7 @@ solvers
 
 PISO
 {
-    nCorrectors     2;
+    nCorrectors     3;
     nNonOrthogonalCorrectors 0;
     pRefCell        2;
     pRefValue       0;
