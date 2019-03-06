@@ -57,10 +57,14 @@ def check_OpenFOAM_vs_Analytical(fdir, plotstuff = False):
     if plotstuff:
         import matplotlib.pyplot as plt
         fig, ax = plt.subplots(1,1)
-        if "dynamic" in plotstuff:
+        if "dynamic" in plotstuff or plotstuff == True:
+            plotstuff = "dynamic"
             recds = range(enditer)
         elif "summary" in plotstuff:
             recds = [5, int(0.1*enditer), int(0.25*enditer), enditer-1]
+    else:
+        plotstuff = "False"
+
     n = 0
     for time in range(enditer):
 
@@ -76,11 +80,14 @@ def check_OpenFOAM_vs_Analytical(fdir, plotstuff = False):
                 y_anal, u_anal = CAObj.get_vprofile(time*dt, flip=True)
                 error = (u_anal[2:-1:2] - u[:,0])/u_anal[2:-1:2]
 
-                if plotstuff:
+                if plotstuff != "False":
                     if time in recds:
-                        l, = ax.plot(u[:,0], y, 'ro-', label="OpenFOAM domain from file")
-                        ax.plot(np.mean(halou[:,:,:,:,0],(0,2)), y[0]-0.5*dy, 'bs',ms=10, label="OpenFOAM halo from file")
-                        ax.plot(np.mean(halout[:,:,:,:,0],(0,2)), y[-1]+0.5*dy, 'bs',ms=10, label="OpenFOAM halo fixed")
+                        l, = ax.plot(u[:,0], y, 'ro-', 
+                                     label="OpenFOAM domain from file")
+                        ax.plot(np.mean(halou[:,:,:,:,0],(0,2)), y[0]-0.5*dy, 
+                                        'bs',ms=10, label="OpenFOAM halo from file")
+                        ax.plot(np.mean(halout[:,:,:,:,0],(0,2)), y[-1]+0.5*dy, 
+                                        'bs',ms=10, label="OpenFOAM halo fixed")
                         ax.plot(u_anal,y_anal, 'k.-', label="Analytical Solution")
 
                     #ax.plot(10.*(u[:,0]-u_anal[-2:0:-2]),y,'y--')
