@@ -12,7 +12,7 @@ MD_COMM = CPL.init(CPL.MD_REALM)
 # Parameters of the cpu topology (cartesian grid)
 npxyz = [1, 1, 1]
 NProcs = np.product(npxyz)
-xyzL = np.array([195.2503206, 18.62550553, 133.3416884], order='F', dtype=np.float64)
+xyzL = np.array([16.795961913825074, 45.349097, 16.795961913825074], order='F', dtype=np.float64)
 xyz_orig = np.array([0.0, 0.0, 0.0], order='F', dtype=np.float64)
 
 if (MD_COMM.Get_size() != NProcs):

@@ -16,11 +16,11 @@ from CouetteAnalytical import CouetteAnalytical as CA
 
 def test_error(error, time):
     if time < 35:
-        assert error < 25., "Error in inital 30 steps greater than 25"
+        assert error < 0.03, "Error in inital 30 steps greater than 30%"
     elif time < 60:
-        assert error < 1., "Error between 30 and 60 steps greater than 1%"
+        assert error < 0.01, "Error between 30 and 60 steps greater than 1%"
     elif time > 60:
-        assert error < 0.1, "Error after 1000 steps greater than 0.1%"
+        assert error < 0.008, "Error after 1000 steps greater than 1.0%"
 
 def check_OpenFOAM_vs_Analytical(fdir, plotstuff = False):
 
@@ -78,8 +78,8 @@ def check_OpenFOAM_vs_Analytical(fdir, plotstuff = False):
                 print(halou.shape, halou[...,0].min(),halou[...,0].max())
                 halout = OpenFOAMuObj.read_halo(startrec=rec,endrec=rec, haloname="movingWall")
                 y_anal, u_anal = CAObj.get_vprofile(time*dt, flip=True)
-                error = (u_anal[2:-1:2] - u[:,0])/u_anal[2:-1:2]
-
+                error = (u_anal[2:-1:2] - u[:,0])/U #/u_anal[2:-1:2]
+                #error[u_anal[2:-1:2] < 0.005] = 0.
                 if plotstuff != "False":
                     if time in recds:
                         l, = ax.plot(u[:,0], y, 'ro-', 
@@ -89,6 +89,7 @@ def check_OpenFOAM_vs_Analytical(fdir, plotstuff = False):
                         ax.plot(np.mean(halout[:,:,:,:,0],(0,2)), y[-1]+0.5*dy, 
                                         'bs',ms=10, label="OpenFOAM halo fixed")
                         ax.plot(u_anal,y_anal, 'k.-', label="Analytical Solution")
+                        ax.plot(-error,y_anal[2:-1:2], 'g--', label="Analytical Solution")
 
                     #ax.plot(10.*(u[:,0]-u_anal[-2:0:-2]),y,'y--')
                     if "dynamic" in plotstuff:
@@ -105,14 +106,14 @@ def check_OpenFOAM_vs_Analytical(fdir, plotstuff = False):
             
                 l2 = np.sqrt(np.sum(error[1:]**2))
                 if not np.isnan(l2):
-                    print(time, l2)
+                    print(time, "L2 norm error =" , l2)
                     test_error(l2, time)
 
             except AssertionError as e:
                 print("AssertionError ", e)
                 raise
 
-            except:# ppl.field.OutsideRecRange:
+            except ppl.field.OutsideRecRange:
                 print("Error result missing", time, OpenFOAMuObj.maxrec, rec)
                 raise
 
@@ -126,4 +127,4 @@ def check_OpenFOAM_vs_Analytical(fdir, plotstuff = False):
 
 
 if __name__ == "__main__":
-    check_OpenFOAM_vs_Analytical("./run1.0/", plotstuff="summary")
+    check_OpenFOAM_vs_Analytical("./run1.0/", plotstuff="dynamic")
