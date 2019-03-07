@@ -41,8 +41,7 @@ for i in list(itertools.combinations_with_replacement(range(1,3), 4)):
     params.append([nx*i[2], nz*i[3], px*i[0], pz*i[1]])
 
 #Travis is so slow now need to run only 2 processes
-
-
+params[-1] = (2,1,2,2)
 
 
 @pytest.mark.parametrize("nx, nz, px, pz", params)
