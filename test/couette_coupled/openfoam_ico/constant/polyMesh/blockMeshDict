@@ -16,6 +16,8 @@ FoamFile
 
 convertToMeters 16.795961913825074;
 
+interp_BC true;
+
 vertices
 (
     (0 0 0)
