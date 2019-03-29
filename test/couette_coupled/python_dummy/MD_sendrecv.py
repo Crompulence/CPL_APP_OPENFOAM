@@ -25,7 +25,7 @@ cart_comm = MD_COMM.Create_cart([npxyz[0], npxyz[1], npxyz[2]])
 CPL.setup_md(cart_comm, xyzL, xyz_orig)
 
 #Setup send and recv buffers
-recv_array, send_array = CPL.get_arrays(recv_size=3, send_size=5)
+recv_array, send_array = CPL.get_arrays(recv_size=3, send_size=4)
 
 #Set velocity
 U = 2.
