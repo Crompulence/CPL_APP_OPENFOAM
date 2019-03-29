@@ -43,24 +43,24 @@ zL = pObj.Raw.zL
 
 # #Simulation parameters
 with open('MD_dummy_fcc.py') as fObj:
-	for l in fObj:
-		if l.startswith('porousStart ='):
-			porousStart = float(l.split()[-1])
-		if l.startswith('porousEnd ='):
-			porousEnd = float(l.split()[-1])
-		if l.startswith('phi ='):
-			phi = float(l.split()[-1])
-		if l.startswith('dp ='):
-			dp = float(l.split()[-1])
-		if l.startswith('rho ='):
-			rho = float(l.split()[-1])
-		if l.startswith('mu ='):
-			mu = float(l.split()[-1])
-		if l.startswith('K ='):
-			K = float(l.split()[-1])
-		if l.startswith('Ubb ='):
-			Ubb = float(l.split()[-1])
-	
+    for l in fObj:
+        if l.startswith('porousStart ='):
+            porousStart = float(l.split()[-1])
+        if l.startswith('porousEnd ='):
+            porousEnd = float(l.split()[-1])
+        if l.startswith('phi ='):
+            phi = float(l.split()[-1])
+        if l.startswith('dp ='):
+            dp = float(l.split()[-1])
+        if l.startswith('rho ='):
+            rho = float(l.split()[-1])
+        if l.startswith('mu ='):
+            mu = float(l.split()[-1])
+        if l.startswith('K ='):
+            K = float(l.split()[-1])
+        if l.startswith('Ubb ='):
+            Ubb = float(l.split()[-1])
+    
 rp = 0.5*dp 
 eps = 1 - phi
 L = (porousEnd - porousStart - 1)*(yL/ny)
@@ -84,27 +84,27 @@ pSol = np.concatenate(
 
 
 def compare_results(x, xSol, tolrel=0.01, tolabs=1e-3):
-	errx = np.zeros_like(xSol)
-	for i in range(0, len(errx)):
-		if xSol[i] == 0.:
-			errx[i] = abs(xSol[i] - x[i]) <= tolabs
-		else:
-			errx[i] = abs((xSol[i] - x[i])/xSol[i]) <= tolrel
+    errx = np.zeros_like(xSol)
+    for i in range(0, len(errx)):
+        if xSol[i] == 0.:
+            errx[i] = abs(xSol[i] - x[i]) <= tolabs
+        else:
+            errx[i] = abs((xSol[i] - x[i])/xSol[i]) <= tolrel
 
-	return errx
+    return errx
 
 errUb = compare_results(Ub, UbSol)
 errp = compare_results(p, pSol)
 
 #def test_velocityfield():
-#	idx = np.where(errUb == False)[0]
-#	print('Velocity profile at height h = ' + str(h[idx]) + ' exceeds the specified error tolerance.')
-#	assert(errUb.all())
+#    idx = np.where(errUb == False)[0]
+#    print('Velocity profile at height h = ' + str(h[idx]) + ' exceeds the specified error tolerance.')
+#    assert(errUb.all())
 
 #def test_pressurefield():
-#	idx = np.where(errp == False)[0]
-#	print('Pressure profile at height h = ' + str(h[idx]) + ' exceeds the specified error tolerance.')
-#	assert(errp.all())
+#    idx = np.where(errp == False)[0]
+#    print('Pressure profile at height h = ' + str(h[idx]) + ' exceeds the specified error tolerance.')
+#    assert(errp.all())
 
 data = np.loadtxt('regression_data/fcc_dummy_regression.txt')
 UbReg = data[:,1]
@@ -114,18 +114,20 @@ errRegUb = abs(UbReg - Ub) <= tolReg
 errRegp = abs(pReg - p) <= tolReg
 
 def test_regression_velocityfield():
-	idx = np.where(errRegUb == False)[0]
-	print('Velocity profile at height h = ' + str(h[idx]) + ' fails the regression test.')
-	assert(errRegUb.all())
+    idx = np.where(errRegUb == False)[0]
+    if idx != []:
+        print('Velocity profile at height h = ' + str(h[idx]) + ' fails the regression test.')
+    assert(errRegUb.all())
 
 def test_regression_pressurefield():
-	idx = np.where(errRegp == False)[0]
-	print('Pressure profile at height h = ' + str(h[idx]) + ' fails the regression test.')
-	assert(errRegp.all())
+    idx = np.where(errRegp == False)[0]
+    if idx != []:
+        print('Pressure profile at height h = ' + str(h[idx]) + ' fails the regression test.')
+    assert(errRegp.all())
 
 try:
     import matplotlib
-    matplotlib.use('Agg')
+    #matplotlib.use('Agg')
     import matplotlib.pyplot as plt
 
     #Plot velocity and pressure profile
