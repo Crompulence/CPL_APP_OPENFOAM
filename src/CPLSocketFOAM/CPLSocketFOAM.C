@@ -735,6 +735,7 @@ double CPLSocketFOAM::unpackPorousVelForceCoeff(volVectorField &U,
                 if (phi > maxPossibleAlpha) {
                     //Default value set in createFields or read from transportProperties
                     eps[cell] = 1.0 - maxPossibleAlpha;
+                    phi = 1 - eps[cell];
                 } else {
                     eps[cell] = 1.0 - phi;
                 }
@@ -742,9 +743,28 @@ double CPLSocketFOAM::unpackPorousVelForceCoeff(volVectorField &U,
                 F[cell].x() = Fxsum/Vcell;
                 F[cell].y() = Fysum/Vcell;
                 F[cell].z() = Fzsum/Vcell;
-                U[cell].x() = Uxsum/(eps[cell]*Vcell);
-                U[cell].y() = Uysum/(eps[cell]*Vcell);
-                U[cell].z() = Uzsum/(eps[cell]*Vcell);
+                
+                // Previous incorrect version of Ua
+                // U[cell].x() = Uxsum/(eps[cell]*Vcell);
+                // U[cell].y() = Uysum/(eps[cell]*Vcell);
+                // U[cell].z() = Uzsum/(eps[cell]*Vcell);
+
+                // Corrected Ua expression. For fluid only cells, set Ua = 0.
+                // To avoid hard-wiring a limit, use the maxPossibleAlpha
+                // value.
+                if (phi < (1-maxPossibleAlpha))
+                {
+                    U[cell].x() = 0.0;
+                    U[cell].y() = 0.0;
+                    U[cell].z() = 0.0;
+                }
+                else
+                {
+                    U[cell].x() = Uxsum/(phi*Vcell);
+                    U[cell].y() = Uysum/(phi*Vcell);
+                    U[cell].z() = Uzsum/(phi*Vcell);
+                }
+
 
 #if DEBUG
                 if (eps[cell] != 1){
