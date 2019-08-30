@@ -57,9 +57,7 @@ test-couette:
 	cd test/couette_coupled && pytest -v test_couette_parallel.py
 
 test-granular:
-	cd test/granular/
-	cd suzuki
-	pytest -v test_column.py
+	cd test/granular/suzuki && pytest -v test_column.py
 
 #.PHONY: all test clean clean-test
 #all: background CPLIcoFOAM CPLporousIcoFoam
