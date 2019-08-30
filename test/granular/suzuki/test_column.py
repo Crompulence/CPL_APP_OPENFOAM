@@ -2,7 +2,7 @@ import os
 import sys
 import subprocess as sp
 import numpy as np
-import matplotlib.pyplot as plt
+import pytest
 
 # Import postproclib
 sys.path.insert(0, "./pyDataView/")
@@ -78,12 +78,13 @@ def get_velocity_pressure_porosity_profile(CFD_folder='./openfoam/',
 
     return h, U, p, n
 
-def test_pressure(tol=0.01):
+def compare_pressure(pSol, p, h, xyz_orig, xyzL, tol=0.01):
     # Test pressure profile at the end of simulation.
     pSolProfile = np.interp(h, [xyz_orig[1],xyzL[1]], [pSol,0.])
     for i in range(len(pSolProfile)):
-        err = abs((pSolProfile[i] - p[i])/pSolProfile[i] <= tol)
-        assert err, ('For h = {:.2f}, the obtained pressure of {:.6f} does not match analytical solution {:.6f} within {:.2f}% relative error'.format(h[i], p[i], pSolProfile[i], tol*100))
+        err = (abs(pSolProfile[i] - p[i])/pSolProfile[i] <= tol)
+        assert err, ('For h = {:.2f}, the obtained pressure of {:.6f} does not match analytical'.format(h[i], p[i])
+                     + ' solution {:.6f} within {:.2f}% relative error'.format(pSolProfile[i], tol*100))
 
 # ----- Main ----- #
 
@@ -107,21 +108,41 @@ g = 981.
 # --------------------------------------------------------
 # --------------------------------------------------------
 
-# Run coupled simulation
-run_coupled()
 
-# Extract input parameters from lammps input script
-pSol = analytical_pressure(dragModel, muf, rhof, Uf, dp, epsf, g, xyzL, xyz_orig)
+@pytest.fixture(scope="module")
+def setup():
 
-# Extract velocity, pressure and eps profile (at end of simulation only)
-h, U, p, n = get_velocity_pressure_porosity_profile()
+    # Run coupled simulation
+    run_coupled()
 
-# Plot Pressure Profile
-plt.plot(h, p, 'r-')
-plt.plot([xyz_orig[1],xyzL[1]], [pSol,0.], 'k--')
-plt.xlabel('Height (cm)')
-plt.ylabel('Pressure (0.1Pa)')
-plt.legend(('Numerical', 'Analytical'))
-plt.tight_layout()
-plt.savefig('fig_pressure.png')
-plt.close()
+    # Extract input parameters from lammps input script
+    pSol = analytical_pressure(dragModel, muf, rhof, Uf, dp, epsf, g, xyzL, xyz_orig)
+
+    # Extract velocity, pressure and eps profile (at end of simulation only)
+    h, U, p, n = get_velocity_pressure_porosity_profile()
+
+    return pSol, h, U, p, n
+
+tols = [1.0, 0.1, 0.01, 0.001, 0.0002]
+@pytest.mark.parametrize("tols", tols)
+def test_displacement(setup, tols):
+
+    pSol, h, U, p, n = setup
+
+    compare_pressure(pSol, p, h, xyz_orig, xyzL, tols)
+
+if __name__ == "__main__":
+
+    pSol, h, U, p, n = setup()
+
+    import matplotlib.pyplot as plt
+
+    # Plot Pressure Profile
+    plt.plot(h, p, 'r-')
+    plt.plot([xyz_orig[1],xyzL[1]], [pSol,0.], 'k--')
+    plt.xlabel('Height (cm)')
+    plt.ylabel('Pressure (0.1Pa)')
+    plt.legend(('Numerical', 'Analytical'))
+    plt.tight_layout()
+    plt.savefig('fig_pressure.png')
+    plt.close()
