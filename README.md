@@ -1,6 +1,5 @@
 
-# CPL APP for OpenFOAM [![Build Status](https://travis-ci.org/Crompulence/CPL_APP_OPENFOAM-3.0.1.svg?branch=master)](https://travis-ci.org/Crompulence/CPL_APP_OPENFOAM-3.0.1/)
-
+# CPL APP for OpenFOAM [![Build Status](https://travis-ci.org/Crompulence/CPL_APP_OPENFOAM-3.0.1.svg?branch=master)](https://travis-ci.org/Crompulence/CPL_APP_OPENFOAM-3.0.1/) ![Build Status](https://img.shields.io/docker/cloud/build/cpllibrary/cpl-openfoam)
 
 1 ) Pre-requisites for compilation
 =================================
