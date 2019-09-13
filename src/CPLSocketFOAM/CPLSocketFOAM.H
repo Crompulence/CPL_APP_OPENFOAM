@@ -107,6 +107,11 @@ public:
 	//meshSearch local search for points in a mesh
 	Foam::meshSearch* meshSearcher;
 
+    //Foam class which wraps bool to check if
+    // boundary value set or intepolated using 1st
+    // cell inside the domain
+    Foam::Switch interp_BC;
+
     //Bitwise mask coefficients
     int const VEL = 1; // 2^0, bit 0
     int const PRESSURE = 2;  // 2^1, bit 1

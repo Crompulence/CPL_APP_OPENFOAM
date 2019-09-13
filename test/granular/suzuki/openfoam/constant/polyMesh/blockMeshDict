@@ -7,32 +7,30 @@
 \*---------------------------------------------------------------------------*/
 FoamFile
 {
-    version     2.0;
-    format      ascii;
-    class       dictionary;
-    object      blockMeshDict;
+    version  2.0;
+    format   ascii;
+    class    dictionary;
+    object   blockMeshDict;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-convertToMeters 16.795961913825074;
-
-interp_BC true;
+convertToMeters 1.0;
 
 vertices
 (
     (0 0 0)
-    (1.0 0 0)
-    (1.0 2.7 0)
-    (0 2.7 0)
-    (0 0 1.0)
-    (1.0 0 1.0)
-    (1.0 2.7 1.0)
-    (0 2.7 1.0)
+    (0.1 0 0)
+    (0.1 10.0 0)
+    (0 10.0 0)
+    (0 0 0.1)
+    (0.1 0 0.1)
+    (0.1 10.0 0.1)
+    (0 10.0 0.1)
 );
 
 blocks
 (
-    hex (0 1 2 3 4 5 6 7) (8 8 8) simpleGrading (1 1 1)
+    hex (0 1 2 3 4 5 6 7) (1 100 1) simpleGrading (1 1 1)
 );
 
 edges
@@ -41,57 +39,32 @@ edges
 
 boundary
 (
-    movingWall
-    {
-        type wall;
-        faces
-      (
-           (3 7 6 2)
-      );
-    }
-    CPLReceiveMD
+    inlet
     {
         type patch;
-      faces
-       (
-          (1 5 4 0)
-      );
+        faces
+        (
+            (1 5 4 0)
+        );
     }
-    streamwiseIn
+    outlet
     {
-        type cyclic;
-        neighbourPatch streamwiseOut;
+        type patch;
+        faces
+        (
+            (3 7 6 2)
+        );
+    }
+    wall
+    {
+        type empty;
         faces
         (
             (0 4 7 3)
-        );
-    }
-    streamwiseOut
-    {
-        type cyclic;
-        neighbourPatch streamwiseIn;
-        faces
-        (
             (2 6 5 1)
-        );
-    }
-    front
-    {
-        type cyclic;
-        neighbourPatch back;
-        faces
-        (
             (4 5 6 7)
-        );
-    }
-    back
-    {
-        type cyclic;
-        neighbourPatch front;
-        faces
-        (
             (0 3 2 1)
-        );
+        );  
     }
 );
 

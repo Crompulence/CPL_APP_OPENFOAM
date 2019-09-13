@@ -41,15 +41,61 @@ solvers
         relTol          0;
     }
 
- }
+    Ua
+    {
+        solver          PBiCG;
+        preconditioner  DILU;
+        tolerance       1e-05;
+        relTol          0;
+    }
+
+    Ub
+    {
+        solver          PBiCG;
+        preconditioner  DILU;
+        tolerance       1e-05;
+        relTol          0;
+    }
+
+    alpha
+    {
+        solver          PBiCG;
+        preconditioner  DILU;
+        tolerance       1e-10;
+        relTol          0;
+    }
+
+    beta
+    {
+        solver          PBiCG;
+        preconditioner  DILU;
+        tolerance       1e-10;
+        relTol          0;
+    }
+
+
+    epsilon
+    {
+        solver          PBiCG;
+        preconditioner  DILU;
+        tolerance       1e-05;
+        relTol          0;
+    }
+
+}
+
 
 PISO
 {
-    nCorrectors     3;
+    nCorrectors     2;
     nNonOrthogonalCorrectors 0;
-    pRefCell        2;
+    pRefCell        10;
     pRefValue       0;
 }
 
 
+SIMPLE
+{
+    nNonOrthogonalCorrectors 1;
+}
 // ************************************************************************* //

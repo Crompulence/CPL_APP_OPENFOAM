@@ -54,7 +54,10 @@ test-couette:
 	cd test/pytest_example/coupled_to_pytest && ./run.sh CPLCFDDEMFoam
 	cd test/pytest_example/pytest_runs_subprocess && pytest -v test_couette.py
 	cd test/couette_coupled && pytest -v test_couette.py
-	cd test/couette_coupled && pytest -v test_couette_parallel.py
+	cd test/couette_coupled && pytest -vs test_couette_parallel.py
+
+test-granular:
+	cd test/granular/suzuki && pytest -v test_column.py
 
 #.PHONY: all test clean clean-test
 #all: background CPLIcoFOAM CPLporousIcoFoam

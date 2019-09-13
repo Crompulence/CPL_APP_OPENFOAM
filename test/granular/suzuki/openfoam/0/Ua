@@ -1,51 +1,32 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  3.0.1                                 |
+|  \\    /   O peration     | Version:  2.2.2                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 FoamFile
 {
-    version     2.0;
-    format      ascii;
-    class       dictionary;
-    location    "system";
-    object      controlDict;
+    version  2.0;
+    format   ascii;
+    class    volVectorField;
+    object   Ua;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     cplIcoFoam;
+dimensions   [0 1 -2 0 0 0 0];
 
-startFrom       startTime;
+internalField    uniform (0 0 0);
 
-startTime       0;
-
-stopAt          endTime;
-
-endTime         200;
-
-deltaT          1.0;
-
-writeControl    runTime;
-
-writeInterval   1.0;
-
-purgeWrite      0;
-
-writeFormat     ascii;
-
-writePrecision  6;
-
-writeCompression off;
-
-timeFormat      general;
-
-timePrecision   6;
-
-runTimeModifiable true;
-
-graphFormat     raw;
-
-
+boundaryField
+{
+    inlet
+    {
+        type calculated;
+    }
+    outlet
+    {
+        type calculated;
+    }
+}
 // ************************************************************************* //

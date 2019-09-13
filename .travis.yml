@@ -98,6 +98,7 @@ script:
     - make test-hydrostatic
     - make test-fcc_dummy
     - make test-couette
+    - make test-granular
 
 after_success:
      - echo "Build Success"

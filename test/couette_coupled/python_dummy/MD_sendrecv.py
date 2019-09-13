@@ -12,7 +12,7 @@ MD_COMM = CPL.init(CPL.MD_REALM)
 # Parameters of the cpu topology (cartesian grid)
 npxyz = [1, 1, 1]
 NProcs = np.product(npxyz)
-xyzL = np.array([195.2503206, 18.62550553, 133.3416884], order='F', dtype=np.float64)
+xyzL = np.array([16.795961913825074, 45.349097, 16.795961913825074], order='F', dtype=np.float64)
 xyz_orig = np.array([0.0, 0.0, 0.0], order='F', dtype=np.float64)
 
 if (MD_COMM.Get_size() != NProcs):
@@ -25,7 +25,7 @@ cart_comm = MD_COMM.Create_cart([npxyz[0], npxyz[1], npxyz[2]])
 CPL.setup_md(cart_comm, xyzL, xyz_orig)
 
 #Setup send and recv buffers
-recv_array, send_array = CPL.get_arrays(recv_size=3, send_size=5)
+recv_array, send_array = CPL.get_arrays(recv_size=3, send_size=4)
 
 #Set velocity
 U = 2.
