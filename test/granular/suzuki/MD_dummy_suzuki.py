@@ -5,28 +5,34 @@ from cplpy import CPL
 
 # Add python scripts to path and import required classes
 sys.path.append('../python_scripts/')
-from DragForce import DragForce, Stokes, DiFelice
+from OpenFOAM_Input import OpenFOAM_Input
+from DragForce import DragForce, Stokes, DiFelice, Ergun
 
 # --------------------------------------------------------
-# USER INPUT 
+# USER INPUT - START
 # --------------------------------------------------------
-# Parameters of the cpu topology (cartesian grid)
-npxyz = np.array([1, 1, 1], order='F', dtype=np.int32)
-xyzL = np.array([0.1, 10.0, 0.1], order='F', dtype=np.float64)
-xyz_orig = np.array([0.0, 0.0, 0.0], order='F', dtype=np.float64)
+npxyz = [1, 1, 1]
+xyzL = [0.1, 10.0, 0.1]
+xyz_orig = [0.0, 0.0, 0.0]
 
-# Parameters for model
-dragModel = 'DiFelice'
-muf = 1.e-2
-rhof = 1.0
-Uf = 0.1
-epsf = 0.4764
-Np_cell = 1. # Number of particles per fluid cell
+dragModel = 'Ergun'
+epsf = 0.476401224402
+Np_cell = 1.
 dp = 0.1
-g = 981.
 # --------------------------------------------------------
+# USER INPUT - END
 # --------------------------------------------------------
-print('initialise')
+cObj = OpenFOAM_Input(case_dir='./openfoam/')
+_, Uf = cObj.read_0_file('./openfoam/0/Ub', 'inlet')
+rhof = cObj.read_constant_file('./openfoam/constant/transportProperties', 'rhob')
+nuf = cObj.read_constant_file('./openfoam/constant/transportProperties', 'nub')
+Uf = Uf[1]
+muf = nuf*rhof
+
+# Parameters of the cpu topology (cartesian grid)
+npxyz = np.array(npxyz, order='F', dtype=np.int32)
+xyzL = np.array(xyzL, order='F', dtype=np.float64)
+xyz_orig = np.array(xyz_orig, order='F', dtype=np.float64)
 
 # initialise MPI
 comm = MPI.COMM_WORLD
@@ -40,16 +46,16 @@ CPL.setup_md(MD_COMM.Create_cart([npxyz[0], npxyz[1], npxyz[2]]), xyzL, xyz_orig
 recvbuf, sendbuf = CPL.get_arrays(recv_size=9, send_size=8)
 
 # Setup drag force object
-print('drag')
 if dragModel == 'Drag' or dragModel == 'Stokes':
-    fObj = Stokes(muf=muf, dp=dp)
+    fObj = Stokes(muf=muf, epsf=epsf, dp=dp)
 elif dragModel == 'DiFelice':
-    fObj = DiFelice(muf=muf, rhof=rhof, Uf=Uf/epsf, dp=dp, Vp=0., epsf=epsf)
+    fObj = DiFelice(muf=muf, rhof=rhof, epsf=epsf, dp=dp, Uf=Uf/epsf, Vp=0.)
+elif dragModel == 'Ergun':
+    fObj = Ergun(muf=muf, rhof=rhof, epsf=epsf, dp=dp, Uf=Uf/epsf, Vp=0.)
 else:
-    raise('Unknown drag force model specified')
+    raise ValueError('Unknown drag force model specified')
 
 # Main time loop
-print('time loop')
 for time in range(200):
 
     print(time)
@@ -62,7 +68,7 @@ for time in range(200):
     # column is filled with particles.
     # [UxSum, UySum, UzSum, FxSum, FySum, FzSum, CdSum, VolSum] 
     sendbuf[:,:,:,:] = 0.
-    sendbuf[6,:,:,:] = Np_cell*fObj.B
+    sendbuf[6,:,:,:] = Np_cell*fObj.B*epsf
     sendbuf[7,:,:,:] = Np_cell*(np.pi/6)*(dp**3)
 
     CPL.send(sendbuf)

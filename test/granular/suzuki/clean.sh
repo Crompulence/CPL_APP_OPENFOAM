@@ -11,4 +11,4 @@ rm -rf ../log.openfoam processor*/ constant/polyMesh/{boundary,faces,neighbour,o
 cd ../
 
 # Clean results
-rm -rf *.png __pycache__/ .cache/
+rm -rf __pycache__/ .cache/
