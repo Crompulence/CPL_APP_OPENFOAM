@@ -732,39 +732,31 @@ double CPLSocketFOAM::unpackPorousVelForceCoeff(volVectorField &U,
                 double phi = volSum/Vcell;
                 //Foam::Info << "CPLSocketFOAM::unpackPorousVelForceCoeff recvBuf " << ix << " " << iy << " " << iz << " " << cell << " "
                 //            << phi << " " << volSum << " " << Vcell << " " << maxPossibleAlpha << Foam::endl;
+
+                //If particle bigger than cell (or overfilled) then
+                //set void fraction to limit 
                 if (phi > maxPossibleAlpha) {
                     //Default value set in createFields or read from transportProperties
-                    eps[cell] = 1.0 - maxPossibleAlpha;
-                    phi = 1 - eps[cell];
-                } else {
-                    eps[cell] = 1.0 - phi;
-                }
-                Fcoeff[cell] = Cdsum/Vcell;
-                F[cell].x() = Fxsum/Vcell;
-                F[cell].y() = Fysum/Vcell;
-                F[cell].z() = Fzsum/Vcell;
-                
-                // Previous incorrect version of Ua
-                // U[cell].x() = Uxsum/(eps[cell]*Vcell);
-                // U[cell].y() = Uysum/(eps[cell]*Vcell);
-                // U[cell].z() = Uzsum/(eps[cell]*Vcell);
-
-                // Corrected Ua expression. For fluid only cells, set Ua = 0.
-                // To avoid hard-wiring a limit, use the maxPossibleAlpha
-                // value.
-                if (phi < (1-maxPossibleAlpha))
-                {
+                    phi = maxPossibleAlpha;
+                // For fluid only cells, set Ua = 0.
+                } else if (phi < 1e-3) {
                     U[cell].x() = 0.0;
                     U[cell].y() = 0.0;
                     U[cell].z() = 0.0;
-                }
-                else
-                {
+                else {
                     U[cell].x() = Uxsum/(phi*Vcell);
                     U[cell].y() = Uysum/(phi*Vcell);
                     U[cell].z() = Uzsum/(phi*Vcell);
                 }
 
+                // The applied forces are multiplied by epsilon so we need
+                // to collect these in this form to ensure momentum is equal 
+                //& opposite and then divide by epsilon
+                eps[cell] = 1.0 - phi;
+                Fcoeff[cell] = Cdsum/(eps[cell]*Vcell);
+                F[cell].x() = Fxsum/(eps[cell]*Vcell);
+                F[cell].y() = Fysum/(eps[cell]*Vcell);
+                F[cell].z() = Fzsum/(eps[cell]*Vcell);
 
 #if DEBUG
                 if (eps[cell] != 1){
