@@ -94,9 +94,12 @@ install:
     - cp lib/* $ENVPREFIX/lib
     - cp bin/* $ENVPREFIX/bin
 
+    # Add PyFoam for granular cases
+    - pip install PyFoam
+
 script:
     - make test-hydrostatic
-    - make test-fcc_dummy
+    # - make test-fcc_dummy
     - make test-couette
     - make test-granular
 

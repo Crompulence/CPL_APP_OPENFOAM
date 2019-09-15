@@ -4,7 +4,6 @@ import errno
 import pytest
 import subprocess as sp
 import numpy as np
-import matplotlib.pyplot as plt
 
 # Import postproclib
 sys.path.insert(0, "./pyDataView/")
@@ -132,7 +131,7 @@ dragModels = ['DiFelice', 'Ergun']
 Uf_values = [0.1, 0.2, 0.3, 0.4, 0.5]
 @pytest.mark.parametrize('dragModel', dragModels)
 @pytest.mark.parametrize('Uf', Uf_values)
-def test_pressure(Uf, dragModel):
+def test_pressure(Uf, dragModel, plot_results=False):
     # Set input parametesr
     set_input_parameters(Uf, dragModel)
 
@@ -152,8 +151,10 @@ def test_pressure(Uf, dragModel):
     p = p + mObj.rhof*mObj.g*np.flipud(h)
 
     # Plot the results
-    plot_pressure(h, p, pSol, mObj.xyz_orig, mObj.xyzL, 
-        file_name='./results/fig_pressure_Uf_{}_{}'.format(Uf, dragModel))
+    if plot_results:
+        import matplotlib.pyplot as plt
+        plot_pressure(h, p, pSol, mObj.xyz_orig, mObj.xyzL, 
+            file_name='./results/fig_pressure_Uf_{}_{}'.format(Uf, dragModel))
 
     compare_pressure(h, p, pSol, mObj.xyz_orig, mObj.xyzL, tol=0.02)
 
