@@ -162,8 +162,6 @@ int main(int argc, char *argv[])
         CPL.recv();
         CPL.unpackPorousVelForceCoeff(Ua, F, dragCoef, beta, maxPossibleAlpha, mesh);
         alpha = scalar(1) - beta;
-        // As dragCoef was defined in sediFoam scheme in CPLForce.cpp, here we change it to CFDEM scheme
-        dragCoef = dragCoef * beta;
         surfaceScalarField betaf = fvc::interpolate(beta);
         betaPhib = betaf*phib;
 

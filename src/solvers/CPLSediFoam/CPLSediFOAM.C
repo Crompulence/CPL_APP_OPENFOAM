@@ -123,6 +123,8 @@ int main(int argc, char *argv[])
             //sum of force weightings and porosity
             CPL.recv();
             CPL.unpackPorousVelForceCoeff(Ua, F, dragCoef, beta, maxPossibleAlpha, mesh);
+            // Here we change the dragCoef to the SediFOAM scheme
+            dragCoef = dragCoef / beta;
             alpha = scalar(1) - beta;
         }
 
