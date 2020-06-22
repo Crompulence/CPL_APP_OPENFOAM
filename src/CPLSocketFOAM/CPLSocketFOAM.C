@@ -162,7 +162,8 @@ void CPLSocketFOAM::initCFD(const Foam::Time &runTime, const Foam::fvMesh &mesh)
     ncxyz[2] = meshDensity.z();
 
     // Origin of the domain
-    double xyz_orig[3] = {0.0, 0.0, 0.0};
+    //double xyz_orig[3] = {0.0, 0.0, 0.0};
+    double xyz_orig[3] = {vertices[0][0],vertices[0][1], vertices[0][2]}; //Hanqiao-Jun. 1 2020
 
     // Initialise CPL library
 	//CPL::set_timing(0, nsteps, dt_cfd);

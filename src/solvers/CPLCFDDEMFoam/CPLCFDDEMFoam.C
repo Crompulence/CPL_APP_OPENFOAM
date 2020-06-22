@@ -162,7 +162,6 @@ int main(int argc, char *argv[])
         CPL.recv();
         CPL.unpackPorousVelForceCoeff(Ua, F, dragCoef, beta, maxPossibleAlpha, mesh);
         alpha = scalar(1) - beta;
-
         surfaceScalarField betaf = fvc::interpolate(beta);
         betaPhib = betaf*phib;
 
@@ -213,7 +212,7 @@ int main(int argc, char *argv[])
                 }
                 */
 
-                solve(UbEqn == - fvc::grad(p) + dragCoef/rhob*Ua);
+                solve(UbEqn == - beta*fvc::grad(p) + dragCoef/rhob*Ua);
 
 
                 // --- PISO loop
@@ -271,6 +270,7 @@ int main(int argc, char *argv[])
                         for (int nonOrth=0; nonOrth<=nNonOrthCorr; nonOrth++)
                     #endif
                     */
+                    rUbAbeta = rUbA*beta*beta;
                     for (int nonOrth=0; nonOrth<=nNonOrthCorr; nonOrth++)
                     {
                         // Pressure corrector
@@ -319,7 +319,7 @@ int main(int argc, char *argv[])
                     } // end non-orthogonal corrector loop
 
                     betaPhib = betaf*phib;
-                    Ub -= rUbA*fvc::grad(p) - dragCoef/rhob*Ua*rUbA;
+                    Ub -= beta*rUbA*fvc::grad(p) - dragCoef/rhob*Ua*rUbA;
 
                     /*
                     #include "continuityErrorPhiPU.H"

@@ -123,6 +123,8 @@ int main(int argc, char *argv[])
             //sum of force weightings and porosity
             CPL.recv();
             CPL.unpackPorousVelForceCoeff(Ua, F, dragCoef, beta, maxPossibleAlpha, mesh);
+            // Here we change the dragCoef to the SediFOAM scheme
+            dragCoef = dragCoef / beta;
             alpha = scalar(1) - beta;
         }
 
@@ -147,7 +149,7 @@ int main(int argc, char *argv[])
 
         // E.S. A full solve seems to be needed here in place of relax to give correct answer
         // for plain Couette flow solver
-        solve(UbEqn == -fvc::grad(p));
+        solve(UbEqn == - beta*fvc::grad(p));
 
         // Only a Jacobi iteration is done to find a guess of the velocity 
         // before solving for the pressure equation based on the mixture
