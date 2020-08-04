@@ -38,7 +38,7 @@ class DragForce(object):
 
 		F = self.B*(Uf - Vp)
 		volume = (np.pi/6.)*(self.dp**3)
-		dP = (1. - self.epsf)*(F/volume)
+		dP = ((1. - self.epsf)/self.epsf)*(F/volume)
 		return dP
 
 class Stokes(DragForce):

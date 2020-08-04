@@ -101,6 +101,7 @@ def get_pressure_profile(CFD_folder='./openfoam/', pressure_var='p', axis_val=1)
 # solution. Save the file in the results directory (which is created if
 # required) and also save the data used for plotting as .npz file.
 def plot_pressure(h, p, pSol, xyz_orig, xyzL, file_name='fig_pressure'):
+    import matplotlib.pyplot as plt
     plt.plot(h, p, 'r-')
     plt.plot([xyz_orig[1],xyzL[1]], [pSol,0.], 'k--')
     plt.xlabel('Height (cm)')
@@ -152,14 +153,13 @@ def test_pressure(Uf, dragModel, plot_results=False):
 
     # Plot the results
     if plot_results:
-        import matplotlib.pyplot as plt
         plot_pressure(h, p, pSol, mObj.xyz_orig, mObj.xyzL, 
             file_name='./results/fig_pressure_Uf_{}_{}'.format(Uf, dragModel))
 
     compare_pressure(h, p, pSol, mObj.xyz_orig, mObj.xyzL, tol=0.02)
 
 if __name__ == "__main__":
-    test_pressure(Uf=0.5, dragModel='DiFelice')
+    test_pressure(Uf=0.5, dragModel='DiFelice', plot_results=True)
 
     
 
