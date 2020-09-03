@@ -16,10 +16,18 @@ except ImportError:
     import postproclib as ppl
 
 # Add python scripts to path and import required classes
-sys.path.append('../python_scripts/')
-from MOCK_Input import MOCK_Input, MOCK_Writer
-from OpenFOAM_Input import OpenFOAM_Input, OpenFOAM_Writer_0_File
-from DragForce import DragForce, Stokes, DiFelice, Ergun
+sys.path.insert(0, "./cfd-dem-scripts/")
+try:
+    from MOCK_Input import MOCK_Input, MOCK_Writer
+    from OpenFOAM_Input import OpenFOAM_Input, OpenFOAM_Writer_0_File
+    from DragForce import DragForce, Stokes, DiFelice, Ergun
+except ImportError:
+    cmd = "git clone https://github.com/adnansufian/cfd-dem-scripts.git ./cfd-dem-scripts"
+    downloadout = sp.check_output(cmd, shell=True)
+    sys.path.insert(0, "./cfd-dem-scripts")
+    from MOCK_Input import MOCK_Input, MOCK_Writer
+    from OpenFOAM_Input import OpenFOAM_Input, OpenFOAM_Writer_0_File
+    from DragForce import DragForce, Stokes, DiFelice, Ergun
 
 # Run coupled simulation as subprocess
 def run_coupled(run_bash_script='run.sh'):
