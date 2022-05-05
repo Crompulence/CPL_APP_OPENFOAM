@@ -5,5 +5,5 @@ blockMesh
 decomposePar
 cd ../
 
-cplexec -c 1 "CPLIcoFoam -case ./openfoam -parallel" -m 1 "lmp_cpl -i lammps.in" 
+cplexec -c 1 "CPLIcoFoamFE4 -case ./openfoam -parallel" -m 1 "lmp_cpl -i lammps.in" 
 
