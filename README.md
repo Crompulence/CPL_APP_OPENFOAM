@@ -9,23 +9,21 @@
 - A copy of OpenFOAM
 - The same GCC and MPICH version used to build CPL library
 
-The following environnment variables:
+The following environment variables:
 
     FOAM_CPL_SOCKET_LIBBIN = $FOAM_INST_DIR/cpl-socket/lib
     LD_LIBRARY_PATH        = $LD_LIBRARY_PATH:$FOAM_CPL_LIBBIN
 
 **must be defined** in order for a) the compilation to work and b) the library
 to be found by the ld linker. They are conveniently defined in the config 
-file SOURCEME, which may be found in the level above this README file: 
+file SOURCEME, which can be used as follows: 
 
-    $  cd ../
     $  source SOURCEME.sh
-    $  cd -
 
 2 ) Install
 ===========
 
-The install process assumes that you have OpenFOAM fully installed with all code source. The process then simply builds a top level solver, using all of the OpenFOAM shared libraries and CPL library's shared library, which is designed for coupled simulation. 
+The install process assumes that you have OpenFOAM fully installed with all source code. The process then simply builds a top level solver, using all of the OpenFOAM shared libraries and CPL library's shared library, which is designed for coupled simulation. 
 
 First, change directory to CPL_APP_OPENFOAM-DEV,
 
