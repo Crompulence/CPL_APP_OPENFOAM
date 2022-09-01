@@ -20,6 +20,9 @@ cplsedifoam: socket
 cplcfddemfoam: socket
 	@wmake src/solvers/CPLCFDDEMFoam
 
+CPLTestFoam:
+	@wmake src/solvers/CPLTestFoam
+
 icofoam:
 	@wmake src/solvers/IcoFoam
 
@@ -31,8 +34,10 @@ clean:
 	@wclean src/solvers/CPLporousIcoFoam
 	@wclean src/solvers/CPLSediFoam
 	@wclean src/solvers/CPLCFDDEMFoam
+	@wclean src/solvers/CPLTestFoam
 	@wclean src/CPLSocketFOAM
 	@wclean src/CPLPstream
+
 	rm -rf bin
 	rm -rf lib
 

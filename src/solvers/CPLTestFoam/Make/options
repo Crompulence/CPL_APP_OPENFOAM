@@ -1,0 +1,12 @@
+
+EXE_INC = \
+    $(MPI_ARCH_INC) \
+    -I$(CPL_INCLUDE_PATH)/cpl \
+    -I$(LIB_SRC)/finiteVolume/lnInclude \
+    -I$(LIB_SRC)/meshTools/lnInclude
+
+EXE_LIBS = \
+    -L$(CPL_LIBRARY_PATH) -Wl,-rpath=$(CPL_LIBRARY_PATH) \  
+    -lfiniteVolume \
+    -lblockMesh \
+    -lcpl

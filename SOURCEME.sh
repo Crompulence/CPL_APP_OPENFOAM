@@ -19,7 +19,7 @@ cd $DIR
 export CWD=`pwd`
 export FOAM_INST_DIR=$(cat CODE_INST_DIR)
 # Source the other environment variables
-foamDotFile=$FOAM_INST_DIR/OpenFOAM-$FOAM_CPL_VERSION/etc/bashrc
+foamDotFile=$FOAM_INST_DIR/etc/bashrc
 echo $foamDotFile
 if [ -f $foamDotFile ]; then
     source $foamDotFile
