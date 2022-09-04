@@ -43,7 +43,8 @@ Description
 #include <unistd.h>
 #include <bitset>
 #include "interpolation.H"
-#include "PstreamGlobals.H" 
+//Commented out for conversion to v2112
+//#include "PstreamGlobals.H" 
 #include "CPLSocketFOAM.H"
 
 #include "cpl/CPL_cartCreate.h"
@@ -60,7 +61,8 @@ void CPLSocketFOAM::initComms (int& argc, char**& argv) {
     if (flag == 0)
 		MPI_Init(&argc, &argv);
     CPL::init (CPL::cfd_realm, realmComm);
-	Foam::PstreamGlobals::CPLRealmComm = realmComm;
+    //Commented out for conversion to v2112
+	//Foam::PstreamGlobals::CPLRealmComm = realmComm;
     MPI_Comm_rank (realmComm, &rankRealm);
 
 }
@@ -88,8 +90,10 @@ void CPLSocketFOAM::initCFD(const Foam::Time &runTime, const Foam::fvMesh &mesh)
                         			 IOobject::MUST_READ, IOobject::NO_WRITE,
 									 false));
     Foam::dictionary simpleCoeffs = decomposeDict.subDict("simpleCoeffs");
-    Foam::Vector<int> np = simpleCoeffs.lookup("n");
+    Foam::Vector<int> np = vector(simpleCoeffs.lookup("n"));
     nprocs = np.x() * np.y() * np.z();
+
+    Foam::Info << "CPLSocketFOAM::initCFD procs " << np.x() << " " << np.y() << " " << np.z() << Foam::endl;
 
     // Define arrays needed by MPI & CPL cart create routines 
     npxyz[0] = np.x();
@@ -154,7 +158,9 @@ void CPLSocketFOAM::initCFD(const Foam::Time &runTime, const Foam::fvMesh &mesh)
 
     Foam::word dummyRegionName("dummy");
     Foam::blockMesh blocks(blockMeshDict, dummyRegionName);
-    Foam::Vector<int> meshDensity = blocks[0].meshDensity();
+    Foam::Vector<int> meshDensity;// = blocks[0].meshDensity();
+
+    Foam::Info << "CPLSocketFOAM::initCFD meshDensity " << meshDensity.x() << " " << meshDensity.y() << " " << meshDensity.z() << Foam::endl;
    
     // Global number of cells
     ncxyz[0] = meshDensity.x();
@@ -455,7 +461,7 @@ double CPLSocketFOAM::unpackVelocity(volVectorField &U, fvMesh &mesh)
 				<< exit(FatalError);
 		}
 
-		Foam::fvPatchVectorField& rvPatch = U.boundaryField()[rvPatchID];
+		Foam::fvPatchVectorField rvPatch = U.boundaryField()[rvPatchID];
 		const Foam::vectorField BoundaryfaceCntr = mesh.boundary()[rvPatchID].Cf();
 
 		Foam::label cell;
@@ -587,8 +593,8 @@ double CPLSocketFOAM::unpackVelocityPressure(volVectorField &U, volScalarField &
 				<< exit(FatalError);
 		}
 
-		Foam::fvPatchVectorField& rvPatch = U.boundaryField()[rvPatchID];
-		Foam::fvPatchScalarField& rvPatchP = p.boundaryField()[rvPatchID];
+		Foam::fvPatchVectorField rvPatch = U.boundaryField()[rvPatchID];
+		Foam::fvPatchScalarField rvPatchP = p.boundaryField()[rvPatchID];
 		const Foam::vectorField BoundaryfaceCntr = mesh.boundary()[rvPatchID].Cf();
 
 		Foam::label cell;
