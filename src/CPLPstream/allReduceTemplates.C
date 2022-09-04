@@ -2,8 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
+    \\  /    A nd           | www.openfoam.com
      \\/     M anipulation  |
+-------------------------------------------------------------------------------
+    Copyright (C) 2012-2015 OpenFOAM Foundation
+    Copyright (C) 2019-2020 OpenCFD Ltd.
 -------------------------------------------------------------------------------
 License
     This file is part of OpenFOAM.
@@ -24,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "allReduce.H"
+#include "profilingPstream.H"
 
 // * * * * * * * * * * * * * * * Global Functions  * * * * * * * * * * * * * //
 
@@ -44,16 +48,13 @@ void Foam::allReduce
         return;
     }
 
+    profilingPstream::beginTiming();
+
     if (UPstream::nProcs(communicator) <= UPstream::nProcsSimpleSum)
     {
         if (UPstream::master(communicator))
         {
-            for
-            (
-                int slave=UPstream::firstSlave();
-                slave<=UPstream::lastSlave(communicator);
-                slave++
-            )
+            for (const int proci : UPstream::subProcs(communicator))
             {
                 Type value;
 
@@ -64,25 +65,15 @@ void Foam::allReduce
                         &value,
                         MPICount,
                         MPIType,
-                        slave,  //UPstream::procID(slave),
+                        proci,
                         tag,
                         PstreamGlobals::MPICommunicators_[communicator],
                         MPI_STATUS_IGNORE
                     )
                 )
                 {
-                    FatalErrorIn
-                    (
-                        "void Foam::allReduce\n"
-                        "(\n"
-                        "    Type&,\n"
-                        "    int,\n"
-                        "    MPI_Datatype,\n"
-                        "    MPI_Op,\n"
-                        "    const BinaryOp&,\n"
-                        "    const int\n"
-                        ")\n"
-                    )   << "MPI_Recv failed"
+                    FatalErrorInFunction
+                        << "MPI_Recv failed"
                         << Foam::abort(FatalError);
                 }
 
@@ -98,24 +89,14 @@ void Foam::allReduce
                     &Value,
                     MPICount,
                     MPIType,
-                    UPstream::masterNo(),//UPstream::procID(masterNo()),
+                    UPstream::masterNo(),
                     tag,
                     PstreamGlobals::MPICommunicators_[communicator]
                 )
             )
             {
-                FatalErrorIn
-                (
-                    "void Foam::allReduce\n"
-                    "(\n"
-                    "    Type&,\n"
-                    "    int,\n"
-                    "    MPI_Datatype,\n"
-                    "    MPI_Op,\n"
-                    "    const BinaryOp&,\n"
-                    "    const int\n"
-                    ")\n"
-                )   << "MPI_Send failed"
+                FatalErrorInFunction
+                    << "MPI_Send failed"
                     << Foam::abort(FatalError);
             }
         }
@@ -123,12 +104,7 @@ void Foam::allReduce
 
         if (UPstream::master(communicator))
         {
-            for
-            (
-                int slave=UPstream::firstSlave();
-                slave<=UPstream::lastSlave(communicator);
-                slave++
-            )
+            for (const int proci : UPstream::subProcs(communicator))
             {
                 if
                 (
@@ -137,24 +113,14 @@ void Foam::allReduce
                         &Value,
                         MPICount,
                         MPIType,
-                        slave,      //UPstream::procID(slave),
+                        proci,
                         tag,
                         PstreamGlobals::MPICommunicators_[communicator]
                     )
                 )
                 {
-                    FatalErrorIn
-                    (
-                        "void Foam::allReduce\n"
-                        "(\n"
-                        "    Type&,\n"
-                        "    int,\n"
-                        "    MPI_Datatype,\n"
-                        "    MPI_Op,\n"
-                        "    const BinaryOp&,\n"
-                        "    const int\n"
-                        ")\n"
-                    )   << "MPI_Send failed"
+                    FatalErrorInFunction
+                        << "MPI_Send failed"
                         << Foam::abort(FatalError);
                 }
             }
@@ -168,25 +134,15 @@ void Foam::allReduce
                     &Value,
                     MPICount,
                     MPIType,
-                    UPstream::masterNo(),//UPstream::procID(masterNo()),
+                    UPstream::masterNo(),
                     tag,
                     PstreamGlobals::MPICommunicators_[communicator],
                     MPI_STATUS_IGNORE
                 )
             )
             {
-                FatalErrorIn
-                (
-                    "void Foam::allReduce\n"
-                    "(\n"
-                    "    Type&,\n"
-                    "    int,\n"
-                    "    MPI_Datatype,\n"
-                    "    MPI_Op,\n"
-                    "    const BinaryOp&,\n"
-                    "    const int\n"
-                    ")\n"
-                )   << "MPI_Recv failed"
+                FatalErrorInFunction
+                    << "MPI_Recv failed"
                     << Foam::abort(FatalError);
             }
         }
@@ -205,6 +161,100 @@ void Foam::allReduce
         );
         Value = sum;
     }
+
+    profilingPstream::addReduceTime();
+}
+
+
+template<class Type>
+void Foam::iallReduce
+(
+    void* recvBuf,
+    int MPICount,
+    MPI_Datatype MPIType,
+    MPI_Op MPIOp,
+    const label communicator,
+    label& requestID
+)
+{
+    if (!UPstream::parRun())
+    {
+        return;
+    }
+
+    if (UPstream::warnComm != -1 && communicator != UPstream::warnComm)
+    {
+        Pout<< "** non-blocking reducing:"
+            << UList<Type>(static_cast<Type*>(recvBuf), MPICount)
+            << " with comm:" << communicator
+            << " warnComm:" << UPstream::warnComm << endl;
+        error::printStack(Pout);
+    }
+
+    profilingPstream::beginTiming();
+
+#if defined(MPI_VERSION) && (MPI_VERSION >= 3)
+    MPI_Request request;
+    if
+    (
+        MPI_Iallreduce
+        (
+            MPI_IN_PLACE,
+            recvBuf,
+            MPICount,
+            MPIType,
+            MPIOp,
+            PstreamGlobals::MPICommunicators_[communicator],
+            &request
+        )
+    )
+    {
+        FatalErrorInFunction
+            << "MPI_Iallreduce failed for "
+            << UList<Type>(static_cast<Type*>(recvBuf), MPICount)
+            << Foam::abort(FatalError);
+    }
+
+    if (PstreamGlobals::freedRequests_.size())
+    {
+        requestID = PstreamGlobals::freedRequests_.remove();
+        PstreamGlobals::outstandingRequests_[requestID] = request;
+    }
+    else
+    {
+        requestID = PstreamGlobals::outstandingRequests_.size();
+        PstreamGlobals::outstandingRequests_.append(request);
+    }
+
+    if (UPstream::debug)
+    {
+        Pout<< "UPstream::allocateRequest for non-blocking reduce"
+            << " : request:" << requestID << endl;
+    }
+#else
+    // Non-blocking not yet implemented in mpi
+    if
+    (
+        MPI_Allreduce
+        (
+            MPI_IN_PLACE,
+            recvBuf,
+            MPICount,
+            MPIType,
+            MPIOp,
+            PstreamGlobals::MPICommunicators_[communicator]
+        )
+    )
+    {
+        FatalErrorInFunction
+            << "MPI_Allreduce failed for "
+            << UList<Type>(static_cast<Type*>(recvBuf), MPICount)
+            << Foam::abort(FatalError);
+    }
+    requestID = -1;
+#endif
+
+    profilingPstream::addReduceTime();
 }
 
 

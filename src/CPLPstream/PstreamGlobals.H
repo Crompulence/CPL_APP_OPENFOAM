@@ -2,8 +2,10 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2013 OpenFOAM Foundation
+    \\  /    A nd           | www.openfoam.com
      \\/     M anipulation  |
+-------------------------------------------------------------------------------
+    Copyright (C) 2013-2015 OpenFOAM Foundation
 -------------------------------------------------------------------------------
 License
     This file is part of OpenFOAM.
@@ -36,40 +38,32 @@ SourceFiles
 #ifndef PstreamGlobals_H
 #define PstreamGlobals_H
 
-#include "mpi.h"
-
 #include "DynamicList.H"
+#include <mpi.h>
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-
-/*---------------------------------------------------------------------------*\
-                           Class PstreamGlobals Declaration
-\*---------------------------------------------------------------------------*/
-
 namespace PstreamGlobals
 {
 
+//- Outstanding non-blocking operations.
 extern DynamicList<MPI_Request> outstandingRequests_;
+extern DynamicList<label> freedRequests_;
 
-//extern int nRequests_;
-//extern DynamicList<label> freedRequests_;
-
+//- Max outstanding message tag operations.
 extern int nTags_;
 
+//- Free'd message tags
 extern DynamicList<int> freedTags_;
-
 
 // Current communicators. First element will be MPI_COMM_WORLD
 extern DynamicList<MPI_Comm> MPICommunicators_;
 extern DynamicList<MPI_Group> MPIGroups_;
 
-void checkCommunicator(const label, const label procNo);
 
-// MPI realm communicator for the continuum
-extern MPI_Comm CPLRealmComm;
+void checkCommunicator(const label comm, const label toProcNo);
 
 };
 

@@ -2,11 +2,8 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | www.openfoam.com
+    \\  /    A nd           | Copyright (C) 2011-2014 OpenFOAM Foundation
      \\/     M anipulation  |
--------------------------------------------------------------------------------
-    Copyright (C) 2011-2017 OpenFOAM Foundation
-    Copyright (C) 2019-2021 OpenCFD Ltd.
 -------------------------------------------------------------------------------
 License
     This file is part of OpenFOAM.
@@ -28,12 +25,11 @@ Description
     Write primitive and binary block from OPstream
 
 \*---------------------------------------------------------------------------*/
+#include "mpi.h"
 
 #include "UOPstream.H"
 #include "PstreamGlobals.H"
 #include "profilingPstream.H"
-
-#include <mpi.h>
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
@@ -81,9 +77,9 @@ bool Foam::UOPstream::write
             const_cast<char*>(buf),
             bufSize,
             MPI_BYTE,
-            toProcNo,
+            toProcNo,   //procID(toProcNo),
             tag,
-            PstreamGlobals::MPICommunicators_[communicator]
+            PstreamGlobals::MPICommunicators_[communicator] //MPI_COMM_WORLD
         );
 
         // Assume these are from scatters ...
@@ -104,9 +100,9 @@ bool Foam::UOPstream::write
             const_cast<char*>(buf),
             bufSize,
             MPI_BYTE,
-            toProcNo,
+            toProcNo,   //procID(toProcNo),
             tag,
-            PstreamGlobals::MPICommunicators_[communicator]
+            PstreamGlobals::MPICommunicators_[communicator] //MPI_COMM_WORLD
         );
 
         // Assume these are from scatters ...
@@ -129,9 +125,9 @@ bool Foam::UOPstream::write
             const_cast<char*>(buf),
             bufSize,
             MPI_BYTE,
-            toProcNo,
+            toProcNo,   //procID(toProcNo),
             tag,
-            PstreamGlobals::MPICommunicators_[communicator],
+            PstreamGlobals::MPICommunicators_[communicator],//MPI_COMM_WORLD,
             &request
         );
 
@@ -150,8 +146,12 @@ bool Foam::UOPstream::write
     }
     else
     {
-        FatalErrorInFunction
-            << "Unsupported communications type "
+        FatalErrorIn
+        (
+            "UOPstream::write"
+            "(const int fromProcNo, char* buf, std::streamsize bufSize"
+            ", const int)"
+        )   << "Unsupported communications type "
             << UPstream::commsTypeNames[commsType]
             << Foam::abort(FatalError);
     }
@@ -159,5 +159,7 @@ bool Foam::UOPstream::write
     return !transferFailed;
 }
 
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 // ************************************************************************* //

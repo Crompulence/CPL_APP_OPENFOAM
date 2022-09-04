@@ -2,8 +2,10 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2012-2013 OpenFOAM Foundation
+    \\  /    A nd           | www.openfoam.com
      \\/     M anipulation  |
+-------------------------------------------------------------------------------
+    Copyright (C) 2012-2016 OpenFOAM Foundation
 -------------------------------------------------------------------------------
 License
     This file is part of OpenFOAM.
@@ -21,7 +23,7 @@ License
     You should have received a copy of the GNU General Public License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
-InNamspace
+InNamespace
     Foam
 
 Description
@@ -35,9 +37,9 @@ SourceFiles
 #ifndef allReduce_H
 #define allReduce_H
 
-#include "mpi.h"
-
 #include "UPstream.H"
+
+#include <mpi.h>
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -53,7 +55,18 @@ void allReduce
     MPI_Op op,
     const BinaryOp& bop,
     const int tag,
-    const int communicator
+    const label communicator
+);
+
+template<class Type>
+void iallReduce
+(
+    void* Value,
+    int count,
+    MPI_Datatype MPIType,
+    MPI_Op op,
+    const label communicator,
+    label& requestID
 );
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -63,7 +76,7 @@ void allReduce
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#   include "allReduceTemplates.C"
+    #include "allReduceTemplates.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
