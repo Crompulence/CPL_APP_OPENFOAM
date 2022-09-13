@@ -89,7 +89,7 @@ New folders created by building process
 5 ) To patch a Pstream
 =========================
 
-Why do you need to do this? If you want to run two codes with the colon MPMD syntax
+Why do you need to do this? If you want to run two codes with the colon MPMD syntax,
 
     mpiexec -n 4 CPLIcoFoam : -n 16 ./MD
 
@@ -150,7 +150,7 @@ Finally, in order to allow a "shared" MPI run, we need to define the `Foam::Pstr
         CPL::init(CFD_realm, CFD_COMM); 
 	    Foam::PstreamGlobals::CPLRealmComm = CFD_COMM;
 
-A few notes, the PstreamGlobals.h must be included so the variable introduced above can be set (and replace MPI_COMM_WORLD). Also, this should be called as early as possible in the main function of an OpenFOAM solver. The function which starts MPI `Foam::"UPstream::init"` and uses Foam::PstreamGlobals::CPLRealmComm is called by one of the include statements `#include "setRootCase.H"`, `#include "createTime.H"` or `#include "createMesh.H"`
+A few notes, the PstreamGlobals.h must be included so the variable introduced above can be set (and replace `MPI_COMM_WORLD`). Also, this should be called as early as possible in the main function of an OpenFOAM solver. The function which starts MPI `Foam::"UPstream::init"` and uses `Foam::PstreamGlobals::CPLRealmComm` is called by one of the include statements `#include "setRootCase.H"`, `#include "createTime.H"` or `#include "createMesh.H"`
 
 
 
