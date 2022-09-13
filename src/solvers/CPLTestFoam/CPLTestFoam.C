@@ -31,6 +31,7 @@ Description
 
 #include "fvCFD.H"
 #include "pisoControl.H"
+#include "PstreamGlobals.H"
 #include "mpi.h"
 #include "cpl.h"
 
@@ -38,6 +39,26 @@ Description
 
 int main(int argc, char *argv[])
 {
+
+    //Define variables
+    bool cflag;
+    int CFD_realm = 1;
+    MPI_Comm CFD_COMM, CART_COMM;
+    CPL::ndArray<double> send_array, recv_array;
+
+    int flag = 0;
+    int ierr = MPI_Initialized(&flag);
+
+    Foam::Info << "MPI_Initialized(&flag) " << flag << Foam::endl;
+    if (flag == 0)
+		MPI_Init(&argc, &argv);
+
+    //Initialise CPL library
+    CPL::init(CFD_realm, CFD_COMM); 
+
+    //If you want to use shared MPI_COMM_WORLD, this line is set
+    Info<< "\nSetting CPLRealmComm\n" << endl;
+	Foam::PstreamGlobals::CPLRealmComm = CFD_COMM;
 
     #include "setRootCase.H"
     #include "createTime.H"
@@ -47,17 +68,8 @@ int main(int argc, char *argv[])
     #include "createFields.H"
     #include "initContinuityErrs.H"
 
-    //Define variables
-    bool flag;
-    int CFD_realm = 1;
-    MPI_Comm CFD_COMM, CART_COMM;
-    CPL::ndArray<double> send_array, recv_array;
-
-    //Initialise CPL library
-    CPL::init(CFD_realm, CFD_COMM); 
-
     // Initial communication to initialize domains
-    int npxyz[3] = {2, 1, 1}; int periods[3] = {1, 1, 1};
+    int npxyz[3] = {1, 1, 1}; int periods[3] = {1, 1, 1};
     MPI_Cart_create(CFD_COMM, 3, npxyz, periods, 1, &CART_COMM);
 
     double xyzL[3] = {1.0, 1.0, 1.0}; double xyz_orig[3] = {0.0, 0.0, 0.0};
@@ -70,10 +82,10 @@ int main(int argc, char *argv[])
     while (runTime.loop())
     {
 
-        flag = CPL::recv(&recv_array);
+        cflag = CPL::recv(&recv_array);
         std::cout << "CPLTestFoam " << time << " " << recv_array(0,0,0,0) << std::endl;
         send_array(0,0,0,0) = 2.*time;
-        flag = CPL::send(&send_array);
+        cflag = CPL::send(&send_array);
 
         Info<< "Time = " << runTime.timeName() << nl << endl;
 
@@ -143,7 +155,7 @@ int main(int argc, char *argv[])
         time += 1;
     }
     Info<< "End\n" << endl;
-//	CPL::finalize(); // uncomment if CPL is installed
+	CPL::finalize(); // uncomment if CPL is installed
 
     return 0;
 }
