@@ -274,8 +274,9 @@ bool Foam::UPstream::init(int& argc, char**& argv, const bool needsThread)
         argc -= 2;
     }
 
-    MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
-    MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
+    Pout<< "Using CPLRealmComm for first time " << endl;
+    MPI_Comm_size(Foam::PstreamGlobals::CPLRealmComm, &numprocs);
+    MPI_Comm_rank(Foam::PstreamGlobals::CPLRealmComm, &myRank);
 
     if (debug)
     {
@@ -472,7 +473,7 @@ void Foam::UPstream::shutdown(int errNo)
         else
         {
             // Abort only locally or world?
-            MPI_Abort(MPI_COMM_WORLD, errNo);
+            MPI_Abort(Foam::PstreamGlobals::CPLRealmComm, errNo);
         }
     }
 }
@@ -487,7 +488,7 @@ void Foam::UPstream::exit(int errNo)
 
 void Foam::UPstream::abort()
 {
-    MPI_Abort(MPI_COMM_WORLD, 1);
+    MPI_Abort(Foam::PstreamGlobals::CPLRealmComm, 1);
 }
 
 
@@ -1186,8 +1187,8 @@ void Foam::UPstream::allocatePstreamCommunicator
                 << UPstream::worldComm << Foam::exit(FatalError);
         }
 
-        PstreamGlobals::MPICommunicators_[index] = MPI_COMM_WORLD;
-        MPI_Comm_group(MPI_COMM_WORLD, &PstreamGlobals::MPIGroups_[index]);
+        PstreamGlobals::MPICommunicators_[index] = Foam::PstreamGlobals::CPLRealmComm;
+        MPI_Comm_group(Foam::PstreamGlobals::CPLRealmComm, &PstreamGlobals::MPIGroups_[index]);
         MPI_Comm_rank
         (
             PstreamGlobals::MPICommunicators_[index],

@@ -65,6 +65,9 @@ extern DynamicList<MPI_Group> MPIGroups_;
 
 void checkCommunicator(const label comm, const label toProcNo);
 
+// CPL realm communicator for the continuum
+extern MPI_Comm CPLRealmComm;
+
 };
 
 

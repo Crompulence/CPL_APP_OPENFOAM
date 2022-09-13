@@ -61,5 +61,9 @@ void Foam::PstreamGlobals::checkCommunicator
     }
 }
 
+// Set default that CPL realm communicator MPI_COMM_WORLD
+// so if not set in coupling, will still work for just continuum
+MPI_Comm Foam::PstreamGlobals::CPLRealmComm = MPI_COMM_WORLD; //MPI_COMM_NULL;
+
 
 // ************************************************************************* //

@@ -43,8 +43,7 @@ Description
 #include <unistd.h>
 #include <bitset>
 #include "interpolation.H"
-//Commented out for conversion to v2112
-//#include "PstreamGlobals.H" 
+#include "PstreamGlobals.H" 
 #include "CPLSocketFOAM.H"
 
 #include "cpl/CPL_cartCreate.h"
@@ -61,8 +60,7 @@ void CPLSocketFOAM::initComms (int& argc, char**& argv) {
     if (flag == 0)
 		MPI_Init(&argc, &argv);
     CPL::init (CPL::cfd_realm, realmComm);
-    //Commented out for conversion to v2112
-	//Foam::PstreamGlobals::CPLRealmComm = realmComm;
+	Foam::PstreamGlobals::CPLRealmComm = realmComm;
     MPI_Comm_rank (realmComm, &rankRealm);
 
 }

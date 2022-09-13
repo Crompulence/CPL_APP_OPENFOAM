@@ -1,4 +1,5 @@
+blockMesh
 decomposePar -force
 cplc++ minimal_MD.cpp -o MD
-mpiexec -n 2 CPLTestFoam -parallel | grep 'CPLTestFoam' & 
-mpiexec -n 2 ./MD
+mpiexec -n 1 CPLTestFoam -parallel &
+mpiexec -n 1 ./MD
