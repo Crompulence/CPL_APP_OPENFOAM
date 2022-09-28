@@ -52,8 +52,8 @@ Description
 #include "error.H"
 #include "meshSearch.H"
 
-#include "cpl/CPL_ndArray.h"
-#include "cpl/cpl.h"
+#include "CPL_ndArray.h"
+#include "cpl.h"
 
 //Check if file exists
 inline bool file_exists (const std::string& name) {
@@ -105,6 +105,7 @@ public:
     void recv();
 
 	//meshSearch local search for points in a mesh
+    bool meshSearcherCreated=false;
 	Foam::meshSearch* meshSearcher;
 
     //Foam class which wraps bool to check if
@@ -121,7 +122,9 @@ public:
     int const DEBUG = 0;
 
 	~CPLSocketFOAM() {
-		delete meshSearcher;
+        if (meshSearcherCreated){
+    		delete meshSearcher;
+        }
 	}
 
 

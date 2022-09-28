@@ -20,8 +20,11 @@ cplsedifoam: socket
 cplcfddemfoam: socket
 	@wmake src/solvers/CPLCFDDEMFoam
 
-CPLTestFoam:
+cpltestfoam: socket
 	@wmake src/solvers/CPLTestFoam
+
+cpltestsocketfoam: socket
+	@wmake src/solvers/CPLTestSocketFoam
 
 icofoam:
 	@wmake src/solvers/IcoFoam
