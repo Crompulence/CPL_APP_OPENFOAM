@@ -28,7 +28,7 @@ jobs:
           sudo apt-get install openfoam2106-default
           
       - name: Remove OpenMPI
-        run: sudo apt-get purge openmpi-bin 
+        run: sudo dpkg -r --force-depends openmpi-bin 
         
       - name: Install mpich
         run: sudo apt-get install -y mpich   
@@ -61,8 +61,8 @@ jobs:
           echo "CPL_THIRD_PARTY_LIB=$CPL_THIRD_PARTY_LIB" >> $GITHUB_ENV
           echo "$CPL_BIN_PATH" >> $GITHUB_PATH
           
-      - name: Setup Debug Session
-        uses: csexton/debugger-action@master
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
         
       - name: Build CPL OPENFOAM 
         run: | 
