@@ -18,6 +18,9 @@ jobs:
     runs-on: ubuntu-20.04
             
     steps:
+    
+      - name: Setup Debug Session
+        uses: csexton/debugger-action@master
           
       - name: Update repo
         run: sudo apt-get update -y
@@ -47,7 +50,7 @@ jobs:
         run: | 
           pwd
           ls
-          make
+          make PLATFORM=gcc
           source SOURCEME.sh
           #Contents of SOURCEME
           echo "CPL_PATH=$CPL_PATH" >> $GITHUB_ENV
