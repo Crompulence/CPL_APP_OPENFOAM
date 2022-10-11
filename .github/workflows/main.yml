@@ -18,10 +18,7 @@ jobs:
     runs-on: ubuntu-20.04
             
     steps:
-    
-      - name: Setup Debug Session
-        uses: csexton/debugger-action@master
-          
+              
       - name: Update repo
         run: sudo apt-get update -y
         
@@ -64,7 +61,9 @@ jobs:
           echo "CPL_THIRD_PARTY_LIB=$CPL_THIRD_PARTY_LIB" >> $GITHUB_ENV
           echo "$CPL_BIN_PATH" >> $GITHUB_PATH
           
-          
+      - name: Setup Debug Session
+        uses: csexton/debugger-action@master
+        
       - name: Build CPL OPENFOAM 
         run: | 
            echo /usr/lib/openfoam/openfoam2106/ > ./CODE_INST_DIR
