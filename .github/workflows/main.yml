@@ -1,0 +1,84 @@
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "master" branch
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+
+  test:
+    runs-on: ubuntu-20.04
+            
+    steps:
+          
+      - name: Update repo
+        run: sudo apt-get update -y
+        
+      - name: OpenFOAM
+        run: | 
+          curl https://dl.openfoam.com/add-debian-repo.sh | sudo bash
+          sudo apt-get install openfoam2106-default
+          
+      - name: Remove OpenMPI
+        run: sudo apt-get purge openmpi-bin 
+        
+      - name: Install mpich
+        run: sudo apt-get install -y mpich   
+            
+      - name: Checkout CPL APP
+        uses: actions/checkout@v3
+
+      # Checks-out cpl-library repository
+      - uses: actions/checkout@v3
+        with:
+          repository: Crompulence/cpl-library
+          path: cpl-library
+          
+      - name: Build cpl-library
+        working-directory: ./cpl-library
+        run: | 
+          pwd
+          ls
+          make
+          source SOURCEME.sh
+          #Contents of SOURCEME
+          echo "CPL_PATH=$CPL_PATH" >> $GITHUB_ENV
+          echo "CPL_BIN_PATH=$CPL_BIN_PATH" >> $GITHUB_ENV
+          echo "CPL_LIBRARY_PATH=$CPL_LIBRARY_PATH" >> $GITHUB_ENV
+          echo "CPL_INCLUDE_PATH=$CPL_INCLUDE_PATH" >> $GITHUB_ENV
+          echo "PYTHONPATH=$PYTHONPATH" >> $GITHUB_ENV
+          echo "CPLPY_PATH=$CPLPY_PATH" >> $GITHUB_ENV
+          echo "CPL_THIRD_PARTY=$CPL_THIRD_PARTY" >> $GITHUB_ENV
+          echo "CPL_THIRD_PARTY_INC=$CPL_THIRD_PARTY_INC" >> $GITHUB_ENV
+          echo "CPL_THIRD_PARTY_LIB=$CPL_THIRD_PARTY_LIB" >> $GITHUB_ENV
+          echo "$CPL_BIN_PATH" >> $GITHUB_PATH
+          
+          
+      - name: Build CPL OPENFOAM 
+        run: | 
+           echo /usr/lib/openfoam/openfoam2106/ > ./CODE_INST_DIR
+           make pstream
+           make socket
+           make cpltestfoam
+           make cpltestsocketfoam
+
+      - name: Update pip
+        run: python -m pip install --upgrade pip
+
+      - name: Install pytest
+        run: pip install pytest
+          
+      - name: Install mpi4py
+        run: pip install mpi4py
+
+      - name: Install scientific packages
+        run: pip install numpy scipy matplotlib
+        
