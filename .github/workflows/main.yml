@@ -18,25 +18,18 @@ jobs:
     runs-on: ubuntu-20.04
             
     steps:
-  
+      - uses: actions/checkout@v2
+      - name: Setup tmate session
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
+      
       - name: Update repo
         run: sudo apt-get update -y
-        
-      - name: OpenFOAM
-        run: | 
-          curl https://dl.openfoam.com/add-debian-repo.sh | sudo bash
-          sudo apt-get install openfoam2106-default
-          
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-          
-      - name: Remove OpenMPI
-        run: sudo apt-get remove openmpi-bin 
         
       - name: Install mpich
         run: sudo apt-get install -y mpich   
             
-      - name: Checkout CPL APP
+      - name: Update Checkout
         uses: actions/checkout@v3
 
       # Checks-out cpl-library repository
@@ -48,8 +41,6 @@ jobs:
       - name: Build cpl-library
         working-directory: ./cpl-library
         run: | 
-          pwd
-          ls
           make PLATFORM=gcc
           source SOURCEME.sh
           #Contents of SOURCEME
@@ -64,14 +55,6 @@ jobs:
           echo "CPL_THIRD_PARTY_LIB=$CPL_THIRD_PARTY_LIB" >> $GITHUB_ENV
           echo "$CPL_BIN_PATH" >> $GITHUB_PATH
         
-      - name: Build CPL OPENFOAM 
-        run: | 
-           echo /usr/lib/openfoam/openfoam2106/ > ./CODE_INST_DIR
-           make pstream
-           make socket
-           make cpltestfoam
-           make cpltestsocketfoam
-
       - name: Update pip
         run: python -m pip install --upgrade pip
 
@@ -84,3 +67,40 @@ jobs:
       - name: Install scientific packages
         run: pip install numpy scipy matplotlib
         
+      - uses: actions/cache@v2
+        id: cache-openfoam  # give it a name for checking the cache hit-or-not
+        with:
+          path: ./openfoam-OpenFOAM-v2112/  # what we cache: the folder
+          key: ${{ runner.os }}-primes
+                
+      - name: Download OpenFOAM
+        if: steps.cache-openfoam.outputs.cache-hit != 'true'
+        run: | 
+          wget https://develop.openfoam.com/Development/openfoam/-/archive/OpenFOAM-v2112.220610/openfoam-OpenFOAM-v2112.220610.tar.gz
+          wget https://develop.openfoam.com/Development/ThirdParty-common/-/archive/v2112/ThirdParty-common-v2112.tar.gz
+          tar -xzf openfoam-OpenFOAM-v2112.220610.tar.gz
+          tar -xzf ThirdParty-common-v2112.tar.gz
+       #   wget https://develop.openfoam.com/Development/openfoam/-/archive/OpenFOAM-v2106/openfoam-OpenFOAM-v2106.tar.gz
+       #   wget https://develop.openfoam.com/Development/ThirdParty-common/-/archive/v2106/ThirdParty-common-v2106.tar.gz
+
+      - name: Build OpenFOAM
+        if: steps.cache-openfoam.outputs.cache-hit != 'true'
+        working-directory: ./openfoam-OpenFOAM-v2112.220610
+        run: | 
+          cp ../config/prefs.sh ./etc/
+          source ./etc/bashrc
+          foamSystemCheck
+          wmake -j -q
+          
+      #- name: OpenFOAM from repo
+      #  run: | 
+      #    curl https://dl.openfoam.com/add-debian-repo.sh | sudo bash
+      #    sudo apt-get install openfoam2106-default
+      
+      - name: Build CPL OPENFOAM 
+        run: | 
+           echo ./openfoam-OpenFOAM-v2112.220610 > ./CODE_INST_DIR
+           make pstream
+           make socket
+           make cpltestfoam
+           make cpltestsocketfoam
