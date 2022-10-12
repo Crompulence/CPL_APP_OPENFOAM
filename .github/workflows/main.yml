@@ -86,7 +86,7 @@ jobs:
           cp ../config/prefs.sh ./etc/
           source ./etc/bashrc
           foamSystemCheck
-          wmake -j -v
+          wmake -j
           
       #- name: OpenFOAM from repo
       #  run: | 
