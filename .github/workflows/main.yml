@@ -57,7 +57,7 @@ jobs:
         run: | 
           cp ../config/prefs.sh ./etc/
           source ./etc/bashrc || true
-          wmake -j
+          ./Allwmake -j
           
       #- name: OpenFOAM from repo
       #  run: | 
