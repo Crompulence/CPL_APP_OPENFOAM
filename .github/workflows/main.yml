@@ -56,7 +56,7 @@ jobs:
         working-directory: ./openfoam-OpenFOAM-v2112.220610
         run: | 
           cp ../config/prefs.sh ./etc/
-          source ./etc/bashrc
+          source ./etc/bashrc || true
           wmake -j
           
       #- name: OpenFOAM from repo
