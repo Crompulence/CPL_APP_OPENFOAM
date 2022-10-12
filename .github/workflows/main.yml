@@ -19,6 +19,9 @@ jobs:
             
     steps:
     
+      - name: Checkout CPL APP
+        uses: actions/checkout@v3
+    
       - name: Update repo
         run: sudo apt-get update -y
         
