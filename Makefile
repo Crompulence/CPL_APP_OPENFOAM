@@ -20,7 +20,7 @@ cplsedifoam: socket
 cplcfddemfoam: socket
 	@wmake src/solvers/CPLCFDDEMFoam
 
-cpltestfoam: socket
+cpltestfoam: pstream
 	@wmake src/solvers/CPLTestFoam
 
 cpltestsocketfoam: socket
@@ -38,6 +38,7 @@ clean:
 	@wclean src/solvers/CPLSediFoam
 	@wclean src/solvers/CPLCFDDEMFoam
 	@wclean src/solvers/CPLTestFoam
+	@wclean src/solvers/CPLTestSocketFoam
 	@wclean src/CPLSocketFOAM
 	@wclean src/CPLPstream
 
