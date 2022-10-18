@@ -284,12 +284,12 @@ bool Foam::UPstream::init(int& argc, char**& argv, const bool needsThread)
             << " world:" << world << endl;
     }
 
-    if (worldIndex == -1 && numprocs <= 1)
-    {
-        FatalErrorInFunction
-            << "attempt to run parallel on 1 processor"
-            << Foam::abort(FatalError);
-    }
+    //if (worldIndex == -1 && numprocs <= 1)
+    //{
+    //    FatalErrorInFunction
+    //        << "attempt to run parallel on 1 processor"
+    //        << Foam::abort(FatalError);
+    //}
 
     // Initialise parallel structure
     setParRun(numprocs, provided_thread_support == MPI_THREAD_MULTIPLE);
