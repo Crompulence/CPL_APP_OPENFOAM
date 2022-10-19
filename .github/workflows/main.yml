@@ -31,7 +31,7 @@ jobs:
       - uses: actions/cache@v2
         id: cache-openfoam  # give it a name for checking the cache hit-or-not
         with:
-          path: ./openfoam-OpenFOAM-v2106/  # cache the folder
+          path: ./OpenFOAM-v2106/  # cache the folder
           key: ${{ runner.os }}-primes
             
       - name: Download OpenFOAM
@@ -119,8 +119,10 @@ jobs:
                              
       - name: Build CPLTestFoam 
         run: | 
-           echo ./openfoam-OpenFOAM-v2106 > ./CODE_INST_DIR
-           ln -s ./src/CPLPStream_v2106 ./src/CPLPstream
+           echo ./OpenFOAM-v2106 > ./CODE_INST_DIR
+           cd ./src
+           ln -s CPLPstream_v2106 ./CPLPstream
+           cd ../
            source SOURCEME.sh
            make pstream
            make cpltestfoam
@@ -130,6 +132,7 @@ jobs:
            source SOURCEME.sh
            cd ./examples/CPLTestFoam
            cplc++ minimal_MD.cpp -o MD
+           blockMesh
            mpiexec -n 1 CPLTestFoam -parallel : -n 1 ./MD
            
       - name: Build CPLTestSocketFoam 
@@ -143,6 +146,8 @@ jobs:
            source SOURCEME.sh
            cd ./examples/CPLTestSocketFoam
            cplc++ minimal_MD.cpp -o MD
+           blockMesh
+           decomposePar -force
            mpiexec -n 2 CPLTestSocketFoam -parallel : -n 2 ./MD
            
       - uses: actions/checkout@v2

@@ -2,8 +2,24 @@ OpenFOAM_DIR=`cat CODE_INST_DIR`
 OpenFOAM_SRC_DIR=$(OpenFOAM_SRC_DIR)/src
 OpenFOAM_ETC_DIR=$(OpenFOAM_ETC_DIR)/etc
 
+#ifneq (,$(findstring 3.0.1,$(OpenFOAM_DIR)))
+#	echo "3.0.1"
+#ln -s src/CPLPstream_3.0.1 src/CPLPstream 
+#else ifneq (,$(findstring 2106,$(OpenFOAM_DIR)))
+#	echo "2106"
+#ln -s src/CPLPstream_v2106 src/CPLPstream 
+#else ifneq (,$(findstring 2112,$(OpenFOAM_DIR)))
+#	echo "2112"
+#ln -s src/CPLPstream_v2112 src/CPLPstream 
+#else
+#	echo "OpenFOAM version not known"
+#endif
+
 .PHONY: all test clean clean-test pstream socket cplicofoam cplsedifoam cplcfddemfoam
 all: cplicofoam cplsedifoam cplcfddemfoam
+
+
+
 
 pstream:
 	@wmake libso src/CPLPstream
