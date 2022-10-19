@@ -48,7 +48,7 @@ jobs:
 
 
       - name: Check OpenFOAM can be built
-        working-directory: ./openfoam-OpenFOAM-v2106
+        working-directory: ./OpenFOAM-v2106
         run: | 
           cp ../config/prefs.sh ./etc/
           source ./etc/bashrc || true
@@ -56,7 +56,7 @@ jobs:
 
       - name: Build OpenFOAM with mpich
         if: steps.cache-openfoam.outputs.cache-hit != 'true'
-        working-directory: ./openfoam-OpenFOAM-v2106
+        working-directory: ./OpenFOAM-v2106
         run: | 
           cp ../config/prefs.sh ./etc/
           source ./etc/bashrc || true
@@ -66,6 +66,12 @@ jobs:
       #  run: | 
       #    curl https://dl.openfoam.com/add-debian-repo.sh | sudo bash
       #    sudo apt-get install openfoam2106-default
+
+      #- name: Check OpenFOAM works ok
+      #  working-directory: ./OpenFOAM-v2106
+      #  run: | 
+      #    cd ./path/to/cavity/example
+      #    mpiexec -n 2 icoFoam -parallel
 
       # Checks-out cpl-library repository
       - uses: actions/checkout@v3
@@ -90,17 +96,17 @@ jobs:
           echo "CPL_THIRD_PARTY_LIB=$CPL_THIRD_PARTY_LIB" >> $GITHUB_ENV
           echo "$CPL_BIN_PATH" >> $GITHUB_PATH
         
-      - name: Update pip
-        run: python -m pip install --upgrade pip
+      #- name: Update pip
+      #  run: python -m pip install --upgrade pip
 
-      - name: Install pytest
-        run: pip install pytest
+      #- name: Install pytest
+      #  run: pip install pytest
           
-      - name: Install mpi4py
-        run: pip install mpi4py
+      #- name: Install mpi4py
+      #  run: pip install mpi4py
 
-      - name: Install scientific packages
-        run: pip install numpy scipy matplotlib
+      #- name: Install scientific packages
+      #  run: pip install numpy scipy matplotlib
                              
       - name: Build CPLTestFoam 
         run: | 
