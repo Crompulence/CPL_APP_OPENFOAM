@@ -40,6 +40,7 @@ jobs:
           wget https://develop.openfoam.com/Development/openfoam/-/archive/OpenFOAM-v2106/openfoam-OpenFOAM-v2106.tar.gz
           wget https://develop.openfoam.com/Development/ThirdParty-common/-/archive/v2106/ThirdParty-common-v2106.tar.gz
           tar -xzf openfoam-OpenFOAM-v2106.tar.gz
+          mv openfoam-OpenFOAM-v2106 OpenFOAM-v2106
           tar -xzf ThirdParty-common-v2106.tar.gz
           #wget https://develop.openfoam.com/Development/openfoam/-/archive/OpenFOAM-v2112.220610/openfoam-OpenFOAM-v2112.220610.tar.gz
           #wget https://develop.openfoam.com/Development/ThirdParty-common/-/archive/v2112/ThirdParty-common-v2112.tar.gz
