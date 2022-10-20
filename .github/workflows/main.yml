@@ -39,7 +39,7 @@ jobs:
       - uses: xSAVIKx/artifact-exists-action@v0
         id: check_built_OpenFOAM
         with:
-          name: 'built_OpenFOAM-v2106'
+          name: built_OpenFOAM-v2106
       
       #Download built OpenFOAM artifact (if exists)
       - uses: actions/checkout@v2
