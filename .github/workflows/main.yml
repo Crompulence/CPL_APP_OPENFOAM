@@ -42,11 +42,18 @@ jobs:
       #    name: built_OpenFOAM-v2106
       
       #Download built OpenFOAM artifact (if exists)
-      - uses: actions/checkout@v2
-      - uses: actions/download-artifact@v3
-        #if: steps.check_built_OpenFOAM.outputs.exists == 'true'
+      #- uses: actions/checkout@v2
+      #- uses: actions/download-artifact@v3
+      #  #if: steps.check_built_OpenFOAM.outputs.exists == 'true'
+      #  with:
+      #    name: built_OpenFOAM-v2106
+
+      - name: Download artifact
+        id: download-artifact
+        uses: dawidd6/action-download-artifact@v2
         with:
           name: built_OpenFOAM-v2106
+          search_artifacts: true
           
       - name: Check file existence
         id: check_files
