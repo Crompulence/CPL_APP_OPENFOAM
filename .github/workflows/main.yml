@@ -36,20 +36,31 @@ jobs:
             sudo apt-get install libgmp-dev libmpfr-dev libmpc-dev
         
       #Check if artifact exists
-      - uses: xSAVIKx/artifact-exists-action@v0
-        id: check_built_OpenFOAM
-        with:
-          name: built_OpenFOAM-v2106
+      #- uses: xSAVIKx/artifact-exists-action@v0
+      #  id: check_built_OpenFOAM
+      #  with:
+      #    name: built_OpenFOAM-v2106
       
       #Download built OpenFOAM artifact (if exists)
       - uses: actions/checkout@v2
       - uses: actions/download-artifact@v3
-        if: steps.check_built_OpenFOAM.outputs.exists == 'true'
+        #if: steps.check_built_OpenFOAM.outputs.exists == 'true'
         with:
           name: built_OpenFOAM-v2106
+          
+      - name: Check file existence
+        id: check_files
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "built_OpenFOAM-v2106.tar"
+
+      - name: File exists
+        if: steps.check_files.outputs.files_exists == 'true'
+        # Only runs if all of the files exists
+        run: echo built_OpenFOAM-v2106.tar exists!
 
       - name: untar OpenFOAM
-        if: steps.check_built_OpenFOAM.outputs.exists == 'true'
+        if: steps.check_files.outputs.files_exists == 'true'
         run:  tar -xvf built_OpenFOAM-v2106.tar ./OpenFOAM-v2106
         
       #- uses: actions/cache@v2
@@ -60,7 +71,8 @@ jobs:
       #    key: ${{ runner.os }}-primes
             
       - name: Download OpenFOAM
-        if: steps.check_built_OpenFOAM.outputs.exists != 'true'
+        if: steps.check_files.outputs.files_exists != 'true'
+        #if: steps.check_built_OpenFOAM.outputs.exists != 'true'
         #if: steps.cache-openfoam.outputs.cache-hit != 'true'
         run: | 
           wget https://develop.openfoam.com/Development/openfoam/-/archive/OpenFOAM-v2106/openfoam-OpenFOAM-v2106.tar.gz
@@ -83,7 +95,8 @@ jobs:
 
 
       - name: Build OpenFOAM with mpich
-        if: steps.check_built_OpenFOAM.outputs.exists != 'true'
+        if: steps.check_files.outputs.files_exists != 'true'
+        #if: steps.check_built_OpenFOAM.outputs.exists != 'true'
         #if: steps.cache-openfoam.outputs.cache-hit != 'true'
         working-directory: ./OpenFOAM-v2106
         run: | 
@@ -93,11 +106,13 @@ jobs:
           
        #Save the completed upload of OpenFOAM
       - name: Tar built OpenFOAM ready for upload
-        if: steps.check_built_OpenFOAM.outputs.exists != 'true'
+        if: steps.check_files.outputs.files_exists != 'true'
+        #if: steps.check_built_OpenFOAM.outputs.exists != 'true'
         run: tar -cvf built_OpenFOAM-v2106.tar ./OpenFOAM-v2106
 
       - name: Upload built OpenFOAM artifact
-        if: steps.check_built_OpenFOAM.outputs.exists != 'true'
+        if: steps.check_files.outputs.files_exists != 'true'
+        #if: steps.check_built_OpenFOAM.outputs.exists != 'true'
         uses: actions/upload-artifact@v3
         with:
           name: built_OpenFOAM-v2106
