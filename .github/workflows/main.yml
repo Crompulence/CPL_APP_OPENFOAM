@@ -28,6 +28,13 @@ jobs:
       - name: Install mpich
         run: sudo apt-get install -y mpich
         
+      - name: OpenFOAM prerequists
+        run: |
+            sudo apt-get install build-essential autoconf 
+            sudo apt-get install autotools-dev cmake gawk gnuplot
+            sudo apt-get install flex libfl-dev libreadline-dev zlib1g-dev
+            sudo apt-get install libgmp-dev libmpfr-dev libmpc-dev
+        
       #Check if artifact exists
       - uses: xSAVIKx/artifact-exists-action@v0
         id: check_built_OpenFOAM
@@ -72,15 +79,8 @@ jobs:
         run: | 
           cp ../config/prefs.sh ./etc/
           source ./etc/bashrc || true
-          foamSystemCheck
-          
-          
-      - name: OpenFOAM prerequists
-        run: |
-            sudo apt-get install build-essential autoconf 
-            sudo apt-get install autotools-dev cmake gawk gnuplot
-            sudo apt-get install flex libfl-dev libreadline-dev zlib1g-dev
-            sudo apt-get install libgmp-dev libmpfr-dev libmpc-dev
+          foamSystemCheck        
+
 
       - name: Build OpenFOAM with mpich
         if: steps.check_built_OpenFOAM.outputs.exists != 'true'
@@ -153,8 +153,8 @@ jobs:
         run: | 
            echo ./OpenFOAM-v2106 > ./CODE_INST_DIR
            cd ./src
-           ln -s CPLPstream_v2106 ./CPLPstream
-           cd ../
+           ln -s ./CPLPstream_v2106 ./CPLPstream
+           cd ./../
            source SOURCEME.sh
            make pstream
            make cpltestfoam
