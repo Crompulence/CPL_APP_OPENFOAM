@@ -48,12 +48,22 @@ jobs:
       #  with:
       #    name: built_OpenFOAM-v2106
 
-      #- name: Download artifact
+      #- name: Download artifact 1
       #  id: download-artifact
       #  uses: dawidd6/action-download-artifact@v2
       #  with:
-      #    name: built_OpenFOAM-v2106
+      #    name: built_OpenFOAM-v2106_1
       #    run_id: 3283023654
+      
+      #- name: Download artifact 2
+      #  id: download-artifact
+      #  uses: dawidd6/action-download-artifact@v2
+      #  with:
+      #    name: built_OpenFOAM-v2106_2
+      #    run_id: 3283023654
+      
+      - name: merge artifacts
+        run:  cat part_OpenFOAMaa part_OpenFOAMab > built_OpenFOAM-v2106.tar.gz
           
       - name: Check file existence
         id: check_files
@@ -115,16 +125,25 @@ jobs:
       - name: Tar built OpenFOAM ready for upload
         if: steps.check_files.outputs.files_exists != 'true'
         #if: steps.check_built_OpenFOAM.outputs.exists != 'true'
-        run: tar -czvf built_OpenFOAM-v2106.tar.gz ./OpenFOAM-v2106
-
-      - name: Upload built OpenFOAM artifact
+        run: | 
+            tar -czvf built_OpenFOAM-v2106.tar.gz ./OpenFOAM-v2106
+            split -n 2 built_OpenFOAM-v2106.tar.gz part_OpenFOAM
+            
+      #Split built_OpenFOAM-v2106.tar.gz into two parts
+      - name: Upload built OpenFOAM artifact 1
         if: steps.check_files.outputs.files_exists != 'true'
-        #if: steps.check_built_OpenFOAM.outputs.exists != 'true'
         uses: actions/upload-artifact@v3
         with:
-          name: built_OpenFOAM-v2106
-          path: built_OpenFOAM-v2106.tar.gz    
-                   
+          name: built_OpenFOAM-v2106_1
+          path: part_OpenFOAMaa     
+
+      - name: Upload built OpenFOAM artifact 2
+        if: steps.check_files.outputs.files_exists != 'true'
+        uses: actions/upload-artifact@v3
+        with:
+          name: built_OpenFOAM-v2106_2
+          path: part_OpenFOAMab
+          
       #- name: OpenFOAM from repo
       #  run: | 
       #    curl https://dl.openfoam.com/add-debian-repo.sh | sudo bash
