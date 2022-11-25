@@ -48,12 +48,12 @@ jobs:
       #  with:
       #    name: built_OpenFOAM-v2106
 
-      - name: Download artifact
-        id: download-artifact
-        uses: dawidd6/action-download-artifact@v2
-        with:
-          name: built_OpenFOAM-v2106
-          run_id: 3283023654
+      #- name: Download artifact
+      #  id: download-artifact
+      #  uses: dawidd6/action-download-artifact@v2
+      #  with:
+      #    name: built_OpenFOAM-v2106
+      #    run_id: 3283023654
           
       - name: Check file existence
         id: check_files
