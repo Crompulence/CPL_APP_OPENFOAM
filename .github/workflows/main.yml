@@ -111,15 +111,15 @@ jobs:
           foamSystemCheck        
 
 
-      - name: Build OpenFOAM with mpich
-        if: steps.check_files.outputs.files_exists != 'true'
-        #if: steps.check_built_OpenFOAM.outputs.exists != 'true'
-        #if: steps.cache-openfoam.outputs.cache-hit != 'true'
-        working-directory: ./OpenFOAM-v2106
-        run: | 
-          cp ../config/prefs.sh ./etc/
-          source ./etc/bashrc || true
-          ./Allwmake -j
+      #- name: Build OpenFOAM with mpich
+      #  if: steps.check_files.outputs.files_exists != 'true'
+      #  #if: steps.check_built_OpenFOAM.outputs.exists != 'true'
+      #  #if: steps.cache-openfoam.outputs.cache-hit != 'true'
+      #  working-directory: ./OpenFOAM-v2106
+      #  run: | 
+      #    cp ../config/prefs.sh ./etc/
+      #    source ./etc/bashrc || true
+      #    ./Allwmake -j
           
        #Save the completed upload of OpenFOAM
       - name: Tar built OpenFOAM ready for upload
