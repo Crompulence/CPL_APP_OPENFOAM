@@ -62,8 +62,8 @@ jobs:
       #    name: built_OpenFOAM-v2106_2
       #    run_id: 3283023654
       
-      - name: merge artifacts
-        run:  cat part_OpenFOAMaa part_OpenFOAMab > built_OpenFOAM-v2106.tar.gz
+      #- name: merge artifacts
+      #  run:  cat part_OpenFOAM* > built_OpenFOAM-v2106.tar.gz
           
       - name: Check file existence
         id: check_files
