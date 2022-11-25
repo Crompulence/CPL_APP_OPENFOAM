@@ -48,22 +48,22 @@ jobs:
       #  with:
       #    name: built_OpenFOAM-v2106
 
-      #- name: Download artifact 1
-      #  id: download-artifact
-      #  uses: dawidd6/action-download-artifact@v2
-      #  with:
-      #    name: built_OpenFOAM-v2106_1
-      #    run_id: 3283023654
+      - name: Download artifact 1
+        id: download-artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          name: built_OpenFOAM-v2106_1
+          run_id: 3550177145
       
-      #- name: Download artifact 2
-      #  id: download-artifact
-      #  uses: dawidd6/action-download-artifact@v2
-      #  with:
-      #    name: built_OpenFOAM-v2106_2
-      #    run_id: 3283023654
+      - name: Download artifact 2
+        id: download-artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          name: built_OpenFOAM-v2106_2
+          run_id: 3550177145
       
-      #- name: merge artifacts
-      #  run:  cat part_OpenFOAM* > built_OpenFOAM-v2106.tar.gz
+      - name: merge artifacts
+        run:  cat part_OpenFOAM* > built_OpenFOAM-v2106.tar.gz
           
       - name: Check file existence
         id: check_files
@@ -111,15 +111,15 @@ jobs:
           foamSystemCheck        
 
 
-      #- name: Build OpenFOAM with mpich
-      #  if: steps.check_files.outputs.files_exists != 'true'
-      #  #if: steps.check_built_OpenFOAM.outputs.exists != 'true'
-      #  #if: steps.cache-openfoam.outputs.cache-hit != 'true'
-      #  working-directory: ./OpenFOAM-v2106
-      #  run: | 
-      #    cp ../config/prefs.sh ./etc/
-      #    source ./etc/bashrc || true
-      #    ./Allwmake -j
+      - name: Build OpenFOAM with mpich
+        if: steps.check_files.outputs.files_exists != 'true'
+        #if: steps.check_built_OpenFOAM.outputs.exists != 'true'
+        #if: steps.cache-openfoam.outputs.cache-hit != 'true'
+        working-directory: ./OpenFOAM-v2106
+        run: | 
+          cp ../config/prefs.sh ./etc/
+          source ./etc/bashrc || true
+          ./Allwmake -j
           
        #Save the completed upload of OpenFOAM
       - name: Tar built OpenFOAM ready for upload
