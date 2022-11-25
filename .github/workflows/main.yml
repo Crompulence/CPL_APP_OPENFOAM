@@ -59,16 +59,16 @@ jobs:
         id: check_files
         uses: andstor/file-existence-action@v1
         with:
-          files: "built_OpenFOAM-v2106.tar"
+          files: "built_OpenFOAM-v2106.tar.gz"
 
       - name: File exists
         if: steps.check_files.outputs.files_exists == 'true'
         # Only runs if all of the files exists
-        run: echo built_OpenFOAM-v2106.tar exists!
+        run: echo built_OpenFOAM-v2106.tar.gz exists!
 
       - name: untar OpenFOAM
         if: steps.check_files.outputs.files_exists == 'true'
-        run:  tar -xvf built_OpenFOAM-v2106.tar ./OpenFOAM-v2106
+        run:  tar -xzvf built_OpenFOAM-v2106.tar.gz ./OpenFOAM-v2106
         
       #- uses: actions/cache@v2
       #  if: steps.cache-openfoam.outputs.cache-hit != 'true'
@@ -115,7 +115,7 @@ jobs:
       - name: Tar built OpenFOAM ready for upload
         if: steps.check_files.outputs.files_exists != 'true'
         #if: steps.check_built_OpenFOAM.outputs.exists != 'true'
-        run: tar -cvf built_OpenFOAM-v2106.tar ./OpenFOAM-v2106
+        run: tar -czvf built_OpenFOAM-v2106.tar.gz ./OpenFOAM-v2106
 
       - name: Upload built OpenFOAM artifact
         if: steps.check_files.outputs.files_exists != 'true'
@@ -123,7 +123,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: built_OpenFOAM-v2106
-          path: built_OpenFOAM-v2106.tar    
+          path: built_OpenFOAM-v2106.tar.gz    
                    
       #- name: OpenFOAM from repo
       #  run: | 
