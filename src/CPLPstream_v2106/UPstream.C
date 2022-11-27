@@ -1062,7 +1062,7 @@ void Foam::UPstream::allocatePstreamCommunicator
         }
 
         PstreamGlobals::MPICommunicators_[index] = Foam::PstreamGlobals::CPLRealmComm;
-        MPI_Comm_group(MPI_COMM_WORLD, &PstreamGlobals::MPIGroups_[index]);
+        MPI_Comm_group(Foam::PstreamGlobals::CPLRealmComm, &PstreamGlobals::MPIGroups_[index]);
         MPI_Comm_rank
         (
             PstreamGlobals::MPICommunicators_[index],
