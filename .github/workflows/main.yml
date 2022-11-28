@@ -58,7 +58,8 @@ jobs:
       - name: Download OpenFOAM 2106 built for 20.04 from pCloud
         run: |
             wget https://edef1.pcloud.com/cBZhnSn54ZFm7RbuZVJl0ZXZMHGTc7Z2ZZq4pZkZa4xYMZgZW7Z90ZjXZJ7ZnkZqkZ37Z17ZfZEZlkZK7Z1XZb0pYZXHI1JcsAY4u33JtjqATDLyb9TxXX/built_OpenFOAM-v2106_mpich_Ubuntu_20.04.tar.gz
-      
+            mv built_OpenFOAM-v2106_mpich_Ubuntu_20.04.tar.gz built_OpenFOAM-v2106.tar.gz
+            
       - name: Check file existence
         id: check_files
         uses: andstor/file-existence-action@v1
