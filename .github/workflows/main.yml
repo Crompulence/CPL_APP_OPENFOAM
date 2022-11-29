@@ -34,20 +34,7 @@ jobs:
             sudo apt-get install autotools-dev cmake gawk gnuplot
             sudo apt-get install flex libfl-dev libreadline-dev zlib1g-dev
             sudo apt-get install libgmp-dev libmpfr-dev libmpc-dev
-        
-      #Check if artifact exists
-      #- uses: xSAVIKx/artifact-exists-action@v0
-      #  id: check_built_OpenFOAM
-      #  with:
-      #    name: built_OpenFOAM-v2106
-      
-      #Download built OpenFOAM artifact (if exists)
-      #- uses: actions/checkout@v2
-      #- uses: actions/download-artifact@v3
-      #  #if: steps.check_built_OpenFOAM.outputs.exists == 'true'
-      #  with:
-      #    name: built_OpenFOAM-v2106
-
+             
       - name: Download prebuilt OpenFOAM artifact
         id: download-artifact
         uses: dawidd6/action-download-artifact@v2
@@ -74,18 +61,12 @@ jobs:
       - name: untar OpenFOAM
         if: steps.check_files.outputs.files_exists == 'true'
         run:  tar -xzvf built_OpenFOAM-v2106.tar.gz ./OpenFOAM-v2106
-        
-      #- uses: actions/cache@v2
-      #  if: steps.cache-openfoam.outputs.cache-hit != 'true'
-      #  id: cache-openfoam  # give it a name for checking the cache hit-or-not
-      #  with:
-      #    path: ./OpenFOAM-v2106/  # cache the folder
-      #    key: ${{ runner.os }}-primes
-            
-      - name: Download OpenFOAM
+
+       #########################################   
+       #   Download and build if no artifact  #
+       #########################################
+      - name: Or Download OpenFOAM if it doesn't exist
         if: steps.check_files.outputs.files_exists != 'true'
-        #if: steps.check_built_OpenFOAM.outputs.exists != 'true'
-        #if: steps.cache-openfoam.outputs.cache-hit != 'true'
         run: | 
           wget https://develop.openfoam.com/Development/openfoam/-/archive/OpenFOAM-v2106/openfoam-OpenFOAM-v2106.tar.gz
           wget https://develop.openfoam.com/Development/ThirdParty-common/-/archive/v2106/ThirdParty-common-v2106.tar.gz
@@ -97,45 +78,40 @@ jobs:
           #tar -xzf openfoam-OpenFOAM-v2112.220610.tar.gz
           #tar -xzf ThirdParty-common-v2112.tar.gz
 
-
       - name: Check OpenFOAM can be built
+        if: steps.check_files.outputs.files_exists != 'true'
         working-directory: ./OpenFOAM-v2106
         run: | 
           cp ../config/prefs.sh ./etc/
           source ./etc/bashrc || true
           foamSystemCheck        
 
-
       - name: Build OpenFOAM with mpich
         if: steps.check_files.outputs.files_exists != 'true'
-        #if: steps.check_built_OpenFOAM.outputs.exists != 'true'
-        #if: steps.cache-openfoam.outputs.cache-hit != 'true'
         working-directory: ./OpenFOAM-v2106
         run: | 
           cp ../config/prefs.sh ./etc/
           source ./etc/bashrc || true
           ./Allwmake -j
           
-       #Save the completed upload of OpenFOAM
+       #########################################   
+       # Save the completed upload of OpenFOAM #
+       #########################################
       - name: Tar built OpenFOAM ready for upload
         if: steps.check_files.outputs.files_exists != 'true'
-        #if: steps.check_built_OpenFOAM.outputs.exists != 'true'
         run: | 
             tar -czvf built_OpenFOAM-v2106.tar.gz ./OpenFOAM-v2106
             
-      #Split built_OpenFOAM-v2106.tar.gz into two parts
-      - name: Upload built OpenFOAM artifact 1
+      - name: Upload built OpenFOAM artifact
         if: steps.check_files.outputs.files_exists != 'true'
         uses: actions/upload-artifact@v3
         with:
           name: built_OpenFOAM-v2106_mpich_Ubuntu_20.04
           path: built_OpenFOAM-v2106.tar.gz     
           
-      #- name: OpenFOAM from repo
-      #  run: | 
-      #    curl https://dl.openfoam.com/add-debian-repo.sh | sudo bash
-      #    sudo apt-get install openfoam2106-default
-
+       #########################################   
+       #  Run both a serial and parallel case  #
+       #########################################
       #- name: Check OpenFOAM works ok
       #  working-directory: ./OpenFOAM-v2106
       #  run: | 
@@ -164,18 +140,6 @@ jobs:
           echo "CPL_THIRD_PARTY_INC=$CPL_THIRD_PARTY_INC" >> $GITHUB_ENV
           echo "CPL_THIRD_PARTY_LIB=$CPL_THIRD_PARTY_LIB" >> $GITHUB_ENV
           echo "$CPL_BIN_PATH" >> $GITHUB_PATH
-        
-      #- name: Update pip
-      #  run: python -m pip install --upgrade pip
-
-      #- name: Install pytest
-      #  run: pip install pytest
-          
-      #- name: Install mpi4py
-      #  run: pip install mpi4py
-
-      #- name: Install scientific packages
-      #  run: pip install numpy scipy matplotlib
                              
       - name: Build CPLTestFoam 
         run: | 
@@ -183,7 +147,7 @@ jobs:
            cd ./src
            ln -s ./CPLPstream_v2106 ./CPLPstream
            cd ./../
-           source SOURCEME.sh
+           source SOURCEME.sh || true
            make pstream
            make cpltestfoam
            
@@ -209,6 +173,21 @@ jobs:
            blockMesh
            decomposePar -force
            mpiexec -n 2 CPLTestSocketFoam -parallel : -n 2 ./MD
+           
+       #########################################   
+       #  Run all further tests using Pytest   #
+       #########################################
+      #- name: Update pip
+      #  run: python -m pip install --upgrade pip
+
+      #- name: Install pytest
+      #  run: pip install pytest
+          
+      #- name: Install mpi4py
+      #  run: pip install mpi4py
+
+      #- name: Install scientific packages
+      #  run: pip install numpy scipy matplotlib
            
       - uses: actions/checkout@v2
       - name: Setup tmate session
