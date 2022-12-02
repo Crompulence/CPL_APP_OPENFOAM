@@ -1,6 +1,8 @@
 
 CPP_DIRECTIVE = -std=c++11 \
-    -Wno-old-style-cast
+    -Wno-old-style-cast \
+    -DFULLDEBUG -g -O2
+
 
 EXE_INC = \
     $(CPP_DIRECTIVE) \
