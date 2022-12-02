@@ -1,7 +1,7 @@
-
+//Using no compiler optimisation prevents a double free bug in strings for gcc 9+
 CPP_DIRECTIVE = -std=c++11 \
     -Wno-old-style-cast \
-    -DFULLDEBUG -g -O2
+    -O0
 
 
 EXE_INC = \
