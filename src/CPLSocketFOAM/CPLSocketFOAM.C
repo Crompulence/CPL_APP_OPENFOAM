@@ -146,10 +146,16 @@ void CPLSocketFOAM::initCFD(const Foam::Time &runTime, const Foam::fvMesh &mesh)
     //Read optional interpolate boundary flag from blockmesh
 	interp_BC.readIfPresent("interp_BC", blockMeshDict);
     Foam::Info << "interp_BC" << interp_BC << Foam::endl;
-    //if (interp_BC == false)
-    //    FatalErrorIn("CPLSocketFOAM::initCFD()") << exit(FatalError);
     
+	// Patch receiving B.Cs
     receivePatchName = "CPLReceiveMD";
+	rvPatchID = mesh.boundary().findPatchID(receivePatchName);
+	if (rvPatchID == -1) {
+		FatalErrorIn ( "CPLSocketFOAM::initCFD()")
+			<< " Could not find patch ID " << receivePatchName << ". "
+			   " Aborting."
+			<< exit(FatalError);
+	}
     //Foam::dictionary boundary = blockMeshDict.subDict("boundary");
     //Foam::dictionary CPLReceiveMD = boundary.subDict("CPLReceiveMD");
     //CPLReceiveMD.readIfPresent("interp_BC");
@@ -159,20 +165,8 @@ void CPLSocketFOAM::initCFD(const Foam::Time &runTime, const Foam::fvMesh &mesh)
     double eps = 0.00001;
     int im = 0; int jm = 0; int km = 0;
     double maxx = 0.0; double maxy = 0.0; double maxz = 0.0;
-	// Just on coupled BC
-//	Foam::string receivePatchName("CPLReceiveMD");
-//	Foam::label rvPatchID = mesh.boundary().findPatchID(receivePatchName);
-//	if (rvPatchID == -1) {
-//		FatalErrorIn ( "CPLSocketFOAM::unpack()")
-//			<< " Could not find patch ID " << receivePatchName << ". "
-//			   " Aborting."
-//			<< exit(FatalError);
-//	}
-//	const Foam::vectorField BoundaryfaceCntr = mesh.boundary()[rvPatchID].Cf();
-//	for (int I = 0; I != BoundaryfaceCntr.size(); ++I) {
-//		double x = BoundaryfaceCntr[I].x();
-//		double y = BoundaryfaceCntr[I].y();
-//		double z = BoundaryfaceCntr[I].z();
+
+
     //Loop over all cells in domain
 	const Foam::vectorField cellCntr = mesh.C();
 	for (int I = 0; I != cellCntr.size(); ++I) {
@@ -189,27 +183,12 @@ void CPLSocketFOAM::initCFD(const Foam::Time &runTime, const Foam::fvMesh &mesh)
             << im << " " << jm << " " << km << Foam::endl;
 
     }
-
-    //double dummyDensity = -666.0;
-    //Foam::word dummyRegionName("dummy");
-    //Foam::blockMesh blocks(blockMeshDict, dummyRegionName);
-    //Foam::Info << "CPLSocketFOAM::initCFD blockMeshDict blocks " << blockMeshDict.lookup("blocks") << Foam::endl;
-    //Foam::Vector<int> meshDensity = blocks[0].meshDensity();
-   
-    //int cells[3] = {im, jm, km}; 
-    //Foam::sumReduce(cells, 3, 0, Foam::PstreamGlobals::CPLRealmComm);
-
     // Global number of cells
     int gim=im; int gjm = jm; int gkm=km;
     if (npxyz[0] > 1) MPI_Allreduce(&im, &gim, 1, MPI_INT, MPI_SUM, Foam::PstreamGlobals::CPLRealmComm);
     if (npxyz[1] > 1) MPI_Allreduce(&jm, &gjm, 1, MPI_INT, MPI_SUM, Foam::PstreamGlobals::CPLRealmComm);
     if (npxyz[2] > 1) MPI_Allreduce(&km, &gkm, 1, MPI_INT, MPI_SUM, Foam::PstreamGlobals::CPLRealmComm);
     ncxyz[0] = gim; ncxyz[1] = gjm; ncxyz[2] = gkm;
-
-    //Foam::Vector<int> cells = {im, jm, km};
-    //ncxyz[0] = cells.x();
-    //ncxyz[1] = cells.y();
-    //ncxyz[2] = cells.z();
 
     Foam::Info << "CPLSocketFOAM::initCFD cells " 
                << ncxyz[0] << " " << ncxyz[1] << " " << ncxyz[2] << Foam::endl;
@@ -503,16 +482,6 @@ double CPLSocketFOAM::unpackVelocity(volVectorField &U, fvMesh &mesh)
 		int applyBCy = CPL::get<int> ("cpl_cfd_bc_y");
 		int applyBCz = CPL::get<int> ("cpl_cfd_bc_z");
 
-		// Patch receiving B.Cs
-		Foam::label rvPatchID = mesh.boundary().findPatchID(receivePatchName);
-
-		if (rvPatchID == -1) {
-			FatalErrorIn ( "CPLSocketFOAM::unpack()")
-				<< " Could not find patch ID " << receivePatchName << ". "
-				   " Aborting."
-				<< exit(FatalError);
-		}
-
 		Foam::fvPatchVectorField& rvPatch = U.boundaryFieldRef()[rvPatchID];
 		const Foam::vectorField BoundaryfaceCntr = mesh.boundary()[rvPatchID].Cf();
 
@@ -633,15 +602,6 @@ double CPLSocketFOAM::unpackVelocityPressure(volVectorField &U, volScalarField &
 		int applyBCz = CPL::get<int> ("cpl_cfd_bc_z");
 
 		// Patch receiving B.Cs
-		Foam::label rvPatchID = mesh.boundary().findPatchID(receivePatchName);
-
-		if (rvPatchID == -1) {
-			FatalErrorIn ( "CPLSocketFOAM::unpack()")
-				<< " Could not find patch ID " << receivePatchName << ". "
-				   " Aborting."
-				<< exit(FatalError);
-		}
-
 		Foam::fvPatchVectorField& rvPatch = U.boundaryFieldRef()[rvPatchID];
 		Foam::fvPatchScalarField& rvPatchP = p.boundaryFieldRef()[rvPatchID];
 		const Foam::vectorField BoundaryfaceCntr = mesh.boundary()[rvPatchID].Cf();
