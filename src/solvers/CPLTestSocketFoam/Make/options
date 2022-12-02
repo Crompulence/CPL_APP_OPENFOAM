@@ -1,6 +1,7 @@
 
 EXE_INC = \
     -Wno-old-style-cast \
+    -DFULLDEBUG -g -O2 \
     $(MPI_ARCH_INC) \
     -I$(CPL_INCLUDE_PATH)/cpl \
     -I$(LIB_SRC)/finiteVolume/lnInclude \
