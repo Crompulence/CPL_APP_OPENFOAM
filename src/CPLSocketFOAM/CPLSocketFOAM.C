@@ -341,6 +341,7 @@ void CPLSocketFOAM::pack(volVectorField &U,
 
     //Foam::volTensorField Ei = tensor::one;
 
+
     //Reallocate buffer depending on send type
     allocateBuffers(sendtype);
 	if (CPL::is_proc_inside(cnstFPortion.data())) {
@@ -377,11 +378,14 @@ void CPLSocketFOAM::pack(volVectorField &U,
                             npack += VELSIZE;
 
 //#if DEBUG
-			                Foam::Info << "CPLSocketFOAM::pack vel " << ix << " " << iy << " " << iz
-                                       << " " << cell << " " << " " << globalPos << " " <<
+			                std::cout << "CPLSocketFOAM::pack vel " << ix << " " << iy << " " << iz
+                                       << " " << cell << " " << 
+                                       (glob_cell[0] + 0.5) * dx << " " <<
+                                       (glob_cell[1] + 0.5) * dy << " " << 
+                                       (glob_cell[2] + 0.5) * dz << " " <<
                                        sendBuf(npack-3,loc_cell[0],loc_cell[1],loc_cell[2]) << " " <<
                                        sendBuf(npack-2,loc_cell[0],loc_cell[1],loc_cell[2]) << " " <<
-                                       sendBuf(npack-1,loc_cell[0],loc_cell[1],loc_cell[2]) << " " << Foam::endl;
+                                       sendBuf(npack-1,loc_cell[0],loc_cell[1],loc_cell[2]) << " " << std::endl;
 //#endif
 				        }
 
@@ -596,10 +600,10 @@ double CPLSocketFOAM::unpackVelocity(volVectorField &U, fvMesh &mesh)
 //                    if (applyBCz) rvPatch[faceI].z() = (recvvz + U[cell].z()) / 2.0;
 //                }
 
-                    Foam::Info << "recvBuf " << facex << " " << facey << " " << facez << " " << cell << " "
+                    std::cout  << "recvBuf " << facex << " " << facey << " " << facez << " " << cell << " "
                                 << m << " " <<  recvvx << " " << recvvy << " " << recvvz << " "
                                 << rvPatch[faceI].x() << " " << rvPatch[faceI].y() << " " << rvPatch[faceI].z() << " "
-                                << Foam::endl;
+                                << std::endl;
             }
 
         }
