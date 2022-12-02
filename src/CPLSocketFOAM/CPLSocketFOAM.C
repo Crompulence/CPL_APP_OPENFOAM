@@ -149,6 +149,7 @@ void CPLSocketFOAM::initCFD(const Foam::Time &runTime, const Foam::fvMesh &mesh)
     //if (interp_BC == false)
     //    FatalErrorIn("CPLSocketFOAM::initCFD()") << exit(FatalError);
     
+    receivePatchName = "CPLReceiveMD";
     //Foam::dictionary boundary = blockMeshDict.subDict("boundary");
     //Foam::dictionary CPLReceiveMD = boundary.subDict("CPLReceiveMD");
     //CPLReceiveMD.readIfPresent("interp_BC");
@@ -503,7 +504,6 @@ double CPLSocketFOAM::unpackVelocity(volVectorField &U, fvMesh &mesh)
 		int applyBCz = CPL::get<int> ("cpl_cfd_bc_z");
 
 		// Patch receiving B.Cs
-		Foam::string receivePatchName ("CPLReceiveMD");
 		Foam::label rvPatchID = mesh.boundary().findPatchID(receivePatchName);
 
 		if (rvPatchID == -1) {
@@ -633,7 +633,6 @@ double CPLSocketFOAM::unpackVelocityPressure(volVectorField &U, volScalarField &
 		int applyBCz = CPL::get<int> ("cpl_cfd_bc_z");
 
 		// Patch receiving B.Cs
-		Foam::string receivePatchName ("CPLReceiveMD");
 		Foam::label rvPatchID = mesh.boundary().findPatchID(receivePatchName);
 
 		if (rvPatchID == -1) {
