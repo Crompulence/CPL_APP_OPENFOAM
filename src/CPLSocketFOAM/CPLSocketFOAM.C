@@ -146,9 +146,16 @@ void CPLSocketFOAM::initCFD(const Foam::Time &runTime, const Foam::fvMesh &mesh)
     //Read optional interpolate boundary flag from blockmesh
 	interp_BC.readIfPresent("interp_BC", blockMeshDict);
     Foam::Info << "interp_BC" << interp_BC << Foam::endl;
-    //if (interp_BC == false)
-    //    FatalErrorIn("CPLSocketFOAM::initCFD()") << exit(FatalError);
     
+	// Patch receiving B.Cs
+    receivePatchName = "CPLReceiveMD";
+	rvPatchID = mesh.boundary().findPatchID(receivePatchName);
+	if (rvPatchID == -1) {
+		FatalErrorIn ( "CPLSocketFOAM::initCFD()")
+			<< " Could not find patch ID " << receivePatchName << ". "
+			   " Aborting."
+			<< exit(FatalError);
+	}
     //Foam::dictionary boundary = blockMeshDict.subDict("boundary");
     //Foam::dictionary CPLReceiveMD = boundary.subDict("CPLReceiveMD");
     //CPLReceiveMD.readIfPresent("interp_BC");
@@ -158,20 +165,8 @@ void CPLSocketFOAM::initCFD(const Foam::Time &runTime, const Foam::fvMesh &mesh)
     double eps = 0.00001;
     int im = 0; int jm = 0; int km = 0;
     double maxx = 0.0; double maxy = 0.0; double maxz = 0.0;
-	// Just on coupled BC
-//	Foam::string receivePatchName("CPLReceiveMD");
-//	Foam::label rvPatchID = mesh.boundary().findPatchID(receivePatchName);
-//	if (rvPatchID == -1) {
-//		FatalErrorIn ( "CPLSocketFOAM::unpack()")
-//			<< " Could not find patch ID " << receivePatchName << ". "
-//			   " Aborting."
-//			<< exit(FatalError);
-//	}
-//	const Foam::vectorField BoundaryfaceCntr = mesh.boundary()[rvPatchID].Cf();
-//	for (int I = 0; I != BoundaryfaceCntr.size(); ++I) {
-//		double x = BoundaryfaceCntr[I].x();
-//		double y = BoundaryfaceCntr[I].y();
-//		double z = BoundaryfaceCntr[I].z();
+
+
     //Loop over all cells in domain
 	const Foam::vectorField cellCntr = mesh.C();
 	for (int I = 0; I != cellCntr.size(); ++I) {
@@ -188,27 +183,12 @@ void CPLSocketFOAM::initCFD(const Foam::Time &runTime, const Foam::fvMesh &mesh)
             << im << " " << jm << " " << km << Foam::endl;
 
     }
-
-    //double dummyDensity = -666.0;
-    //Foam::word dummyRegionName("dummy");
-    //Foam::blockMesh blocks(blockMeshDict, dummyRegionName);
-    //Foam::Info << "CPLSocketFOAM::initCFD blockMeshDict blocks " << blockMeshDict.lookup("blocks") << Foam::endl;
-    //Foam::Vector<int> meshDensity = blocks[0].meshDensity();
-   
-    //int cells[3] = {im, jm, km}; 
-    //Foam::sumReduce(cells, 3, 0, Foam::PstreamGlobals::CPLRealmComm);
-
     // Global number of cells
     int gim=im; int gjm = jm; int gkm=km;
     if (npxyz[0] > 1) MPI_Allreduce(&im, &gim, 1, MPI_INT, MPI_SUM, Foam::PstreamGlobals::CPLRealmComm);
     if (npxyz[1] > 1) MPI_Allreduce(&jm, &gjm, 1, MPI_INT, MPI_SUM, Foam::PstreamGlobals::CPLRealmComm);
     if (npxyz[2] > 1) MPI_Allreduce(&km, &gkm, 1, MPI_INT, MPI_SUM, Foam::PstreamGlobals::CPLRealmComm);
     ncxyz[0] = gim; ncxyz[1] = gjm; ncxyz[2] = gkm;
-
-    //Foam::Vector<int> cells = {im, jm, km};
-    //ncxyz[0] = cells.x();
-    //ncxyz[1] = cells.y();
-    //ncxyz[2] = cells.z();
 
     Foam::Info << "CPLSocketFOAM::initCFD cells " 
                << ncxyz[0] << " " << ncxyz[1] << " " << ncxyz[2] << Foam::endl;
@@ -310,14 +290,11 @@ void CPLSocketFOAM::allocateBuffers(int sendtype) {
             << sendtype << " Aborting." << exit(FatalError);
     }
 }  
-
-   
+    
 // Packs the 9 components of the stress-tensor to 
 // the socket's CPL::ndArray storage.
 void CPLSocketFOAM::pack(volVectorField &U, 
                          volScalarField &p, 
-/*                          volScalarField &T, 
-                         volScalarField &phi,  */
                          dimensionedScalar &nu, 
                          fvMesh &mesh, 
                          int sendtype)
@@ -343,6 +320,7 @@ void CPLSocketFOAM::pack(volVectorField &U,
         Foam::volVectorField divsigma(fvc::div(sigma));
 
     //Foam::volTensorField Ei = tensor::one;
+
 
     //Reallocate buffer depending on send type
     allocateBuffers(sendtype);
@@ -380,11 +358,14 @@ void CPLSocketFOAM::pack(volVectorField &U,
                             npack += VELSIZE;
 
 //#if DEBUG
-			                Foam::Info << "CPLSocketFOAM::pack vel " << rankRealm << " " << ix << " " << iy << " " << iz
-                                       << " " << cell << " " << " " << globalPos << " " <<
+			                std::cout << "CPLSocketFOAM::pack vel " << ix << " " << iy << " " << iz
+                                       << " " << cell << " " << 
+                                       (glob_cell[0] + 0.5) * dx << " " <<
+                                       (glob_cell[1] + 0.5) * dy << " " << 
+                                       (glob_cell[2] + 0.5) * dz << " " <<
                                        sendBuf(npack-3,loc_cell[0],loc_cell[1],loc_cell[2]) << " " <<
                                        sendBuf(npack-2,loc_cell[0],loc_cell[1],loc_cell[2]) << " " <<
-                                       sendBuf(npack-1,loc_cell[0],loc_cell[1],loc_cell[2]) << " " << Foam::endl;
+                                       sendBuf(npack-1,loc_cell[0],loc_cell[1],loc_cell[2]) << " " << std::endl;
 //#endif
 				        }
 
@@ -428,19 +409,6 @@ void CPLSocketFOAM::pack(volVectorField &U,
                             npack += DIVSTRESSSIZE;
 
 				        }
-
-/*                         if ((sendtype & TEMPERATURE) == TEMPERATURE)
-						{
-				            sendBuf(npack+0,loc_cell[0],loc_cell[1],loc_cell[2]) = T;
-                            npack += TEMPERATURESIZE;
-						}
-
-                        if ((sendtype & VOF) == VOF)
-						{
-				            sendBuf(npack+0,loc_cell[0],loc_cell[1],loc_cell[2]) = phi;
-                            npack += PHISIZE;
-						} */
-
 
 				        if (sendtype == DEBUG)
 				        {
@@ -513,17 +481,6 @@ double CPLSocketFOAM::unpackVelocity(volVectorField &U, fvMesh &mesh)
 		int applyBCx = CPL::get<int> ("cpl_cfd_bc_x");
 		int applyBCy = CPL::get<int> ("cpl_cfd_bc_y");
 		int applyBCz = CPL::get<int> ("cpl_cfd_bc_z");
-
-		// Patch receiving B.Cs
-		Foam::string receivePatchName ("CPLReceiveMD");
-		Foam::label rvPatchID = mesh.boundary().findPatchID(receivePatchName);
-
-		if (rvPatchID == -1) {
-			FatalErrorIn ( "CPLSocketFOAM::unpack()")
-				<< " Could not find patch ID " << receivePatchName << ". "
-				   " Aborting."
-				<< exit(FatalError);
-		}
 
 		Foam::fvPatchVectorField& rvPatch = U.boundaryFieldRef()[rvPatchID];
 		const Foam::vectorField BoundaryfaceCntr = mesh.boundary()[rvPatchID].Cf();
@@ -612,10 +569,10 @@ double CPLSocketFOAM::unpackVelocity(volVectorField &U, fvMesh &mesh)
 //                    if (applyBCz) rvPatch[faceI].z() = (recvvz + U[cell].z()) / 2.0;
 //                }
 
-                    Foam::Info << "recvBuf " << rankRealm << " " << facex << " " << facey << " " << facez << " " << cell << " "
+                    std::cout  << "recvBuf " << facex << " " << facey << " " << facez << " " << cell << " "
                                 << m << " " <<  recvvx << " " << recvvy << " " << recvvz << " "
                                 << rvPatch[faceI].x() << " " << rvPatch[faceI].y() << " " << rvPatch[faceI].z() << " "
-                                << Foam::endl;
+                                << std::endl;
             }
 
         }
@@ -645,16 +602,6 @@ double CPLSocketFOAM::unpackVelocityPressure(volVectorField &U, volScalarField &
 		int applyBCz = CPL::get<int> ("cpl_cfd_bc_z");
 
 		// Patch receiving B.Cs
-		Foam::string receivePatchName ("CPLReceiveMD");
-		Foam::label rvPatchID = mesh.boundary().findPatchID(receivePatchName);
-
-		if (rvPatchID == -1) {
-			FatalErrorIn ( "CPLSocketFOAM::unpack()")
-				<< " Could not find patch ID " << receivePatchName << ". "
-				   " Aborting."
-				<< exit(FatalError);
-		}
-
 		Foam::fvPatchVectorField& rvPatch = U.boundaryFieldRef()[rvPatchID];
 		Foam::fvPatchScalarField& rvPatchP = p.boundaryFieldRef()[rvPatchID];
 		const Foam::vectorField BoundaryfaceCntr = mesh.boundary()[rvPatchID].Cf();

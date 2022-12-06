@@ -113,6 +113,10 @@ public:
     // cell inside the domain
     Foam::Switch interp_BC;
 
+    //Name and ID of boundary which is coupled
+	Foam::string receivePatchName;
+    Foam::label rvPatchID;
+
     //Bitwise mask coefficients
     int const VEL = 1; // 2^0, bit 0
     int const PRESSURE = 2;  // 2^1, bit 1
