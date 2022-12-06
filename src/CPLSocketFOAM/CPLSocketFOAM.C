@@ -310,11 +310,14 @@ void CPLSocketFOAM::allocateBuffers(int sendtype) {
             << sendtype << " Aborting." << exit(FatalError);
     }
 }  
-    
+
+   
 // Packs the 9 components of the stress-tensor to 
 // the socket's CPL::ndArray storage.
 void CPLSocketFOAM::pack(volVectorField &U, 
                          volScalarField &p, 
+/*                          volScalarField &T, 
+                         volScalarField &phi,  */
                          dimensionedScalar &nu, 
                          fvMesh &mesh, 
                          int sendtype)
@@ -377,7 +380,7 @@ void CPLSocketFOAM::pack(volVectorField &U,
                             npack += VELSIZE;
 
 //#if DEBUG
-			                Foam::Info << "CPLSocketFOAM::pack vel " << ix << " " << iy << " " << iz
+			                Foam::Info << "CPLSocketFOAM::pack vel " << rankRealm << " " << ix << " " << iy << " " << iz
                                        << " " << cell << " " << " " << globalPos << " " <<
                                        sendBuf(npack-3,loc_cell[0],loc_cell[1],loc_cell[2]) << " " <<
                                        sendBuf(npack-2,loc_cell[0],loc_cell[1],loc_cell[2]) << " " <<
@@ -425,6 +428,19 @@ void CPLSocketFOAM::pack(volVectorField &U,
                             npack += DIVSTRESSSIZE;
 
 				        }
+
+/*                         if ((sendtype & TEMPERATURE) == TEMPERATURE)
+						{
+				            sendBuf(npack+0,loc_cell[0],loc_cell[1],loc_cell[2]) = T;
+                            npack += TEMPERATURESIZE;
+						}
+
+                        if ((sendtype & VOF) == VOF)
+						{
+				            sendBuf(npack+0,loc_cell[0],loc_cell[1],loc_cell[2]) = phi;
+                            npack += PHISIZE;
+						} */
+
 
 				        if (sendtype == DEBUG)
 				        {
@@ -596,7 +612,7 @@ double CPLSocketFOAM::unpackVelocity(volVectorField &U, fvMesh &mesh)
 //                    if (applyBCz) rvPatch[faceI].z() = (recvvz + U[cell].z()) / 2.0;
 //                }
 
-                    Foam::Info << "recvBuf " << facex << " " << facey << " " << facez << " " << cell << " "
+                    Foam::Info << "recvBuf " << rankRealm << " " << facex << " " << facey << " " << facez << " " << cell << " "
                                 << m << " " <<  recvvx << " " << recvvy << " " << recvvz << " "
                                 << rvPatch[faceI].x() << " " << rvPatch[faceI].y() << " " << rvPatch[faceI].z() << " "
                                 << Foam::endl;
