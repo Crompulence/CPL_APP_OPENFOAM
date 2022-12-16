@@ -21,25 +21,25 @@ sigma           0;
 liquid
 {
     transportModel  Newtonian;
-    nu              2.64e-7;
-    rho             1583.4;
+    nu              1.7;
+    rho             0.7;
 
-    Cp              1.1072e3;
-    Cv              1.1072e3;   // assume Cp for liquid
-    kappa           0.057;
+    Cp              1;
+    Cv              1;   // assume Cp for liquid
+    kappa           1;
     hf              0;
 }
 
 vapour
 {
     transportModel  Newtonian;
-    nu              5e-7;
-    rho             14.9;
+    nu              1.7;
+    rho             0.02;
 
-    Cp              895.2;      // FC72 vapour
-    Cv              870.4;      // Cv = Cp - R/w
-    kappa           0.01;       // FC72 vapour
-    hf              93.0e3;
+    Cp              1;      // FC72 vapour
+    Cv              1;      // Cv = Cp - R/w
+    kappa           1;       // FC72 vapour
+    hf              0;
 }
 
 Prt             0.7;

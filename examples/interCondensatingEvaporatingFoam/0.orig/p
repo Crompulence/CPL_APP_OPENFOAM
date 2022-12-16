@@ -1,8 +1,8 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  v2106                                 |
-|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|  \\    /   O peration     | Version:  3.0.1                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 FoamFile
@@ -14,41 +14,48 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions          [ 1 -1 -2 0 0 0 0 ];
+dimensions      [1 -1 -2 0 0 0 0];
 
 internalField       uniform 1e5;
 
 boundaryField
 {
-    CPLReceiveMD
+    movingWall
     {
         type            calculated;
         value           $internalField;
     }
 
-    top
+    
+    streamwiseIn
     {
-        type            calculated;
-        value           $internalField;
+        type            cyclic; 
+        neighbourPatch  streamwiseOut;
     }
 
-    left
+    streamwiseOut
     {
-        type            calculated;
-        value           $internalField;
+        type            cyclic; 
+        neighbourPatch  streamwiseIn;
     }
 
-    right
+    CPLReceiveMD 
     {
-        type            calculated;
-        value           $internalField;
+        type            zeroGradient;
     }
 
-    frontAndBack
+    front
     {
-        type            empty;
+        type            cyclic;
+        neighbourPatch  back;
     }
+
+    back 
+    {
+        type            cyclic;
+        neighbourPatch  front;
+    }
+
 }
-
 
 // ************************************************************************* //
