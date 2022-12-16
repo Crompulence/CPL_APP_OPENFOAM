@@ -1,8 +1,8 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  v2106                                 |
-|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|  \\    /   O peration     | Version:  3.0.1                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 FoamFile
@@ -14,41 +14,60 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions          [0 0 0 1 0 0 0];
+dimensions      [0 0 0 1 0 0 0];
 
-internalField       uniform 366;
+internalField   uniform 373.15;
 
 boundaryField
 {
-    CPLReceiveMD
-    {
-        type            zeroGradient;
-    }
-
-    top
-    {
-        type            inletOutlet;
-        inletValue      $internalField;
-        value           $internalField;
-    }
-
-    left
+    movingWall
     {
         type            fixedValue;
-        value           uniform 360;
+        value 		uniform 373.15;
     }
 
-    right
+    //streamwiseIn
+    //{
+    //    type            fixedValue; 
+    //    value           uniform (0);
+    //}
+
+    //streamwiseOut
+    //{
+    //    type            fixedValue; 
+    //    value           uniform (0);
+    //}
+    
+    streamwiseIn
     {
-        type            zeroGradient;
-        value           $internalField;
+        type            cyclic; 
+        neighbourPatch  streamwiseOut;
     }
 
-    frontAndBack
+    streamwiseOut
     {
-        type            empty;
+        type            cyclic; 
+        neighbourPatch  streamwiseIn;
     }
+
+    CPLReceiveMD 
+    {
+        type            fixedValue;
+	value 		uniform 373.15;
+    }
+
+    front
+    {
+        type            cyclic;
+        neighbourPatch  back;
+    }
+
+    back 
+    {
+        type            cyclic;
+        neighbourPatch  front;
+    }
+
 }
-
 
 // ************************************************************************* //

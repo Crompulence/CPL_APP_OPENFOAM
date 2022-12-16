@@ -121,23 +121,14 @@ int main(int argc, char *argv[])
         CPL.pack(U, p, nu, mesh, CPL.VEL);
         CPL.send();
         CPL.recvVelocity();
-        CPL.unpackVelocity(U, mesh);
+		CPL.unpackVelocityVOF(U, alpha1, alpha2, 
+								 thermo->rho1(), thermo->rho2(), mesh);
     }
 
     Info<< "\nStarting time loop\n" << endl;
 
     while (runTime.run())
     {
-
-
-        if (coupled){
-            std::cout << "CPL.VEL is on " << std::endl;
-            CPL.pack(U, p, nu, mesh, CPL.VEL);
-            //CPL.pack(U, p, nu, mesh, CPL.STRESS);
-            CPL.send();
-            CPL.recvVelocity();
-            CPL.unpackVelocity(U, mesh);
-        }
 
         #include "readDyMControls.H"
 
@@ -199,6 +190,16 @@ int main(int argc, char *argv[])
 
             mixture->correct();
 
+			if (coupled){
+				std::cout << "CPL.VEL is on " << std::endl;
+				CPL.pack(U, p, nu, mesh, CPL.VEL);
+				//CPL.pack(U, p, nu, mesh, CPL.STRESS);
+				CPL.send();
+				CPL.recvVelocity();
+				CPL.unpackVelocityVOF(U, alpha1, alpha2, 
+										 thermo->rho1(), thermo->rho2(), mesh);
+			}
+
             #include "alphaControls.H"
             #include "alphaEqnSubCycle.H"
 
@@ -225,6 +226,9 @@ int main(int argc, char *argv[])
 
         runTime.printExecutionTime(Info);
     }
+
+    if (coupled)
+        CPL.finalize();
 
     Info<< "End\n" << endl;
 

@@ -90,6 +90,9 @@ public:
     void packStress(volVectorField &U, dimensionedScalar &nu, fvMesh &mesh);
     double unpackVelocity(volVectorField &U, fvMesh &mesh);
     double unpackVelocityPressure(volVectorField &U, volScalarField &p, fvMesh &mesh);
+	double unpackVelocityVOF(volVectorField &U, volScalarField &alpha1, volScalarField &alpha2, 
+							 const dimensionedScalar& rho1, const dimensionedScalar& rho2, fvMesh &mesh);
+
     void pack(volVectorField &U, volScalarField &p, dimensionedScalar &nu, fvMesh &mesh, int);
     double unpackPorousForce(volVectorField &F, volScalarField &eps, fvMesh &mesh);
     double unpackPorousVelForceCoeff(volVectorField &U,volVectorField &F, 
@@ -147,7 +150,7 @@ private:
     int ncxyz[3];
 
     // Size of the cells in each direction
-    double dx, dy, dz;
+    double dx, dy, dz, dV;
 
     // Density of the fluid assumed by CPL
     double CPLDensity;

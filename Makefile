@@ -42,6 +42,9 @@ cpltestfoam: pstream
 cpltestsocketfoam: socket
 	@wmake src/solvers/CPLTestSocketFoam
 
+cplinterfoam: socket
+	@wmake src/solvers/CPLinterCondensatingEvaporatingFoam/
+
 icofoam:
 	@wmake src/solvers/IcoFoam
 

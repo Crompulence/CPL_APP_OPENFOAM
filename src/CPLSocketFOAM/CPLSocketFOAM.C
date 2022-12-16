@@ -238,7 +238,8 @@ void CPLSocketFOAM::getCellTopology() {
     dx = CPL::get<double> ("dx");
     dy = CPL::get<double> ("dy");
     dz = CPL::get<double> ("dz");
-   
+    dV = dx*dy*dz;
+
     // Get overlap extents
     CPL::get_olap_limits(olapRegion.data());
     
@@ -680,6 +681,174 @@ double CPLSocketFOAM::unpackVelocityPressure(volVectorField &U, volScalarField &
     }
 }
 
+
+
+// Unpacks the 3 components of the velocity-tensor from the socket's
+// recvVelocity (cpl::ndArray) storage into a boundary condition.
+double CPLSocketFOAM::unpackVelocityVOF(volVectorField &U, 
+										volScalarField &alpha1, 
+										volScalarField &alpha2, 
+										const dimensionedScalar& rho1,
+										const dimensionedScalar& rho2,
+										fvMesh &mesh) 
+{
+
+    Foam::Info << " unpackVelocityVOF " << rankRealm << " " << 
+                CPL::is_proc_inside(velBCPortion.data()) << " " << 
+                velBCPortion.data() << " " << interp_BC << " rho1= " <<
+				rho1 << " rho2= " << rho2 << Foam::endl;
+
+    //bool interp_BC = false;
+
+	if (CPL::is_proc_inside(velBCPortion.data())) {
+
+		// TODO: Make this a utility general function that can be used on buffers
+		if (CPL::get<int>("cpl_cfd_bc_slice")) {
+
+			Foam::Info << "CPL_CFD_BC_SLICE is on: averaging CFD recvVelocity "
+						  "in the x-z plane" << Foam::endl;
+
+			// Number of cells in the local processor in x-z plane
+			int N = recvVelocityBuff.shape(1) * recvVelocityBuff.shape(3);
+
+			// For every component and y-value 
+			for (int j = 0; j < recvVelocityBuff.shape(2); ++j) {
+				for (int c = 0; c < recvVelocityBuff.shape(0); ++c) {
+				// Sum across the x-z plane 
+				double total = 0.0;
+				for (int k = 0; k < recvVelocityBuff.shape(3); ++k)
+					for (int i = 0; i < recvVelocityBuff.shape(1); ++i)
+						total += recvVelocityBuff(c, i, j, k);
+
+			// Find mean by dividing sum by number of cells 
+				for (int k = 0; k < recvVelocityBuff.shape(3); ++k)
+					for (int i = 0; i < recvVelocityBuff.shape(1); ++i)
+						recvVelocityBuff(c, i, j, k) = total / static_cast<double> (N);
+				}
+			}
+		}
+
+		// Apply BCs only in certain directions.
+		int applyBCx = CPL::get<int> ("cpl_cfd_bc_x");
+		int applyBCy = CPL::get<int> ("cpl_cfd_bc_y");
+		int applyBCz = CPL::get<int> ("cpl_cfd_bc_z");
+
+		Foam::fvPatchVectorField& rvPatch = U.boundaryFieldRef()[rvPatchID];
+		Foam::fvPatchScalarField& alpha1Patch = alpha1.boundaryFieldRef()[rvPatchID];
+		Foam::fvPatchScalarField& alpha2Patch = alpha2.boundaryFieldRef()[rvPatchID];
+		const Foam::vectorField BoundaryfaceCntr = mesh.boundary()[rvPatchID].Cf();
+
+		Foam::label cell;
+		Foam::point closestCellCentre;
+		for (int faceI = 0; faceI != BoundaryfaceCntr.size(); ++faceI) {
+			double facex = BoundaryfaceCntr[faceI].x();
+			double facey = BoundaryfaceCntr[faceI].y();
+			double facez = BoundaryfaceCntr[faceI].z();
+			// Find the cell indices for this position recvVelocity(:, ix, iy, iz)
+        	int glob_cell[3]; int loc_cell[3];
+			CPL::map_coord2cell(facex, facey, facez, glob_cell);
+            //glob_cell[1] += 1; // Add one as boundary outside overlap by construction
+	        bool valid_cell = CPL::map_glob2loc_cell(velBCPortion.data(), glob_cell, loc_cell);
+
+//            Foam::Info << "recvBuf cells " << facex << " " << facey << " " << facez << " "
+//                        << glob_cell[0] << " " << glob_cell[1] << " " << glob_cell[2] << " "
+//                        << loc_cell[0] << " " << loc_cell[1] << " " << loc_cell[2] << " "
+//                        << valid_cell << Foam::endl;
+
+            if (valid_cell) {
+
+                double m = recvVelocityBuff(3, loc_cell[0], loc_cell[1], loc_cell[2]);
+				Foam::dimensionedScalar rho("rho", Foam::dimensionSet(1, -3, 0, 0, 0, 0, 0),m/dV);
+				Foam::dimensionedScalar liquidcutoff = 0.5*(rho1 + rho2);
+				bool isliquid = rho > liquidcutoff;
+
+				Foam::Info << facex << " " << facey << " " << facez << " " 
+						   <<  m << " " << "isliquid " << isliquid << " " 
+						   << rho << " " << rho1 << " " << rho2 << " "
+						   << liquidcutoff << Foam::endl;
+
+				if (isliquid) {
+					alpha1Patch[faceI] = 1.0;
+					alpha2Patch[faceI] = 0.0;
+				} else {
+					alpha1Patch[faceI] = 0.0;
+					alpha2Patch[faceI] = 1.0;
+				}
+	
+                double recvvx, recvvy, recvvz;
+                if (m < 1e-5) {
+//                    FatalErrorIn ( "CPLSocketFOAM::unpackVelocity()")
+//                        << "Zero molecules in boundary region or averaging error"
+//                        << exit(FatalError);
+				    recvvx = 0.0;
+        			recvvy = 0.0;
+        			recvvz = 0.0;
+                } else {
+    				recvvx = recvVelocityBuff(0, loc_cell[0], loc_cell[1], loc_cell[2])/m;
+        			recvvy = recvVelocityBuff(1, loc_cell[0], loc_cell[1], loc_cell[2])/m;
+        			recvvz = recvVelocityBuff(2, loc_cell[0], loc_cell[1], loc_cell[2])/m;
+                }
+
+                //Note here velocity is set straight to MD average value
+                if (interp_BC == false) {
+				    if (applyBCx) rvPatch[faceI].x() = recvvx;
+				    if (applyBCy) rvPatch[faceI].y() = recvvy;
+				    if (applyBCz) rvPatch[faceI].z() = recvvz;
+
+//                    Foam::Info << "recvBuf with no interp " << interp_BC << " " 
+//                                << facex << " "  << facey << " "  << facez << " " 
+//                                << recvvx << " " << recvvy << " " << recvvz << " "
+//                                << rvPatch[faceI].x() << " " << rvPatch[faceI].y() 
+//                                << " " << rvPatch[faceI].z() << " " << Foam::endl;
+
+
+		        //or use interpolation assuming specified cell is the one outside the domain
+                } else {
+
+                    Foam::point closestCellCentre((glob_cell[0]+0.5)*dx, 
+                                                  (glob_cell[1]+0.5)*dy, 
+                                                  (glob_cell[2]+0.5)*dz);
+                    Foam::label cell = meshSearcher->findNearestCell(closestCellCentre);
+                    //Foam::label cell = mesh.findCell(closestCellCentre);
+                    if (applyBCx) rvPatch[faceI].x() = (recvvx + U[cell].x()) / 2.0;
+                    if (applyBCy) rvPatch[faceI].y() = (recvvy + U[cell].y()) / 2.0;
+                    if (applyBCz) rvPatch[faceI].z() = (recvvz + U[cell].z()) / 2.0;
+
+//                    Foam::Info << "recvBuf " << facex << " " << facey << " " << facez << " " << cell << " "
+//                                << recvvx << " " << recvvy << " " << recvvz << " "
+//                                << rvPatch[faceI].x() << " " << rvPatch[faceI].y() << " " << rvPatch[faceI].z() << " "
+//                                << rvPatchP[faceI] << " " << Foam::endl;
+
+                }
+
+                //Note here velocity is set straight to MD average value
+		        //which may be correct or you may need to use interpolation
+                // with something like (recvvx + U[cell].x()) / 2.0; where
+		        //cell = mesh.findCell (closestCellCentre);
+//				if (applyBCx) rvPatch[faceI].x() = recvvx;
+//				if (applyBCy) rvPatch[faceI].y() = recvvy;
+//				if (applyBCz) rvPatch[faceI].z() = recvvz;
+//                if (interp_BC) {
+//                    Foam::point closestCellCentre((glob_cell[0]+0.5)*dx, 
+//                                                  (glob_cell[1]+0.5)*dy, 
+//                                                  (glob_cell[2]+0.5)*dz);
+//                    Foam::label cell = meshSearcher->findNearestCell(closestCellCentre);
+//                    //Foam::label cell = mesh.findCell(closestCellCentre);
+//                    if (applyBCx) rvPatch[faceI].x() = (recvvx + U[cell].x()) / 2.0;
+//                    if (applyBCy) rvPatch[faceI].y() = (recvvy + U[cell].y()) / 2.0;
+//                    if (applyBCz) rvPatch[faceI].z() = (recvvz + U[cell].z()) / 2.0;
+//                }
+
+                    Foam::Info  << "unpackVelocityVOF recvBuf " << facex << " " << facey << " " << facez << " " << cell << " "
+                                << m << " " << " " << rho << " " <<  recvvx << " " << recvvy << " " << recvvz << " "
+                                << rvPatch[faceI].x() << " " << rvPatch[faceI].y() << " " << rvPatch[faceI].z() << " "
+                                << alpha1Patch[faceI] << " " << alpha2Patch[faceI] << " "
+                                << Foam::endl;
+            }
+
+        }
+    }
+}
 
 // Unpacks the components from the socket's
 double CPLSocketFOAM::unpackPorousForce(volVectorField &F, volScalarField &eps, fvMesh &mesh) 
