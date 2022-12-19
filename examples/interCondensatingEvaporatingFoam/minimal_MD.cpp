@@ -32,7 +32,7 @@ int main() {
 	CPL::get_olap_limits(olap_limits);
 	CPL::my_proc_portion(olap_limits, portion);
 
-	double uwall = -1.0;	double vwall = 0.5;
+	double uwall = 0.0;	double vwall = 0.5;
     double dV = CPL::get<double> ("dx")*CPL::get<double> ("dy")*CPL::get<double> ("dz");
 
     std::cout << "recv_array.shape " << recv_array.shape(0) << " " 
