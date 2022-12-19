@@ -13,7 +13,7 @@
 #
 
 # Environment variable for install directory
-export FOAM_CPL_VERSION=3.0.1
+export FOAM_CPL_VERSION=v2106
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 cd $DIR
 export CWD=`pwd`
@@ -25,7 +25,7 @@ if [ -f $foamDotFile ]; then
     source $foamDotFile
 else
     echo "ERROR:"
-    echo "   Configuration file 'OpenFOAM-$FOAM_CPL_VERSION/etc/bashrc' not found."
+    echo "   Configuration file $foamDotFile not found."
     return 1
 fi
 
