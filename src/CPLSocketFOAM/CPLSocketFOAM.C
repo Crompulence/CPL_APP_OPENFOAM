@@ -359,14 +359,14 @@ void CPLSocketFOAM::pack(volVectorField &U,
                             npack += VELSIZE;
 
 //#if DEBUG
-			                std::cout << "CPLSocketFOAM::pack vel " << ix << " " << iy << " " << iz
-                                       << " " << cell << " " << 
-                                       (glob_cell[0] + 0.5) * dx << " " <<
-                                       (glob_cell[1] + 0.5) * dy << " " << 
-                                       (glob_cell[2] + 0.5) * dz << " " <<
-                                       sendBuf(npack-3,loc_cell[0],loc_cell[1],loc_cell[2]) << " " <<
-                                       sendBuf(npack-2,loc_cell[0],loc_cell[1],loc_cell[2]) << " " <<
-                                       sendBuf(npack-1,loc_cell[0],loc_cell[1],loc_cell[2]) << " " << std::endl;
+//			                std::cout << "CPLSocketFOAM::pack vel " << ix << " " << iy << " " << iz
+//                                       << " " << cell << " " << 
+//                                       (glob_cell[0] + 0.5) * dx << " " <<
+//                                       (glob_cell[1] + 0.5) * dy << " " << 
+//                                       (glob_cell[2] + 0.5) * dz << " " <<
+//                                       sendBuf(npack-3,loc_cell[0],loc_cell[1],loc_cell[2]) << " " <<
+//                                       sendBuf(npack-2,loc_cell[0],loc_cell[1],loc_cell[2]) << " " <<
+//                                       sendBuf(npack-1,loc_cell[0],loc_cell[1],loc_cell[2]) << " " << std::endl;
 //#endif
 				        }
 
@@ -444,9 +444,9 @@ void CPLSocketFOAM::pack(volVectorField &U,
 double CPLSocketFOAM::unpackVelocity(volVectorField &U, fvMesh &mesh) 
 {
 
-    Foam::Info << " unpackVelocity " << rankRealm << " " << 
-                CPL::is_proc_inside(velBCPortion.data()) << " " << 
-                velBCPortion.data() << " " << interp_BC << Foam::endl;
+//    Foam::Info << " unpackVelocity " << rankRealm << " " << 
+//                CPL::is_proc_inside(velBCPortion.data()) << " " << 
+//                velBCPortion.data() << " " << interp_BC << Foam::endl;
 
     //bool interp_BC = false;
 
@@ -693,10 +693,10 @@ double CPLSocketFOAM::unpackVelocityVOF(volVectorField &U,
 										fvMesh &mesh) 
 {
 
-    Foam::Info << " unpackVelocityVOF " << rankRealm << " " << 
-                CPL::is_proc_inside(velBCPortion.data()) << " " << 
-                velBCPortion.data() << " " << interp_BC << " rho1= " <<
-				rho1 << " rho2= " << rho2 << Foam::endl;
+//    Foam::Info << " unpackVelocityVOF " << rankRealm << " " << 
+//                CPL::is_proc_inside(velBCPortion.data()) << " " << 
+//                velBCPortion.data() << " " << interp_BC << " rho1= " <<
+//				rho1 << " rho2= " << rho2 << Foam::endl;
 
     //bool interp_BC = false;
 
@@ -762,10 +762,10 @@ double CPLSocketFOAM::unpackVelocityVOF(volVectorField &U,
 				Foam::dimensionedScalar liquidcutoff = 0.5*(rho1 + rho2);
 				bool isliquid = rho > liquidcutoff;
 
-				Foam::Info << facex << " " << facey << " " << facez << " " 
-						   <<  m << " " << "isliquid " << isliquid << " " 
-						   << rho << " " << rho1 << " " << rho2 << " "
-						   << liquidcutoff << Foam::endl;
+//				Foam::Info << facex << " " << facey << " " << facez << " " 
+//						   <<  m << " " << "isliquid " << isliquid << " " 
+//						   << rho << " " << rho1 << " " << rho2 << " "
+//						   << liquidcutoff << Foam::endl;
 
 				if (isliquid) {
 					alpha1Patch[faceI] = 1.0;
@@ -839,11 +839,11 @@ double CPLSocketFOAM::unpackVelocityVOF(volVectorField &U,
 //                    if (applyBCz) rvPatch[faceI].z() = (recvvz + U[cell].z()) / 2.0;
 //                }
 
-                    Foam::Info  << "unpackVelocityVOF recvBuf " << facex << " " << facey << " " << facez << " " << cell << " "
-                                << m << " " << " " << rho << " " <<  recvvx << " " << recvvy << " " << recvvz << " "
-                                << rvPatch[faceI].x() << " " << rvPatch[faceI].y() << " " << rvPatch[faceI].z() << " "
-                                << alpha1Patch[faceI] << " " << alpha2Patch[faceI] << " "
-                                << Foam::endl;
+//                    Foam::Info  << "unpackVelocityVOF recvBuf " << facex << " " << facey << " " << facez << " " << cell << " "
+//                                << m << " " << " " << rho << " " <<  recvvx << " " << recvvy << " " << recvvz << " "
+//                                << rvPatch[faceI].x() << " " << rvPatch[faceI].y() << " " << rvPatch[faceI].z() << " "
+//                                << alpha1Patch[faceI] << " " << alpha2Patch[faceI] << " "
+//                                << Foam::endl;
             }
 
         }

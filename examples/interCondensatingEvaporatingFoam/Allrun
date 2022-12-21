@@ -10,5 +10,6 @@ runApplication blockMesh
 runApplication decomposePar
 
 mpiexec -n 2 CPLinterCondensatingEvaporatingFoam -parallel : -n 2 ./MD
+#mpiexec -n 2 CPLinterCondensatingEvaporatingFoam -parallel : -n 2 python3 ./minimal_MD.py
 
 #------------------------------------------------------------------------------

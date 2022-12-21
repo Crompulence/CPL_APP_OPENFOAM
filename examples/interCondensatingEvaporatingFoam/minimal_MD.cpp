@@ -22,7 +22,7 @@ int main() {
     int npxyz[3] = {2, 1, 1}; int periods[3] = {1, 1, 1}; 
     MPI_Cart_create(MD_COMM, 3, npxyz, periods, 1, &CART_COMM);
 
-    double xyzL[3] = {16.795961913825074, 45.349096, 16.795961913825074}; 
+    double xyzL[3] = {476.22031559046, 476.22031559046, 9.5244063118092}; 
     double xyz_orig[3] = {0.0, 0.0, 0.0};
 
     CPL::setup_md(CART_COMM, xyzL, xyz_orig);
@@ -39,20 +39,20 @@ int main() {
                                      << recv_array.shape(1) << " " 
                                      << recv_array.shape(2) << " " 
                                      << recv_array.shape(3) << std::endl;
-	for (int time = 0; time < 6; time++) {
+	for (int time = 0; time < 501; time++) {
         flag = CPL::recv(&recv_array);
-        for (int i=0; i<recv_array.shape(1); i++){
-        for (int k=0; k<recv_array.shape(3); k++){
-            std::cout << "MD recv_array " << i << " " << k 
-                << " " << recv_array(0,i,0,k) 
-                << " " << recv_array(1,i,0,k) 
-                << " " << recv_array(2,i,0,k) << std::endl;
-        }}
+//        for (int i=0; i<recv_array.shape(1); i++){
+//        for (int k=0; k<recv_array.shape(3); k++){
+//            std::cout << "MD recv_array " << i << " " << k 
+//                << " " << recv_array(0,i,0,k) 
+//                << " " << recv_array(1,i,0,k) 
+//                << " " << recv_array(2,i,0,k) << std::endl;
+//        }}
 
         for (int i=0; i<send_array.shape(1); i++){
         for (int k=0; k<send_array.shape(3); k++){
 			int ig = i + portion[0];
-			if (ig > 2 & ig < 6) {
+			if (ig > 60 & ig < 90) {
 				double rho = 0.02;
 				send_array(3,i,0,k) = rho*dV;
 				send_array(0,i,0,k) = uwall*send_array(3,i,0,k);
@@ -67,11 +67,11 @@ int main() {
 			}
             
             //send_array(0,i,0,k) = i/float(send_array.shape(1)) + k/float(send_array.shape(3));
-            std::cout << "MD send_array " << rank << " " << ig << " " << k 
-                   << " " << send_array(0,i,0,k)
-                   << " " << send_array(1,i,0,k)
-                   << " " << send_array(2,i,0,k)
-                   << " " << send_array(3,i,0,k) << std::endl;
+//            std::cout << "MD send_array " << rank << " " << ig << " " << k 
+//                   << " " << send_array(0,i,0,k)
+//                   << " " << send_array(1,i,0,k)
+//                   << " " << send_array(2,i,0,k)
+//                   << " " << send_array(3,i,0,k) << std::endl;
         }}
         flag = CPL::send(&send_array);
         std::cout << "MD time= " << time << std::endl;

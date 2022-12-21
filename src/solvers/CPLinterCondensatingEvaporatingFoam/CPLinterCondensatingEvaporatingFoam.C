@@ -191,7 +191,6 @@ int main(int argc, char *argv[])
             mixture->correct();
 
 			if (coupled){
-				std::cout << "CPL.VEL is on " << std::endl;
 				CPL.pack(U, p, nu, mesh, CPL.VEL);
 				//CPL.pack(U, p, nu, mesh, CPL.STRESS);
 				CPL.send();
