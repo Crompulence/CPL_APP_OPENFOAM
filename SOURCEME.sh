@@ -12,12 +12,33 @@
 #~~~
 #
 
+#Check if CPL path has been set by source SOURCEME.sh in CPL library
+if [ -z $CPL_PATH ]; then
+    echo "CPL PATH is not defined for cpl-library, "
+    echo "trying to use CPL_INST_DIR file"
+    CPL_SOURCEME=$(cat CPL_INST_DIR)/SOURCEME.sh
+
+    if [ -f $CPL_SOURCEME ]; then
+        source $CPL_SOURCEME
+    else
+        echo "WARNING:"
+        echo " CPL library SOURCEME.sh file $CPL_SOURCEME not found."
+    fi
+
+fi
+
+
 # Environment variable for install directory
 export FOAM_CPL_VERSION=v2106
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 cd $DIR
 export CWD=`pwd`
-export FOAM_INST_DIR=$(cat CODE_INST_DIR)
+
+#Use CODE_INST_DIR file to define OpenFOAM to use
+if [ -z $FOAM_INST_DIR ]; then
+    echo "FOAM_INST_DIR is not defined, trying to use CODE_INST_DIR file"
+    export FOAM_INST_DIR=$(cat CODE_INST_DIR)
+fi
 # Source the other environment variables
 foamDotFile=$FOAM_INST_DIR/etc/bashrc
 echo $foamDotFile

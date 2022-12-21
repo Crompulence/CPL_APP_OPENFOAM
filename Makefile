@@ -43,6 +43,7 @@ cpltestsocketfoam: socket
 	@wmake src/solvers/CPLTestSocketFoam
 
 cplinterfoam: socket
+	@wmake src/solvers/CPLinterCondensatingEvaporatingFoam/temperaturePhaseChangeTwoPhaseMixtures/
 	@wmake src/solvers/CPLinterCondensatingEvaporatingFoam/
 
 icofoam:
