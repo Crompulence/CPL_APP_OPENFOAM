@@ -5,4 +5,4 @@ twoPhaseMixtureEThermo/twoPhaseMixtureEThermo.C
 constant/constant.C
 interfaceHeatResistance/interfaceHeatResistance.C
 
-LIB = $(FOAM_LIBBIN)/libphaseTemperatureChangeTwoPhaseMixtures
+LIB = $(FOAM_CPL_APP_LIBBIN)/libphaseTemperatureChangeTwoPhaseMixtures
