@@ -16,14 +16,14 @@ FoamFile
 
 dimensions      [0 0 0 1 0 0 0];
 
-internalField   uniform 373.15;
+internalField   uniform 0.9;
 
 boundaryField
 {
     movingWall
     {
         type            fixedValue;
-        value 		uniform 373.15;
+        value 		uniform 0.9;
     }
 
     //streamwiseIn

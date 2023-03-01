@@ -120,9 +120,10 @@ int main(int argc, char *argv[])
      if (coupled){
         CPL.pack(U, p, nu, mesh, CPL.VEL);
         CPL.send();
-        CPL.recvVelocity();
+        CPL.recvVelocityPressure();
 		CPL.unpackVelocityVOF(U, alpha1, alpha2, 
-								 thermo->rho1(), thermo->rho2(), mesh);
+    						 thermo->rho1(), thermo->rho2(), 
+                              T, mesh);
     }
 
     Info<< "\nStarting time loop\n" << endl;
@@ -194,9 +195,10 @@ int main(int argc, char *argv[])
 				CPL.pack(U, p, nu, mesh, CPL.VEL);
 				//CPL.pack(U, p, nu, mesh, CPL.STRESS);
 				CPL.send();
-				CPL.recvVelocity();
+				CPL.recvVelocityPressure();
 				CPL.unpackVelocityVOF(U, alpha1, alpha2, 
-										 thermo->rho1(), thermo->rho2(), mesh);
+									  thermo->rho1(), thermo->rho2(), 
+                                      T, mesh);
 			}
 
             #include "alphaControls.H"

@@ -79,6 +79,7 @@ if __name__ == '__main__':
         print(CFDPPObj)
         CFDrhoObj = CFDPPObj.plotlist['rho']
         CFDUObj = CFDPPObj.plotlist['U']
+
         x_CFD = CFDrhoObj.grid[0]
         y_CFD = CFDrhoObj.grid[1]
 
@@ -120,7 +121,7 @@ if __name__ == '__main__':
     MD_rank = MD_COMM.Get_rank()
     MD_coords = MD_Cart_COMM.Get_coords(MD_rank)
 
-    recv_array, send_array = CPL.get_arrays(recv_size=3, send_size=4)
+    recv_array, send_array = CPL.get_arrays(recv_size=3, send_size=5)
     uwall = 0.; vwall = 0.5
     olap_limits = np.zeros(6); portion = np.zeros(6)
     olap_limits = CPL.get_olap_limits()
@@ -153,6 +154,11 @@ if __name__ == '__main__':
         send_array[1,:,0,:] = uvw[:,:,1]*Npercell
         send_array[2,:,0,:] = uvw[:,:,2]*Npercell
 
+
+        MDT = TObj.read(startrec=mdrec, endrec=mdrec)
+        MDTBC = np.mean(MDT[:,yloc,:,:,:],(2))
+        T = MDTBC[portion[0]:portion[1]+1,portion[4]:portion[5]+1,0]
+        send_array[4,:,0,:] = T
         CPL.send(send_array)
 
         if plot and MD_rank == 0:
