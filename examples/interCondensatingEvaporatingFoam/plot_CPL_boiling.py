@@ -39,6 +39,12 @@ if __name__ == '__main__':
     rhoObj = MDPPObj.plotlist['rho']
     uObj = MDPPObj.plotlist['u']
     TObj = MDPPObj.plotlist['T']
+    plotObj=rhoObj
+    vmin=0.5
+    vmax=0.75
+    #plotObj=TObj
+    #vmin=0.85
+    #vmax=1.05
     rho = rhoObj.read(startrec=startrec, endrec=startrec+1)
     Lx_MD = float(rhoObj.header.globaldomain1)
     Ly_MD = float(rhoObj.header.globaldomain2)
@@ -73,8 +79,11 @@ if __name__ == '__main__':
     print(CFDPPObj)
     CFDrhoObj = CFDPPObj.plotlist['rho']
     CFDUObj = CFDPPObj.plotlist['U']
-    x_CFD = CFDrhoObj.grid[0]
-    y_CFD = CFDrhoObj.grid[1]
+    CFDTObj = CFDPPObj.plotlist['T']
+    CFDplotObj=CFDrhoObj
+    #CFDplotObj=CFDTObj
+    x_CFD = CFDplotObj.grid[0]
+    y_CFD = CFDplotObj.grid[1]
 
     nx = x_CFD.shape[0]
     ny = y_CFD.shape[0]
@@ -86,7 +95,7 @@ if __name__ == '__main__':
     Ly_CFD = y_CFD.max()+dy/2.
 
     timestepratio = 1
-    ntimestep = rhoObj.maxrec*timestepratio
+    ntimestep = plotObj.maxrec*timestepratio
 
     if plot:
         #Setup figure
@@ -104,29 +113,20 @@ if __name__ == '__main__':
             mdrec = mdrec + 1
 
         #Bottom boundary density conditions
-        MDrho = rhoObj.read(startrec=mdrec, endrec=mdrec)
+        MDrho = plotObj.read(startrec=mdrec, endrec=mdrec)
         MDrhoBC = np.mean(MDrho[:,yloc,:,:,:],(1,2,3))
 
         if plot:
 
             #PLOT MD density contour
-            X, Y, rho = rhoObj.contour([0,1], mdrec, mdrec)
-            cm = ax.pcolormesh(X[:,:yloc]+Lx_MD/2., Y[:,:yloc]+Ly_MD/2.-yloc*dy_MD, rho[:,:yloc,0], cmap=tcmap, vmin=0.5, vmax=0.75)
+            X, Y, rho = plotObj.contour([0,1], mdrec, mdrec)
+            cm = ax.pcolormesh(X[:,:yloc]+Lx_MD/2., 
+                               Y[:,:yloc]+Ly_MD/2.-yloc*dy_MD, 
+                               rho[:,:yloc,0], cmap=tcmap, vmin=vmin, vmax=vmax)
 
-#            #Plot CFD density contour
-            X, Y, rho = CFDrhoObj.contour([0,1], timestep, timestep)
-            cm = ax.pcolormesh(X, Y, rho[:,:,0], cmap=tcmap, vmin=0.5, vmax=0.75)
-
-            #PLOT MD density contour
-#            cm = ax.imshow(np.mean(MDrho[:,yloc:0:-1,:,:,:],(2,3,4)).T,
-#                           extent=[0.,Lx_MD,-yloc*dy_MD,0.],
-#                           cmap=tcmap, alpha=.5)
-
-#            #Plot CFD density contour
-#            cm = ax.imshow(np.mean(CFDrho[:,::-1,:,:,:],(2,3,4)).T,
-#                           extent=[0.,Lx_CFD,0.,Ly_CFD],
-#                           cmap=tcmap)
-
+            #Plot CFD density contour
+            X, Y, rho = CFDplotObj.contour([0,1], timestep, timestep)
+            cm = ax.pcolormesh(X, Y, rho[:,:,0], cmap=tcmap, vmin=vmin, vmax=vmax)
 
 
             #Plot VMD DATA

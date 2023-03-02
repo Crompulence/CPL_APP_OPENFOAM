@@ -26,7 +26,7 @@ int main() {
     double xyz_orig[3] = {0.0, 0.0, 0.0};
 
     CPL::setup_md(CART_COMM, xyzL, xyz_orig);
-    CPL::get_arrays(&recv_array, 3, &send_array, 4, MD_realm);
+    CPL::get_arrays(&recv_array, 3, &send_array, 5, MD_realm);
 
 	int olap_limits[6], portion[6];
 	CPL::get_olap_limits(olap_limits);
@@ -65,6 +65,8 @@ int main() {
 				send_array(1,i,0,k) = 0.0*send_array(3,i,0,k);
 
 			}
+            //Temperature field
+            send_array(4,i,0,k) = 0.95;
             
             //send_array(0,i,0,k) = i/float(send_array.shape(1)) + k/float(send_array.shape(3));
 //            std::cout << "MD send_array " << rank << " " << ig << " " << k 

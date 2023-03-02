@@ -12,7 +12,7 @@ CPL.setup_md(MD_COMM.Create_cart([2, 1, 1]),
              xyzL=[476.22031559046, 476.22031559046, 9.5244063118092], 
              xyz_orig=[0.0, 0.0, 0.0])
 
-recv_array, send_array = CPL.get_arrays(recv_size=3, send_size=4)
+recv_array, send_array = CPL.get_arrays(recv_size=3, send_size=5)
 uwall = 0.; vwall = 0.5
 olap_limits = np.zeros(6); portion = np.zeros(6)
 olap_limits = CPL.get_olap_limits()
@@ -34,6 +34,7 @@ for time in range(501):
                 send_array[3,i,0,k] = rho*dV
                 send_array[0,i,0,k] = uwall*send_array[3,i,0,k]
                 send_array[1,i,0,k] = 0.0*send_array[3,i,0,k]
+            send_array[4,i,0,k] = 0.95
     CPL.send(send_array)
 
     print("MD time", time)

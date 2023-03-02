@@ -91,7 +91,8 @@ public:
     double unpackVelocity(volVectorField &U, fvMesh &mesh);
     double unpackVelocityPressure(volVectorField &U, volScalarField &p, fvMesh &mesh);
 	double unpackVelocityVOF(volVectorField &U, volScalarField &alpha1, volScalarField &alpha2, 
-							 const dimensionedScalar& rho1, const dimensionedScalar& rho2, fvMesh &mesh);
+							 const dimensionedScalar& rho1, const dimensionedScalar& rho2, 
+                             volScalarField &T, fvMesh &mesh);
 
     void pack(volVectorField &U, volScalarField &p, dimensionedScalar &nu, fvMesh &mesh, int);
     double unpackPorousForce(volVectorField &F, volScalarField &eps, fvMesh &mesh);

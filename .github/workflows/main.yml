@@ -40,7 +40,7 @@ jobs:
         uses: dawidd6/action-download-artifact@v2
         with:
           name: built_OpenFOAM-v2106_mpich_Ubuntu_20.04
-          run_id: 3563394780
+          run_id: 4285829398
       
       #- name: Download OpenFOAM 2106 built for 20.04 from pCloud
       #  run: |

@@ -690,6 +690,7 @@ double CPLSocketFOAM::unpackVelocityVOF(volVectorField &U,
 										volScalarField &alpha2, 
 										const dimensionedScalar& rho1,
 										const dimensionedScalar& rho2,
+                                        volScalarField &T, 
 										fvMesh &mesh) 
 {
 
@@ -736,6 +737,7 @@ double CPLSocketFOAM::unpackVelocityVOF(volVectorField &U,
 		Foam::fvPatchVectorField& rvPatch = U.boundaryFieldRef()[rvPatchID];
 		Foam::fvPatchScalarField& alpha1Patch = alpha1.boundaryFieldRef()[rvPatchID];
 		Foam::fvPatchScalarField& alpha2Patch = alpha2.boundaryFieldRef()[rvPatchID];
+		Foam::fvPatchScalarField& TPatch = T.boundaryFieldRef()[rvPatchID];
 		const Foam::vectorField BoundaryfaceCntr = mesh.boundary()[rvPatchID].Cf();
 
 		Foam::label cell;
@@ -766,7 +768,7 @@ double CPLSocketFOAM::unpackVelocityVOF(volVectorField &U,
 //						   <<  m << " " << "isliquid " << isliquid << " " 
 //						   << rho << " " << rho1 << " " << rho2 << " "
 //						   << liquidcutoff << Foam::endl;
-
+                // Set Volume of Fluid based on liquid or gas 
 				if (isliquid) {
 					alpha1Patch[faceI] = 1.0;
 					alpha2Patch[faceI] = 0.0;
@@ -774,6 +776,9 @@ double CPLSocketFOAM::unpackVelocityVOF(volVectorField &U,
 					alpha1Patch[faceI] = 0.0;
 					alpha2Patch[faceI] = 1.0;
 				}
+
+                //Set Temperature boundary condition
+                TPatch[faceI] = recvVelocityBuff(4, loc_cell[0], loc_cell[1], loc_cell[2]);
 	
                 double recvvx, recvvy, recvvz;
                 if (m < 1e-5) {

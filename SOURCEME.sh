@@ -35,12 +35,12 @@ cd $DIR
 export CWD=`pwd`
 
 #Use CODE_INST_DIR file to define OpenFOAM to use
-if [ -z $FOAM_INST_DIR ]; then
-    echo "FOAM_INST_DIR is not defined, trying to use CODE_INST_DIR file"
-    export FOAM_INST_DIR=$(cat CODE_INST_DIR)
+if [ -z $FOAM_INSTALL_DIR ]; then
+    echo "FOAM_INSTALL_DIR is not defined, trying to use CODE_INST_DIR file"
+    export FOAM_INSTALL_DIR=$(cat CODE_INST_DIR)
 fi
 # Source the other environment variables
-foamDotFile=$FOAM_INST_DIR/etc/bashrc
+foamDotFile=$FOAM_INSTALL_DIR/etc/bashrc
 echo $foamDotFile
 if [ -f $foamDotFile ]; then
     source $foamDotFile
