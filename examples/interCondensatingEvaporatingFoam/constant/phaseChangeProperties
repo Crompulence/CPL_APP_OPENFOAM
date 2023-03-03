@@ -14,13 +14,9 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-phaseChangeTwoPhaseModel constant;
+phaseChangeTwoPhaseModel interfaceHeatResistance;
 
-constantCoeffs
-{
-    coeffC          0;
-    coeffE          0;
-}
-
+R 0.00;
+spread 3;
 
 // ************************************************************************* //

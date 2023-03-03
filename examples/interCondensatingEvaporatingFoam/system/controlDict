@@ -23,13 +23,13 @@ startTime       0;
 
 stopAt          endTime;
 
-endTime         8500;
+endTime         500;
 
 deltaT          1.0;
 
 writeControl    runTime;
 
-writeInterval   10.0;
+writeInterval   100.0;
 
 purgeWrite      0;
 
@@ -54,4 +54,19 @@ maxCo           2.0;
 maxAlphaCo      1.0;
 
 maxDeltaT       1000;
+
+functions{
+
+bubbleVol
+    {
+        type            volFieldValue;
+        libs            (fieldFunctionObjects);
+        writeControl    timeStep;
+        writeInterval   1;
+        writeFields     false;
+        log             true;
+        operation       volIntegrate;
+        fields 		(alpha.vapour);
+    }
+}
 // ************************************************************************* //
