@@ -42,9 +42,12 @@ Now, to build the various solvers, it may be as simple as,
 
 N.B.: warnings from the included MPI headers may be ignored. This makes a range of OpenFOAM solvers, including
 
-   - CPLIcoFOAM - A basic fluid solver for MD-CFD coupling which partially overlaps an MD simulation
-   - CPLSediFOAM - SediFOAM (https://github.com/xiaoh/sediFoam) adapted to use the CPL library philosophy of minimal linked library
-   - CPLCFDDEMFOAM - CFDDEM (https://www.cfdem.com/) adapted to use the CPL library philosophy of minimal linked library
+   - CPLTestFoam - A version of an OpenFOAM solver with the same contents as the [CPL library minimal send and recieve mocks](https://github.com/Crompulence/cpl-library/tree/master/examples/minimal_send_recv_mocks), this tests to see if both CPL library and OpenFOAM is built correctly and exchnages information using the code in examples/CPLTestFoam. 
+   - CPLTestSocketFoam - A minimal test of the functionality of the CPLSocket code which is used to exchange information and set boundary conditions in OpenFOAM, run using the examples/CPLTestSocketFoam.
+   - CPLinterCondensatingEvaporatingFoam - Used for multi-phase simulations and runs with the example in examples/interCondensatingEvaporatingFoam.
+   - CPLIcoFOAM - A basic fluid solver for MD-CFD coupling which partially overlaps an MD simulation, same code as CPLTestSocketFoam.
+   - CPLSediFOAM - SediFOAM (https://github.com/xiaoh/sediFoam) adapted to use the CPL library philosophy of minimal linked library.
+   - CPLCFDDEMFOAM - CFDDEM (https://www.cfdem.com/) adapted to use the CPL library philosophy of minimal linked library.
 
 3 ) License
 ==========
@@ -76,8 +79,8 @@ libraries. This directory contains the source code for a coupled
 incompressible solver CPLIcoFoam that is based on OpenFOAM's icoFoam.
 
  - examples - some input examples for various cases
- - test - a range of test cases run automatically on Travis CI
- - config - scripts to specify version of MPI to build OpenFOAM with and patches for scotch.
+ - test - a range of test cases run automatically on GitHub Actions (previously Travis CI)
+ - config - scripts to specify version of MPI to build OpenFOAM (in particular mpich) as well as other patches.
 
 New folders created by building process
 
@@ -93,7 +96,7 @@ Why do you need to do this? If you want to run two codes with the colon MPMD syn
 
     mpiexec -n 4 CPLIcoFoam : -n 16 ./MD
 
-where they have a shared `MPI_COMM_WORLD`, which we will call the "shared" paradigm of coupling (as opposed to the distinct paradigm where both codes are started individually and join together using the not always functional `MPI_Open_port` and `MPI_Comm_accept` style linking to create an intercommunicator between the `MPI_COMM_WORLD` intracommunicators of both codes). The sharing of `MPI_COMM_WORLD` means that any use of `MPI_COMM_WORLD` in any MPI communications will now cause errors or deadlock in the coupled code, so these have to be replaced with a local comm. Patching Pstream, the location where all MPI communication is contained, is the easiest way to do that for OpenFOAM. The steps are as follows (given in general terms to account for future OpenFOAM changes but specifically done for v2112 in the current patch.
+where they have a shared `MPI_COMM_WORLD`, which we will call the "shared" paradigm of coupling. This is as opposed to the distinct paradigm where both codes are started individually and join together. The distinct paradigm relies on the ((not always functional) `MPI_Open_port` and `MPI_Comm_accept` linking to create an intercommunicator between the `MPI_COMM_WORLD` intracommunicators of both codes. The sharing of `MPI_COMM_WORLD` in shared coupling means that any use of `MPI_COMM_WORLD` in any MPI communications will now cause errors or deadlock in the coupled code, so these have to be replaced with a local comm (i.e. a CFD_WORLD_COMM). Patching Pstream, the location where all MPI communication is contained, is the easiest way to do that for OpenFOAM. The steps are as follows (given in general terms to account for future OpenFOAM changes but specifically done up to v2112).
 
 The Pstream which is used can be replaced for all codes using `LD_LIBRARY_PATH`, it goes from version in
 
