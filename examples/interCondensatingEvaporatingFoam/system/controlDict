@@ -62,7 +62,7 @@ bubbleVol
         type            volFieldValue;
         libs            (fieldFunctionObjects);
         writeControl    timeStep;
-        writeInterval   1;
+        writeInterval   10.0;
         writeFields     false;
         log             true;
         operation       volIntegrate;
