@@ -30,9 +30,7 @@ fi
 
 # Environment variable for install directory
 export FOAM_CPL_VERSION=v2106
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-cd $DIR
-export CWD=`pwd`
+CWD="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
 #Use CODE_INST_DIR file to define OpenFOAM to use
 if [ -z $FOAM_INSTALL_DIR ]; then
