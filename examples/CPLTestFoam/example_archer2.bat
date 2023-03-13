@@ -16,12 +16,15 @@ export OMP_NUM_THREADS=1
 
 module load other-software
 module load cpl-openfoam/2106
-# source the SOURCEME.sh files
-source $CPL_PATH/SOURCEME.sh
-source $CPL_APP_OPENFOAM_PATH/SOURCEME.sh
+source $FOAM_CPL_APP/SOURCEME.sh
 
-# return to the cwd
-cd /work/t42/t42/gavin/CPLTestFoam
+# using your own installtion: remove the last three lines and use these four lines instead
+# remmeber to update the path to the two SOURCEME.sh files
+#module load openfoam/com/v2106
+#module load lammps/13_Jun_2022
+#module load cray-python
+#source /work/y23/shared/cpl-openfoam-lammps/cpl-library/SOURCEME.sh
+#source /work/y23/shared/cpl-openfoam-lammps/CPL_APP_OPENFOAM/SOURCEME.sh
 
 # run blockMesh and decompasePar
 # NB these are both serial codes and should only be run within a parallel job if

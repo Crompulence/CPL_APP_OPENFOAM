@@ -14,23 +14,29 @@
 # single thread export overriders any declaration in srun
 export OMP_NUM_THREADS=1
 
-module load openfoam/com/v2106
-module load lammps/13_Jun_2022
-module load cray-python
-#module load xthi
+module load other-software
+module load cpl-openfoam/2106
+source $FOAM_CPL_APP/SOURCEME.sh
 
-cd /work/ecseaf01/ecseaf01/gavboi/cpl-library
-source SOURCEME.sh
-cd /work/ecseaf01/ecseaf01/gavboi/CPL_APP_OPENFOAM
-source SOURCEME.sh
-cd examples/interCondensatingEvaporatingFoam
+# using your own installtion: remove the last three lines and use these four lines instead
+# remmeber to update the path to the two SOURCEME.sh files
+#module load openfoam/com/v2106
+#module load lammps/13_Jun_2022
+#module load cray-python
+#source /work/y23/shared/cpl-openfoam-lammps/cpl-library/SOURCEME.sh
+#source /work/y23/shared/cpl-openfoam-lammps/CPL_APP_OPENFOAM/SOURCEME.sh
 
-blockMesh
-decomposePar -force
+# load restor0Dir tool
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
+restore0Dir
+
+blockMesh > log.blockMesh 2>&1
+decomposePar > log.decomposePar 2>&1
 
 SHARED_ARGS="--distribution=block:block --hint=nomultithread"
 
-#srun ${SHARED_ARGS} --het-group=0 --nodes=1 --tasks-per-node=2 xthi : --het-group=1 --nodes=1 --tasks-per-node=2 xthi
-
 srun ${SHARED_ARGS} --het-group=0 --nodes=1 --tasks-per-node=2 MD : --het-group=1 --nodes=1 --tasks-per-node=2 CPLinterCondensatingEvaporatingFoam -parallel
+
+reconstructPar > log.reconstructPar 2>&1
+
 
