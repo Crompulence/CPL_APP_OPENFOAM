@@ -54,4 +54,19 @@ maxCo           2.0;
 maxAlphaCo      1.0;
 
 maxDeltaT       1000;
+
+functions{
+
+bubbleVol
+    {
+        type            volFieldValue;
+        libs            (fieldFunctionObjects);
+        writeControl    timeStep;
+        writeInterval   10.0;
+        writeFields     false;
+        log             true;
+        operation       volIntegrate;
+        fields 		(alpha.vapour);
+    }
+}
 // ************************************************************************* //

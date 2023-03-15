@@ -39,7 +39,7 @@ vapour
     Cp              1;      // FC72 vapour
     Cv              1;      // Cv = Cp - R/w
     kappa           1;       // FC72 vapour
-    hf              0;
+    hf              1.0;
 }
 
 Prt             0.7;
