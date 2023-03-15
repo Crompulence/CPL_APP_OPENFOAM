@@ -192,7 +192,6 @@ jobs:
       - name: Test CPLIcoFoam Couette
         run: |      
            source SOURCEME.sh || true
-           cd ./test/couette_coupled/
            pytest -s test/couette_coupled/test_couette.py 
 
       #- uses: actions/checkout@v2
