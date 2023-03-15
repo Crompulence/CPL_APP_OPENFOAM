@@ -5,6 +5,8 @@ import shutil
 import numpy as np
 import subprocess as sp
 import itertools
+import glob
+
 from OpenFOAM_vs_analytical import check_OpenFOAM_vs_Analytical
 
 class cd:
@@ -88,6 +90,21 @@ def test_newtest(nx, nz, px, pz):
         run.setup()
         run.execute(blocking=True, print_output=False, extra_cmds="-M")
 
+    resultsdir = rundir + "/cfd_data/"+inputfile
+    #print("resultsdir", resultsdir, "\n\n\n")
+
+    #Delete empty processor0 folder if only one processor
+    if (px*pz == 1):
+        with cd (resultsdir):
+            shutil.rmtree("./processor0")
+        #sp.check_output("reconstructPar -withZero", shell=True)
+        #for f in glob.glob("./processor*"):
+        #    print("REMOVING ", f, "in ", resultsdir, "\n\n\n\n\n") 
+        #    shutil.rmtree(f)
+
         #Check results are correct
-        check_OpenFOAM_vs_Analytical(rundir)
+        check_OpenFOAM_vs_Analytical(rundir, parallel_run=False)
+    else:
+        #Check results are correct
+        check_OpenFOAM_vs_Analytical(rundir, parallel_run=True)
 

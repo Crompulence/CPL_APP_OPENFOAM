@@ -1,15 +1,17 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  3.0.1                                 |
-|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|  \\    /   O peration     | Version:  v2106                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 FoamFile
 {
     version     2.0;
     format      ascii;
+    arch        "LSB;label=32;scalar=64";
     class       volVectorField;
+    location    "0";
     object      U;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -25,36 +27,28 @@ boundaryField
         type            fixedValue;
         value           uniform (0 0 0);
     }
-
-    CPLReceiveMD 
+    CPLReceiveMD
     {
         type            fixedValue;
         value           uniform (0 0 0);
     }
-
     streamwiseIn
     {
-        type            cyclic; 
-        neighbourPatch  streamwiseOut;
+        type            cyclic;
     }
-
     streamwiseOut
     {
-        type            cyclic; 
-        neighbourPatch  streamwiseIn;
+        type            cyclic;
     }
-
     front
     {
         type            cyclic;
-        neighbourPatch  back;
     }
-
-    back 
+    back
     {
         type            cyclic;
-        neighbourPatch  front;
     }
 }
+
 
 // ************************************************************************* //
