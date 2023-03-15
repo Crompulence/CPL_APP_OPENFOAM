@@ -22,11 +22,11 @@ def test_error(error, time):
     elif time > 60:
         assert error < 0.008, "Error after 1000 steps greater than 1.0%"
 
-def check_OpenFOAM_vs_Analytical(fdir, plotstuff = False):
+def check_OpenFOAM_vs_Analytical(fdir, plotstuff = False, parallel_run=True):
 
     OpenFOAMfdir = fdir+"/cfd_data/openfoam_ico/"
     print("Openfoam dir = ", OpenFOAMfdir)
-    OpenFOAMuObj = ppl.OpenFOAM_vField(OpenFOAMfdir, parallel_run=True)
+    OpenFOAMuObj = ppl.OpenFOAM_vField(OpenFOAMfdir, parallel_run=parallel_run)
     dt = float(OpenFOAMuObj.Raw.delta_t)
     tplot = float(OpenFOAMuObj.Raw.header.headerDict['controlDict']['writeInterval'])
     endtime = float(OpenFOAMuObj.Raw.header.headerDict['controlDict']['endTime'])
@@ -59,7 +59,7 @@ def check_OpenFOAM_vs_Analytical(fdir, plotstuff = False):
         fig, ax = plt.subplots(1,1)
         if "dynamic" in plotstuff or plotstuff == True:
             plotstuff = "dynamic"
-            recds = range(enditer)
+            recds = list(range(enditer))
         elif "summary" in plotstuff:
             recds = [5, int(0.1*enditer), int(0.25*enditer), enditer-1]
     else:
@@ -72,7 +72,7 @@ def check_OpenFOAM_vs_Analytical(fdir, plotstuff = False):
         if time%OpenFOAMwriteinterval == 0:
             rec = int(time/float(OpenFOAMwriteinterval))
             try:
-                OpenFOAMuObj = ppl.OpenFOAM_vField(OpenFOAMfdir, parallel_run=True)
+                OpenFOAMuObj = ppl.OpenFOAM_vField(OpenFOAMfdir, parallel_run=parallel_run)
                 y, u = OpenFOAMuObj.profile(1,startrec=rec,endrec=rec)
                 halou = OpenFOAMuObj.read_halo(startrec=rec,endrec=rec, haloname="CPLReceiveMD")
                 print(halou.shape, halou[...,0].min(),halou[...,0].max())

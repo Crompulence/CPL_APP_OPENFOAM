@@ -48,7 +48,6 @@ def test_newtest(wallvel):
     with cd (TEST_DIR+"/"+inputfile):
         sp.check_output("python clean.py -f", shell=True)
         sp.check_output("blockMesh", shell=True)
-        sp.check_output("decomposePar", shell=True)
 
     #Setup Changes
     with cd(TEST_DIR):
@@ -67,8 +66,8 @@ def test_newtest(wallvel):
 
         #Run the case
         run.setup()
-        run.execute(blocking=True, print_output=True, extra_cmds="-M")
+        run.execute(blocking=True, print_output=False, extra_cmds="-M")
 
         #Check results are correct
-        check_OpenFOAM_vs_Analytical(rundir)
+        check_OpenFOAM_vs_Analytical(rundir, parallel_run=False)
 

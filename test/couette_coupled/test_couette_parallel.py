@@ -37,7 +37,7 @@ TEST_DIR = os.path.dirname(os.path.realpath(__file__))
 nx = 6; nz = 6
 px = 1; pz = 1
 params = []
-l = list(itertools.combinations_with_replacement(range(1,3), 4))
+l = list(itertools.combinations_with_replacement(list(range(1,3)), 4))
 
 #Travis is so slow now need to run only 2 processes max
 l[-1] = (2,1,2,2)

@@ -45,7 +45,7 @@ def setup():
 
 
 #Main time loop
-time = range(1000)
+time = list(range(1000))
 @pytest.mark.parametrize("time", time)
 def test_loop(setup, time):
 
@@ -67,7 +67,7 @@ def test_loop(setup, time):
     #Assert error bounds for L2 norm
     ur = np.mean(recvbuf[0,:,:,:],(0,2))
     error = np.sum(np.abs(100*(u_anal[1:-1:2] - ur)/U))
-    print(time, "Error = ", error)
+    print((time, "Error = ", error))
     if time < 10:
         assert error < 20., "Error in inital 10 steps greater than 20%"
     elif time < 30:

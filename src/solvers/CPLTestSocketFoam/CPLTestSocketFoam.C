@@ -51,7 +51,6 @@ int main(int argc, char *argv[])
 
     // Create a CPL object (not used if uncoupled) and intialises MPI
     CPLSocketFOAM CPL;
-
     if (coupled)
         CPL.initComms(argc, argv);
 
