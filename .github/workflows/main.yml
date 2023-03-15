@@ -173,23 +173,29 @@ jobs:
            blockMesh
            decomposePar -force
            mpiexec -n 2 CPLTestSocketFoam -parallel : -n 2 ./MD
-           
+
        #########################################   
        #  Run all further tests using Pytest   #
        #########################################
-      #- name: Update pip
-      #  run: python -m pip install --upgrade pip
+      - name: Update pip
+        run: python -m pip install --upgrade pip
 
-      #- name: Install pytest
-      #  run: pip install pytest
-          
-      #- name: Install mpi4py
-      #  run: pip install mpi4py
+      - name: Install mpi4py
+        run: pip install mpi4py
+            
+      - name: Install pytest
+        run: pip install pytest
 
-      #- name: Install scientific packages
-      #  run: pip install numpy scipy matplotlib
-           
-      - uses: actions/checkout@v2
-      - name: Setup tmate session
-        if: ${{ failure() }}
-        uses: mxschmitt/action-tmate@v3
+      - name: Install scientific packages
+        run: pip install numpy scipy matplotlib
+
+      - name: Test CPLIcoFoam Couette
+        run: |      
+           source SOURCEME.sh || true
+           cd ./test/couette_coupled/
+           pytest -s test/couette_coupled/test_couette.py 
+
+      #- uses: actions/checkout@v2
+      #- name: Setup tmate session
+      #  if: ${{ failure() }}
+      #  uses: mxschmitt/action-tmate@v3
