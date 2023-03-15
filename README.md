@@ -12,7 +12,7 @@
 The following environment variables:
 
     FOAM_CPL_SOCKET_LIBBIN = $FOAM_INST_DIR/cpl-socket/lib
-    LD_LIBRARY_PATH        = $LD_LIBRARY_PATH:$FOAM_CPL_LIBBIN
+    LD_LIBRARY_PATH        = $FOAM_CPL_LIBBIN:$LD_LIBRARY_PATH
 
 **must be defined** in order for a) the compilation to work and b) the library
 to be found by the ld linker. They are conveniently defined in the config 
@@ -33,8 +33,8 @@ First, change directory to CPL_APP_OPENFOAM-DEV,
 
     echo "/path/to/openfoam/directory/" > CODE_INST_DIR
 
-Note that the folder in this directory is expected to be called OpenFOAM-3.0.1. 
-This is the currently supported OpenFOAM version.
+Note that the folder in this directory is expected to be called OpenFOAM-v2106 
+Currently supported OpenFOAM versions include v2106, v2112 and previously 3.0.1. In addition, a version using [Foam-extend](https://github.com/FoamScience/CPL_FoamExtend) has been developed.
 
 Now, to build the various solvers, it may be as simple as,
 
@@ -43,9 +43,9 @@ Now, to build the various solvers, it may be as simple as,
 N.B.: warnings from the included MPI headers may be ignored. This makes a range of OpenFOAM solvers, including
 
    - CPLTestFoam - A version of an OpenFOAM solver with the same contents as the [CPL library minimal send and recieve mocks](https://github.com/Crompulence/cpl-library/tree/master/examples/minimal_send_recv_mocks), this tests to see if both CPL library and OpenFOAM is built correctly and exchnages information using the code in examples/CPLTestFoam. 
-   - CPLTestSocketFoam - A minimal test of the functionality of the CPLSocket code which is used to exchange information and set boundary conditions in OpenFOAM, run using the examples/CPLTestSocketFoam.
+   - CPLTestSocketFoam - A minimal test of the functionality of the CPLSocket code which is used to exchange information and set boundary conditions in OpenFOAM, run using the examples/CPLTestSocketFoam with debugging information shown.
+   - CPLIcoFOAM - A basic fluid solver for MD-CFD coupling which partially overlaps an MD simulation, same basic code as CPLTestSocketFoam but without the degging information.
    - CPLinterCondensatingEvaporatingFoam - Used for multi-phase simulations and runs with the example in examples/interCondensatingEvaporatingFoam.
-   - CPLIcoFOAM - A basic fluid solver for MD-CFD coupling which partially overlaps an MD simulation, same code as CPLTestSocketFoam.
    - CPLSediFOAM - SediFOAM (https://github.com/xiaoh/sediFoam) adapted to use the CPL library philosophy of minimal linked library.
    - CPLCFDDEMFOAM - CFDDEM (https://www.cfdem.com/) adapted to use the CPL library philosophy of minimal linked library.
 
