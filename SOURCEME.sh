@@ -12,22 +12,6 @@
 #~~~
 #
 
-#Check if CPL path has been set by source SOURCEME.sh in CPL library
-if [ -z $CPL_PATH ]; then
-    echo "CPL PATH is not defined for cpl-library, "
-    echo "trying to use CPL_INST_DIR file"
-    CPL_SOURCEME=$(cat CPL_INST_DIR)/SOURCEME.sh
-
-    if [ -f $CPL_SOURCEME ]; then
-        source $CPL_SOURCEME
-    else
-        echo "WARNING:"
-        echo " CPL library SOURCEME.sh file $CPL_SOURCEME not found."
-    fi
-
-fi
-
-
 # Environment variable for install directory
 export FOAM_CPL_VERSION=v2106
 CWD="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
