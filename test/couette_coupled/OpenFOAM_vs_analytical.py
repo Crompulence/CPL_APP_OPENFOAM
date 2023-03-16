@@ -1,6 +1,7 @@
 import numpy as np
 import sys
 import subprocess as sp
+import time
 
 # Import symwraplib
 sys.path.insert(0, "./pyDataView/")
@@ -72,11 +73,26 @@ def check_OpenFOAM_vs_Analytical(fdir, plotstuff = False, parallel_run=True):
         if time%OpenFOAMwriteinterval == 0:
             rec = int(time/float(OpenFOAMwriteinterval))
             try:
-                OpenFOAMuObj = ppl.OpenFOAM_vField(OpenFOAMfdir, parallel_run=parallel_run)
-                y, u = OpenFOAMuObj.profile(1,startrec=rec,endrec=rec)
-                halou = OpenFOAMuObj.read_halo(startrec=rec,endrec=rec, haloname="CPLReceiveMD")
-                print(halou.shape, halou[...,0].min(),halou[...,0].max())
-                halout = OpenFOAMuObj.read_halo(startrec=rec,endrec=rec, haloname="movingWall")
+                read_attempt=5
+                while True:
+                    try:
+                        OpenFOAMuObj = ppl.OpenFOAM_vField(OpenFOAMfdir, parallel_run=parallel_run)
+                        y, u = OpenFOAMuObj.profile(1,startrec=rec,endrec=rec)
+                        halou = OpenFOAMuObj.read_halo(startrec=rec,endrec=rec, haloname="CPLReceiveMD")
+                        print(halou.shape, halou[...,0].min(),halou[...,0].max())
+                        halout = OpenFOAMuObj.read_halo(startrec=rec,endrec=rec, haloname="movingWall")
+                        break
+                    except ppl.field.OutsideRecRange:
+                        if (read_attempt == 0):
+                            raise
+                        else:
+                            print("At record=", rec, "data not found", 
+                                  "read attempts left=", read_attempt, 
+                                  ". Waiting 2 seconds and trying again.")
+                            time.wait(2.)
+                            read_attempt =- 1
+                            continue
+                            
                 y_anal, u_anal = CAObj.get_vprofile(time*dt, flip=True)
                 error = (u_anal[2:-1:2] - u[:,0])/U #/u_anal[2:-1:2]
                 #error[u_anal[2:-1:2] < 0.005] = 0.
@@ -102,7 +118,6 @@ def check_OpenFOAM_vs_Analytical(fdir, plotstuff = False, parallel_run=True):
                         plt.savefig('out{:05}.png'.format(n)); n+=1
 
                         ax.cla()
-
             
                 l2 = np.sqrt(np.sum(error[1:]**2))
                 if not np.isnan(l2):
