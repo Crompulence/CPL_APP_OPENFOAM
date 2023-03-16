@@ -89,7 +89,7 @@ def check_OpenFOAM_vs_Analytical(fdir, plotstuff = False, parallel_run=True):
                             print("At record=", rec, "data not found", 
                                   "read attempts left=", read_attempt, 
                                   ". Waiting 2 seconds and trying again.")
-                            time.wait(2.)
+                            time.sleep(2.)
                             read_attempt =- 1
                             continue
                             
