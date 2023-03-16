@@ -4,6 +4,7 @@ import sys
 import shutil
 import numpy as np
 import subprocess as sp
+import time
 from OpenFOAM_vs_analytical import check_OpenFOAM_vs_Analytical
 
 class cd:
@@ -67,7 +68,9 @@ def test_newtest(wallvel):
         #Run the case
         run.setup()
         run.execute(blocking=True, print_output=False, extra_cmds="-M -p")
-
+        #Blocking doesn't seem to work correctly on Actions so add wait
+        time.sleep(5.0)
+        
         #Check results are correct
         check_OpenFOAM_vs_Analytical(rundir, parallel_run=False)
 
