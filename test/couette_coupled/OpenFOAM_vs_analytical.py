@@ -73,7 +73,7 @@ def check_OpenFOAM_vs_Analytical(fdir, plotstuff = False, parallel_run=True):
         if t%OpenFOAMwriteinterval == 0:
             rec = int(t/float(OpenFOAMwriteinterval))
             try:
-                read_attempt=5
+                read_attempt=10
                 while True:
                     try:
                         OpenFOAMuObj = ppl.OpenFOAM_vField(OpenFOAMfdir, parallel_run=parallel_run)
@@ -90,7 +90,7 @@ def check_OpenFOAM_vs_Analytical(fdir, plotstuff = False, parallel_run=True):
                                   "read attempts left=", read_attempt, 
                                   ". Waiting 2 seconds and trying again.")
                             time.sleep(2.)
-                            read_attempt =- 1
+                            read_attempt -= 1
                             continue
                             
                 y_anal, u_anal = CAObj.get_vprofile(t*dt, flip=True)
