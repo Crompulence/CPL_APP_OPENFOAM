@@ -205,7 +205,7 @@ jobs:
            source SOURCEME.sh || true
            pytest -s ./test/couette_coupled/test_couette_parallel.py
 
-      #- uses: actions/checkout@v2
-      #- name: Setup tmate session
-      #  if: ${{ failure() }}
-      #  uses: mxschmitt/action-tmate@v3
+      - uses: actions/checkout@v2
+      - name: Setup tmate session
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
