@@ -88,7 +88,7 @@ def test_newtest(nx, nz, px, pz):
                                        "BOUNDARY_EXTENTS": topo})
         #Run the case
         run.setup()
-        run.execute(blocking=True, print_output=False, extra_cmds="-M")
+        run.execute(blocking=True, print_output=False, extra_cmds="-M -p")
 
     resultsdir = rundir + "/cfd_data/"+inputfile
     #print("resultsdir", resultsdir, "\n\n\n")
