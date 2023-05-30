@@ -16,7 +16,7 @@ The following environment variables:
 
 **must be defined** in order for a) the compilation to work and b) the library
 to be found by the ld linker. They are conveniently defined in the config 
-file SOURCEME, which can be used as follows: 
+file SOURCEME.sh, located in cpl-library, which can be used as follows: 
 
     $  source SOURCEME.sh
 
@@ -92,11 +92,11 @@ New folders created by building process
 5 ) To patch a Pstream
 =========================
 
-Why do you need to do this? If you want to run two codes with the colon MPMD syntax,
+Why do you need to do this? If you want to run two codes which share a single MPI_COMM_WORLD,
 
     mpiexec -n 4 CPLIcoFoam : -n 16 ./MD
 
-where they have a shared `MPI_COMM_WORLD`, which we will call the "shared" paradigm of coupling. This is as opposed to the distinct paradigm where both codes are started individually and join together. The distinct paradigm relies on the ((not always functional) `MPI_Open_port` and `MPI_Comm_accept` linking to create an intercommunicator between the `MPI_COMM_WORLD` intracommunicators of both codes. The sharing of `MPI_COMM_WORLD` in shared coupling means that any use of `MPI_COMM_WORLD` in any MPI communications will now cause errors or deadlock in the coupled code, so these have to be replaced with a local comm (i.e. a CFD_WORLD_COMM). Patching Pstream, the location where all MPI communication is contained, is the easiest way to do that for OpenFOAM. The steps are as follows (given in general terms to account for future OpenFOAM changes but specifically done up to v2112).
+which we will call the "shared" paradigm of coupling. This is as opposed to the distinct paradigm where both codes are started individually and join together. The distinct paradigm relies on the ((not always functional) `MPI_Open_port` and `MPI_Comm_accept` linking to create an intercommunicator between the `MPI_COMM_WORLD` intracommunicators of both codes. The sharing of `MPI_COMM_WORLD` in shared coupling means that any use of `MPI_COMM_WORLD` in any MPI communications will now cause errors or deadlock in the coupled code, so these have to be replaced with a local comm (i.e. a CFD_WORLD_COMM). Patching Pstream, the location where all MPI communication is contained, is the easiest way to do that for OpenFOAM. The steps are as follows (given in general terms to account for future OpenFOAM changes but specifically done up to v2112).
 
 The Pstream which is used can be replaced for all codes using `LD_LIBRARY_PATH`, it goes from version in
 
