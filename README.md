@@ -36,7 +36,7 @@ First, change directory to CPL_APP_OPENFOAM-DEV,
 Note that the folder in this directory is expected to be called OpenFOAM-v2106 
 Currently supported OpenFOAM versions include v2106, v2112 and previously 3.0.1. In addition, a version using [Foam-extend](https://github.com/FoamScience/CPL_FoamExtend) has been developed.
 
-Next, source the SOURCME.sh file. NB this is the SOURCEME.sh file which sits inside CPL_APP_OPENFOAM-DEV and is different to the SOURCEME.sh file whish sites inside cpl-library.
+Next, source the SOURCEME.sh file. NB this is the SOURCEME.sh file which sits inside the CPL_APP_OPENFOAM directory and is different to the SOURCEME.sh file which sits inside the cpl-library directory.
 
     $  source SOURCEME.sh
 
