@@ -99,42 +99,41 @@ Why do you need to do this? If you want to run two codes which share a single MP
 
     mpiexec -n 4 CPLIcoFoam : -n 16 ./MD
 
-which we will call the "shared" paradigm of coupling. This is as opposed to the distinct paradigm where both codes are started individually and join together. The distinct paradigm relies on the ((not always functional) `MPI_Open_port` and `MPI_Comm_accept` linking to create an intercommunicator between the `MPI_COMM_WORLD` intracommunicators of both codes. The sharing of `MPI_COMM_WORLD` in shared coupling means that any use of `MPI_COMM_WORLD` in any MPI communications will now cause errors or deadlock in the coupled code, so these have to be replaced with a local comm (i.e. a CFD_WORLD_COMM). Patching Pstream, the location where all MPI communication is contained, is the easiest way to do that for OpenFOAM. The steps are as follows (given in general terms to account for future OpenFOAM changes but specifically done up to v2112).
+which we will call the "shared" paradigm of coupling. This is as opposed to the distinct paradigm where both codes have their own distinct `MPI_COMM_WORLD` and are started individually then join together. The distinct paradigm relies on the ((not always functional) `MPI_Open_port` and `MPI_Comm_accept` linking to create an intercommunicator between the `MPI_COMM_WORLD` intracommunicators of both codes. The sharing of `MPI_COMM_WORLD` in shared coupling means that any use of `MPI_COMM_WORLD` in any MPI communications will now cause errors or deadlock in the coupled code, so these have to be replaced with a local comm (i.e. a CFD_WORLD_COMM). Patching OpenFOAMS's Pstream, the location where all MPI communication is contained, is the easiest way to do that for OpenFOAM. The steps are as follows (given in general terms to account for future OpenFOAM changes but specifically done up to v2112).
 
-The Pstream which is used can be replaced for all codes using `LD_LIBRARY_PATH`, it goes from a version with a path similar to
+The Pstream which is used can be replaced for all codes using the `LD_LIBRARY_PATH` environment variable, such that the location of the Pstream library, namely libPstream.so, changes from a version with a path like
 
-    /home/USERNAME/codes/CFD/OpenFOAM/openfoam-OpenFOAM-v2112.220610/platforms/linux64GccDPInt32Opt/lib/libPstream.so
+    /home/USERNAME/codes/CFD/OpenFOAM/openfoam-OpenFOAM-v2112.220610/platforms/linux64GccDPInt32Opt/lib/Pstream.so
     
 to something like
 
-    /home/USERNAME/CPL_APP_OPENFOAM/lib/libPstream.so
+    /home/USERNAME/CPL_APP_OPENFOAM/lib/Pstream.so
     
-NB it is possible that, at this point, the libPstream.so library has not been created yet.
+We will now describe the steps to patch Pstream where we check for correctness after each step.
 
 The first step in patching requires recursively copying all of the Pstream/mpi file from the OpenFOAM code diretory. e.g. in my case
 
     /home/USERNAME/codes/CFD/openfoam-OpenFOAM-v2112.220610/src/Pstream/mpi/
 
 to a folder called `CPLPstream` in the `CPL_APP_OPENFOAM/src` directory, replacing whatever files are there.
+
 You can try building this with wmake, which should add PStream to `CPL_APP_OPENFOAM/lib` and
 by changing `LD_LIBRARY_PATH` you should see included `CPL_APP_OPENFOAM/lib/Pstream.so`
-replacing the default `Pstream.so` on your OpenFOAM executables, e.g.
+replacing the default `Pstream.so` in your OpenFOAM executables.  For example, the following command displays that libraries are included in the icoFoam executable provided by your OpenFOAM, where you'll see your version of Pstream.so is now included.
 
     ldd /home/USERNAME/codes/CFD/OpenFOAM/openfoam-OpenFOAM-v2112.220610/platforms/linux64GccDPInt32Opt/bin/icoFoam
 
-Now, you can edit this Pstream as needed to make sure the shared CPL paradigm works. Then appending the following line to the bottom of the file `PstreamGlobals.H`:
+Now, you can edit this copy of Pstream in `CPL_APP_OPENFOAM/src/CPLPstream` as needed to ensure the shared CPL paradigm works. For your convienance, the following line has already been appended to the bottom of the file `PstreamGlobals.H`:
 
     extern MPI_Comm CPLRealmComm;
 
-and then setting CPLRealmComm to be `MPI_COMM_WORLD` for the default case which is nothing to do with coupling, i.e., update `PstreamGlobals.C` by appending at its end:
+and then setting CPLRealmComm to be `MPI_COMM_WORLD` for the default case which is nothing to do with coupling.  Again, for your convience, the file `PstreamGlobals.C` has the following line included at its end:
 
     MPI_Comm Foam::PstreamGlobals::CPLRealmComm = MPI_COMM_WORLD; 
 
 At this stage, you can rebuild Pstream again and functionality should be identical (we have just add a new variable so far).
 
 Next, find and replace every instance of `MPI_COMM_WORLD` in `UPStream.C` with `Foam::PstreamGlobals::CPLRealmComm`. You can rebuild Pstream and test again as nothing has changed, as the new `Foam::PstreamGlobals::CPLRealmComm` is still `MPI_COMM_WORLD`.
-
-NB In CPLPstream/Make/files, LIB is set to $(FOAM_MPI_LIBBIN)/libPstream.  If you are using a version of OpenFOAM that you did not install youself via, say, 'module load openfoam', then you will not have permission to create your library in $LIB.  To resolve this, edit CPLPstream/Make/files to set LIB to be, say, $(FOAM_CPL_APP_LIBBIN)/libPstream.
 
 Finally, in order to allow a "shared" MPI run, we need to define the `Foam::PstreamGlobals::CPLRealmComm` to be the value returned by `CPL.init`. In an example code this looks like:
 
@@ -161,12 +160,12 @@ Finally, in order to allow a "shared" MPI run, we need to define the `Foam::Pstr
         CPL::init(CFD_realm, CFD_COMM); 
 	    Foam::PstreamGlobals::CPLRealmComm = CFD_COMM;
 
-A few notes, the PstreamGlobals.H must be included so the variable introduced above can be set (and replace `MPI_COMM_WORLD`). Also, this should be called as early as possible in the main function of an OpenFOAM solver. The function which starts MPI `Foam::"UPstream::init"` and uses `Foam::PstreamGlobals::CPLRealmComm` is called by one of the include statements `#include "setRootCase.H"`, `#include "createTime.H"` or `#include "createMesh.H"`, so therefore 
+A few notes, the PstreamGlobals.H must be included so the variable introduced above can be set (and replace `MPI_COMM_WORLD`). Also, this should be called as early as possible in the main function of an OpenFOAM solver. The function which starts MPI `Foam::"UPstream::init"` and uses `Foam::PstreamGlobals::CPLRealmComm` is called by one of these three include statements `#include "setRootCase.H"`, `#include "createTime.H"` or `#include "createMesh.H"`, so therefore the two lines 
 
     CPL::init(CFD_realm, CFD_COMM); 
     Foam::PstreamGlobals::CPLRealmComm = CFD_COMM;
 
-must come immediately after MPI_init and the include PstreamGlobals.H must come before any of these include statements.
+must come immediately after `MPI_init`, and the `include PstreamGlobals.H` must come before any of these three include statements.
 
 
 
