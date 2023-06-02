@@ -123,11 +123,11 @@ replacing the default `Pstream.so` in your OpenFOAM executables.  For example, t
 
     ldd /home/USERNAME/codes/CFD/OpenFOAM/openfoam-OpenFOAM-v2112.220610/platforms/linux64GccDPInt32Opt/bin/icoFoam
 
-Now, you can edit this copy of Pstream in `CPL_APP_OPENFOAM/src/CPLPstream` as needed to ensure the shared CPL paradigm works. For your convienance, the following line has already been appended to the bottom of the file `PstreamGlobals.H`:
+Now, you can edit this copy of Pstream in `CPL_APP_OPENFOAM/src/CPLPstream` as needed to ensure the shared CPL paradigm works. The following line must be added as the last decleration line near the bottom of the file `PstreamGlobals.H`:
 
     extern MPI_Comm CPLRealmComm;
 
-and then setting CPLRealmComm to be `MPI_COMM_WORLD` for the default case which is nothing to do with coupling.  Again, for your convience, the file `PstreamGlobals.C` has the following line included at its end:
+and then setting CPLRealmComm to be `MPI_COMM_WORLD` for the default case which is nothing to do with coupling.  The file `PstreamGlobals.C` must now include the following line as the last decleration near the the bottom of the file:
 
     MPI_Comm Foam::PstreamGlobals::CPLRealmComm = MPI_COMM_WORLD; 
 
