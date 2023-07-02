@@ -23,7 +23,7 @@ source $FOAM_CPL_APP/SOURCEME.sh
 # using your own installtion: remove the last three lines and use these four lines instead
 # remmeber to update the path to the two SOURCEME.sh files
 #module load openfoam/com/v2106
-#module load lammps/13_Jun_2022
+#module switch gcc gcc/10.3.0
 #module load cray-python
 #source /work/y23/shared/cpl-openfoam-lammps/cpl-library/SOURCEME.sh
 #source /work/y23/shared/cpl-openfoam-lammps/CPL_APP_OPENFOAM/SOURCEME.sh
