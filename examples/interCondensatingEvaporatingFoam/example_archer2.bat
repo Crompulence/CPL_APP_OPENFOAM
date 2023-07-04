@@ -4,7 +4,7 @@
 #SBATCH --time=0:10:0
 #SBATCH --exclusive
 #SBATCH --export=none
-#SBATCH --account=ecseaf01
+#SBATCH --account=y23
 
 #SBATCH --partition=standard
 #SBATCH --qos=standard
@@ -23,8 +23,8 @@ source $FOAM_CPL_APP/SOURCEME.sh
 #module load openfoam/com/v2106
 #module switch gcc gcc/10.3.0
 #module load cray-python
-#source /work/y23/shared/cpl-openfoam-lammps/cpl-library/SOURCEME.sh
-#source /work/y23/shared/cpl-openfoam-lammps/CPL_APP_OPENFOAM/SOURCEME.sh
+#source /work/y23/y23/gavincpl/cpl-library/SOURCEME.sh
+#source /work/y23/y23/gavincpl/CPL_APP_OPENFOAM/SOURCEME.sh
 
 # load restor0Dir tool
 . ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
