@@ -6,7 +6,7 @@
 #SBATCH --export=none
 
 # you will need to change the account code
-#SBATCH --account=t42
+#SBATCH --account=y23
 #SBATCH --partition=standard
 #SBATCH --qos=standard
 
@@ -20,7 +20,7 @@ module load other-software
 module load cpl-openfoam/2106
 source $FOAM_CPL_APP/SOURCEME.sh
 
-# using your own installtion: remove the last three lines and use these four lines instead
+# using your own installtion: remove the last three lines and use these five lines instead
 # remmeber to update the path to the two SOURCEME.sh files
 #module load openfoam/com/v2106
 #module switch gcc gcc/10.3.0
