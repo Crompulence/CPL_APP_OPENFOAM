@@ -23,8 +23,8 @@ source $FOAM_CPL_APP/SOURCEME.sh
 #module load openfoam/com/v2106
 #module switch gcc gcc/10.3.0
 #module load cray-python
-#source /work/y23/shared/cpl-openfoam-lammps/cpl-library/SOURCEME.sh
-#source /work/y23/shared/cpl-openfoam-lammps/CPL_APP_OPENFOAM/SOURCEME.sh
+#source /work/y23/y23/gavincpl/cpl-library/SOURCEME.sh
+#source /work/y23/y23/gavincpl/CPL_APP_OPENFOAM/SOURCEME.sh
 
 # run blockMesh and decompasePar
 # NB these are both serial codes and should only be run within a parallel job if
