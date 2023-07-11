@@ -1,0 +1,343 @@
+g++ -std=c++11 -m64 -pthread -DOPENFOAM=2106 -DWM_DP -DWM_LABEL_SIZE=32 -Wall -Wextra -Wold-style-cast -Wnon-virtual-dtor -Wno-unused-parameter -Wno-invalid-offsetof -Wno-attributes -Wno-unknown-pragmas  -O3  -DNoRepository -ftemplate-depth-100 -IVoF -I/home/mirco/OpenFOAM/OpenFOAM-v2106/src/transportModels/twoPhaseMixture/lnInclude -I/home/mirco/OpenFOAM/OpenFOAM-v2106/src/transportModels -I/home/mirco/OpenFOAM/OpenFOAM-v2106/src/transportModels/incompressible/lnInclude -I/home/mirco/OpenFOAM/OpenFOAM-v2106/src/transportModels/interfaceProperties/lnInclude -I/home/mirco/OpenFOAM/OpenFOAM-v2106/src/TurbulenceModels/turbulenceModels/lnInclude -I/home/mirco/OpenFOAM/OpenFOAM-v2106/src/TurbulenceModels/incompressible/lnInclude -I/home/mirco/OpenFOAM/OpenFOAM-v2106/src/transportModels/immiscibleIncompressibleTwoPhaseMixture/lnInclude -I/home/mirco/OpenFOAM/OpenFOAM-v2106/src/finiteVolume/lnInclude -I/home/mirco/OpenFOAM/OpenFOAM-v2106/src/dynamicFvMesh/lnInclude -I/home/mirco/OpenFOAM/OpenFOAM-v2106/src/meshTools/lnInclude -I/home/mirco/OpenFOAM/OpenFOAM-v2106/src/sampling/lnInclude -iquote. -IlnInclude -I/home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude -I/home/mirco/OpenFOAM/OpenFOAM-v2106/src/OSspecific/POSIX/lnInclude   -fPIC -c interFoamHardtPhaseChange.C -o Make/linux64GccDPInt32Opt/interFoamHardtPhaseChange.o
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/postProcess.H:147:0,
+                 from interFoamHardtPhaseChange.C:64:
+./createFields.H: In function ‘int main(int, char**)’:
+./createFields.H:101:49: warning: ‘Foam::dimensioned<Type>::dimensioned(Foam::Istream&) [with Type = double]’ is deprecated: Since 2018-11 [-Wdeprecated-declarations]
+     dimensionedScalar k1 (phase1.lookup("kappa"));
+                                                 ^
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.H:571:0,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedScalar.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/TimeState.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/Time.H:50,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/finiteVolume/lnInclude/fvCFD.H:6,
+                 from interFoamHardtPhaseChange.C:38:
+/home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.C:305:1: note: declared here
+ Foam::dimensioned<Type>::dimensioned(Istream& is)
+ ^~~~
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/postProcess.H:147:0,
+                 from interFoamHardtPhaseChange.C:64:
+./createFields.H:102:47: warning: ‘Foam::dimensioned<Type>::dimensioned(Foam::Istream&) [with Type = double]’ is deprecated: Since 2018-11 [-Wdeprecated-declarations]
+     dimensionedScalar cp1 (phase1.lookup("Cp"));
+                                               ^
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.H:571:0,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedScalar.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/TimeState.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/Time.H:50,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/finiteVolume/lnInclude/fvCFD.H:6,
+                 from interFoamHardtPhaseChange.C:38:
+/home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.C:305:1: note: declared here
+ Foam::dimensioned<Type>::dimensioned(Istream& is)
+ ^~~~
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/postProcess.H:147:0,
+                 from interFoamHardtPhaseChange.C:64:
+./createFields.H:103:47: warning: ‘Foam::dimensioned<Type>::dimensioned(Foam::Istream&) [with Type = double]’ is deprecated: Since 2018-11 [-Wdeprecated-declarations]
+     dimensionedScalar hf1 (phase1.lookup("Hf"));
+                                               ^
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.H:571:0,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedScalar.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/TimeState.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/Time.H:50,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/finiteVolume/lnInclude/fvCFD.H:6,
+                 from interFoamHardtPhaseChange.C:38:
+/home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.C:305:1: note: declared here
+ Foam::dimensioned<Type>::dimensioned(Istream& is)
+ ^~~~
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/postProcess.H:147:0,
+                 from interFoamHardtPhaseChange.C:64:
+./createFields.H:105:50: warning: ‘Foam::dimensioned<Type>::dimensioned(Foam::Istream&) [with Type = double]’ is deprecated: Since 2018-11 [-Wdeprecated-declarations]
+     dimensionedScalar k2  (phase2.lookup("kappa"));
+                                                  ^
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.H:571:0,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedScalar.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/TimeState.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/Time.H:50,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/finiteVolume/lnInclude/fvCFD.H:6,
+                 from interFoamHardtPhaseChange.C:38:
+/home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.C:305:1: note: declared here
+ Foam::dimensioned<Type>::dimensioned(Istream& is)
+ ^~~~
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/postProcess.H:147:0,
+                 from interFoamHardtPhaseChange.C:64:
+./createFields.H:106:47: warning: ‘Foam::dimensioned<Type>::dimensioned(Foam::Istream&) [with Type = double]’ is deprecated: Since 2018-11 [-Wdeprecated-declarations]
+     dimensionedScalar cp2 (phase2.lookup("Cp"));
+                                               ^
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.H:571:0,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedScalar.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/TimeState.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/Time.H:50,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/finiteVolume/lnInclude/fvCFD.H:6,
+                 from interFoamHardtPhaseChange.C:38:
+/home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.C:305:1: note: declared here
+ Foam::dimensioned<Type>::dimensioned(Istream& is)
+ ^~~~
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/postProcess.H:147:0,
+                 from interFoamHardtPhaseChange.C:64:
+./createFields.H:107:47: warning: ‘Foam::dimensioned<Type>::dimensioned(Foam::Istream&) [with Type = double]’ is deprecated: Since 2018-11 [-Wdeprecated-declarations]
+     dimensionedScalar hf2 (phase2.lookup("Hf"));
+                                               ^
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.H:571:0,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedScalar.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/TimeState.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/Time.H:50,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/finiteVolume/lnInclude/fvCFD.H:6,
+                 from interFoamHardtPhaseChange.C:38:
+/home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.C:305:1: note: declared here
+ Foam::dimensioned<Type>::dimensioned(Istream& is)
+ ^~~~
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/postProcess.H:147:0,
+                 from interFoamHardtPhaseChange.C:64:
+./createFields.H:109:56: warning: ‘Foam::dimensioned<Type>::dimensioned(Foam::Istream&) [with Type = double]’ is deprecated: Since 2018-11 [-Wdeprecated-declarations]
+     dimensionedScalar Tsat (pcProperties.lookup("Tsat"));
+                                                        ^
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.H:571:0,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedScalar.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/TimeState.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/Time.H:50,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/finiteVolume/lnInclude/fvCFD.H:6,
+                 from interFoamHardtPhaseChange.C:38:
+/home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.C:305:1: note: declared here
+ Foam::dimensioned<Type>::dimensioned(Istream& is)
+ ^~~~
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/postProcess.H:147:0,
+                 from interFoamHardtPhaseChange.C:64:
+./createFields.H:110:50: warning: ‘Foam::dimensioned<Type>::dimensioned(Foam::Istream&) [with Type = double]’ is deprecated: Since 2018-11 [-Wdeprecated-declarations]
+     dimensionedScalar R (pcProperties.lookup("R"));
+                                                  ^
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.H:571:0,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedScalar.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/TimeState.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/Time.H:50,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/finiteVolume/lnInclude/fvCFD.H:6,
+                 from interFoamHardtPhaseChange.C:38:
+/home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.C:305:1: note: declared here
+ Foam::dimensioned<Type>::dimensioned(Istream& is)
+ ^~~~
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/postProcess.H:147:0,
+                 from interFoamHardtPhaseChange.C:64:
+./createFields.H:111:66: warning: ‘Foam::dimensioned<Type>::dimensioned(Foam::Istream&) [with Type = double]’ is deprecated: Since 2018-11 [-Wdeprecated-declarations]
+     dimensionedScalar sigmaEvap (pcProperties.lookup("sigmaEvap"));
+                                                                  ^
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.H:571:0,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedScalar.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/TimeState.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/Time.H:50,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/finiteVolume/lnInclude/fvCFD.H:6,
+                 from interFoamHardtPhaseChange.C:38:
+/home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.C:305:1: note: declared here
+ Foam::dimensioned<Type>::dimensioned(Istream& is)
+ ^~~~
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/postProcess.H:147:0,
+                 from interFoamHardtPhaseChange.C:64:
+./createFields.H:112:66: warning: ‘Foam::dimensioned<Type>::dimensioned(Foam::Istream&) [with Type = double]’ is deprecated: Since 2018-11 [-Wdeprecated-declarations]
+     dimensionedScalar sigmaCond (pcProperties.lookup("sigmaCond"));
+                                                                  ^
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.H:571:0,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedScalar.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/TimeState.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/Time.H:50,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/finiteVolume/lnInclude/fvCFD.H:6,
+                 from interFoamHardtPhaseChange.C:38:
+/home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.C:305:1: note: declared here
+ Foam::dimensioned<Type>::dimensioned(Istream& is)
+ ^~~~
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/postProcess.H:147:0,
+                 from interFoamHardtPhaseChange.C:64:
+./createFields.H:113:58: warning: ‘Foam::dimensioned<Type>::dimensioned(Foam::Istream&) [with Type = double]’ is deprecated: Since 2018-11 [-Wdeprecated-declarations]
+     dimensionedScalar DmDot (pcProperties.lookup("DmDot"));
+                                                          ^
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.H:571:0,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedScalar.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/TimeState.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/Time.H:50,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/finiteVolume/lnInclude/fvCFD.H:6,
+                 from interFoamHardtPhaseChange.C:38:
+/home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.C:305:1: note: declared here
+ Foam::dimensioned<Type>::dimensioned(Istream& is)
+ ^~~~
+In file included from interFoamHardtPhaseChange.C:72:0:
+createFields.H:101:49: warning: ‘Foam::dimensioned<Type>::dimensioned(Foam::Istream&) [with Type = double]’ is deprecated: Since 2018-11 [-Wdeprecated-declarations]
+     dimensionedScalar k1 (phase1.lookup("kappa"));
+                                                 ^
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.H:571:0,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedScalar.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/TimeState.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/Time.H:50,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/finiteVolume/lnInclude/fvCFD.H:6,
+                 from interFoamHardtPhaseChange.C:38:
+/home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.C:305:1: note: declared here
+ Foam::dimensioned<Type>::dimensioned(Istream& is)
+ ^~~~
+In file included from interFoamHardtPhaseChange.C:72:0:
+createFields.H:102:47: warning: ‘Foam::dimensioned<Type>::dimensioned(Foam::Istream&) [with Type = double]’ is deprecated: Since 2018-11 [-Wdeprecated-declarations]
+     dimensionedScalar cp1 (phase1.lookup("Cp"));
+                                               ^
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.H:571:0,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedScalar.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/TimeState.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/Time.H:50,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/finiteVolume/lnInclude/fvCFD.H:6,
+                 from interFoamHardtPhaseChange.C:38:
+/home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.C:305:1: note: declared here
+ Foam::dimensioned<Type>::dimensioned(Istream& is)
+ ^~~~
+In file included from interFoamHardtPhaseChange.C:72:0:
+createFields.H:103:47: warning: ‘Foam::dimensioned<Type>::dimensioned(Foam::Istream&) [with Type = double]’ is deprecated: Since 2018-11 [-Wdeprecated-declarations]
+     dimensionedScalar hf1 (phase1.lookup("Hf"));
+                                               ^
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.H:571:0,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedScalar.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/TimeState.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/Time.H:50,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/finiteVolume/lnInclude/fvCFD.H:6,
+                 from interFoamHardtPhaseChange.C:38:
+/home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.C:305:1: note: declared here
+ Foam::dimensioned<Type>::dimensioned(Istream& is)
+ ^~~~
+In file included from interFoamHardtPhaseChange.C:72:0:
+createFields.H:105:50: warning: ‘Foam::dimensioned<Type>::dimensioned(Foam::Istream&) [with Type = double]’ is deprecated: Since 2018-11 [-Wdeprecated-declarations]
+     dimensionedScalar k2  (phase2.lookup("kappa"));
+                                                  ^
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.H:571:0,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedScalar.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/TimeState.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/Time.H:50,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/finiteVolume/lnInclude/fvCFD.H:6,
+                 from interFoamHardtPhaseChange.C:38:
+/home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.C:305:1: note: declared here
+ Foam::dimensioned<Type>::dimensioned(Istream& is)
+ ^~~~
+In file included from interFoamHardtPhaseChange.C:72:0:
+createFields.H:106:47: warning: ‘Foam::dimensioned<Type>::dimensioned(Foam::Istream&) [with Type = double]’ is deprecated: Since 2018-11 [-Wdeprecated-declarations]
+     dimensionedScalar cp2 (phase2.lookup("Cp"));
+                                               ^
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.H:571:0,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedScalar.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/TimeState.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/Time.H:50,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/finiteVolume/lnInclude/fvCFD.H:6,
+                 from interFoamHardtPhaseChange.C:38:
+/home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.C:305:1: note: declared here
+ Foam::dimensioned<Type>::dimensioned(Istream& is)
+ ^~~~
+In file included from interFoamHardtPhaseChange.C:72:0:
+createFields.H:107:47: warning: ‘Foam::dimensioned<Type>::dimensioned(Foam::Istream&) [with Type = double]’ is deprecated: Since 2018-11 [-Wdeprecated-declarations]
+     dimensionedScalar hf2 (phase2.lookup("Hf"));
+                                               ^
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.H:571:0,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedScalar.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/TimeState.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/Time.H:50,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/finiteVolume/lnInclude/fvCFD.H:6,
+                 from interFoamHardtPhaseChange.C:38:
+/home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.C:305:1: note: declared here
+ Foam::dimensioned<Type>::dimensioned(Istream& is)
+ ^~~~
+In file included from interFoamHardtPhaseChange.C:72:0:
+createFields.H:109:56: warning: ‘Foam::dimensioned<Type>::dimensioned(Foam::Istream&) [with Type = double]’ is deprecated: Since 2018-11 [-Wdeprecated-declarations]
+     dimensionedScalar Tsat (pcProperties.lookup("Tsat"));
+                                                        ^
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.H:571:0,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedScalar.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/TimeState.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/Time.H:50,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/finiteVolume/lnInclude/fvCFD.H:6,
+                 from interFoamHardtPhaseChange.C:38:
+/home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.C:305:1: note: declared here
+ Foam::dimensioned<Type>::dimensioned(Istream& is)
+ ^~~~
+In file included from interFoamHardtPhaseChange.C:72:0:
+createFields.H:110:50: warning: ‘Foam::dimensioned<Type>::dimensioned(Foam::Istream&) [with Type = double]’ is deprecated: Since 2018-11 [-Wdeprecated-declarations]
+     dimensionedScalar R (pcProperties.lookup("R"));
+                                                  ^
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.H:571:0,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedScalar.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/TimeState.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/Time.H:50,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/finiteVolume/lnInclude/fvCFD.H:6,
+                 from interFoamHardtPhaseChange.C:38:
+/home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.C:305:1: note: declared here
+ Foam::dimensioned<Type>::dimensioned(Istream& is)
+ ^~~~
+In file included from interFoamHardtPhaseChange.C:72:0:
+createFields.H:111:66: warning: ‘Foam::dimensioned<Type>::dimensioned(Foam::Istream&) [with Type = double]’ is deprecated: Since 2018-11 [-Wdeprecated-declarations]
+     dimensionedScalar sigmaEvap (pcProperties.lookup("sigmaEvap"));
+                                                                  ^
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.H:571:0,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedScalar.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/TimeState.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/Time.H:50,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/finiteVolume/lnInclude/fvCFD.H:6,
+                 from interFoamHardtPhaseChange.C:38:
+/home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.C:305:1: note: declared here
+ Foam::dimensioned<Type>::dimensioned(Istream& is)
+ ^~~~
+In file included from interFoamHardtPhaseChange.C:72:0:
+createFields.H:112:66: warning: ‘Foam::dimensioned<Type>::dimensioned(Foam::Istream&) [with Type = double]’ is deprecated: Since 2018-11 [-Wdeprecated-declarations]
+     dimensionedScalar sigmaCond (pcProperties.lookup("sigmaCond"));
+                                                                  ^
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.H:571:0,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedScalar.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/TimeState.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/Time.H:50,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/finiteVolume/lnInclude/fvCFD.H:6,
+                 from interFoamHardtPhaseChange.C:38:
+/home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.C:305:1: note: declared here
+ Foam::dimensioned<Type>::dimensioned(Istream& is)
+ ^~~~
+In file included from interFoamHardtPhaseChange.C:72:0:
+createFields.H:113:58: warning: ‘Foam::dimensioned<Type>::dimensioned(Foam::Istream&) [with Type = double]’ is deprecated: Since 2018-11 [-Wdeprecated-declarations]
+     dimensionedScalar DmDot (pcProperties.lookup("DmDot"));
+                                                          ^
+In file included from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.H:571:0,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedScalar.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/TimeState.H:41,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/Time.H:50,
+                 from /home/mirco/OpenFOAM/OpenFOAM-v2106/src/finiteVolume/lnInclude/fvCFD.H:6,
+                 from interFoamHardtPhaseChange.C:38:
+/home/mirco/OpenFOAM/OpenFOAM-v2106/src/OpenFOAM/lnInclude/dimensionedType.C:305:1: note: declared here
+ Foam::dimensioned<Type>::dimensioned(Istream& is)
+ ^~~~
+In file included from VoF/alphaEqnSubCycle.H:32:0,
+                 from interFoamHardtPhaseChange.C:150:
+VoF/alphaEqn.H:59:29: error: ‘interface’ was not declared in this scope
+     surfaceScalarField phic(interface.cAlpha()*mag(phi/mesh.magSf()));
+                             ^~~~~~~~~
+In file included from VoF/alphaEqnSubCycle.H:32:0,
+                 from interFoamHardtPhaseChange.C:150:
+VoF/alphaEqn.H:254:9: error: ‘rhoCpPhi’ was not declared in this scope
+         rhoCpPhi = alphaPhi10*(rho1f*cp1 - rho2f*cp2) + phiCN*rho2f*cp2;
+         ^~~~~~~~
+VoF/alphaEqn.H:254:9: note: suggested alternative: ‘rhoPhi’
+         rhoCpPhi = alphaPhi10*(rho1f*cp1 - rho2f*cp2) + phiCN*rho2f*cp2;
+         ^~~~~~~~
+         rhoPhi
+VoF/alphaEqn.H:267:9: error: ‘rhoCpPhi’ was not declared in this scope
+         rhoCpPhi = alphaPhi10*(rho1f*cp1 - rho2f*cp2) + phi*rho2f*cp2;
+         ^~~~~~~~
+VoF/alphaEqn.H:267:9: note: suggested alternative: ‘rhoPhi’
+         rhoCpPhi = alphaPhi10*(rho1f*cp1 - rho2f*cp2) + phi*rho2f*cp2;
+         ^~~~~~~~
+         rhoPhi
+In file included from VoF/alphaEqnSubCycle.H:42:0,
+                 from interFoamHardtPhaseChange.C:150:
+VoF/alphaEqn.H:59:29: error: ‘interface’ was not declared in this scope
+     surfaceScalarField phic(interface.cAlpha()*mag(phi/mesh.magSf()));
+                             ^~~~~~~~~
+In file included from VoF/alphaEqnSubCycle.H:42:0,
+                 from interFoamHardtPhaseChange.C:150:
+VoF/alphaEqn.H:254:9: error: ‘rhoCpPhi’ was not declared in this scope
+         rhoCpPhi = alphaPhi10*(rho1f*cp1 - rho2f*cp2) + phiCN*rho2f*cp2;
+         ^~~~~~~~
+VoF/alphaEqn.H:254:9: note: suggested alternative: ‘rhoPhi’
+         rhoCpPhi = alphaPhi10*(rho1f*cp1 - rho2f*cp2) + phiCN*rho2f*cp2;
+         ^~~~~~~~
+         rhoPhi
+VoF/alphaEqn.H:267:9: error: ‘rhoCpPhi’ was not declared in this scope
+         rhoCpPhi = alphaPhi10*(rho1f*cp1 - rho2f*cp2) + phi*rho2f*cp2;
+         ^~~~~~~~
+VoF/alphaEqn.H:267:9: note: suggested alternative: ‘rhoPhi’
+         rhoCpPhi = alphaPhi10*(rho1f*cp1 - rho2f*cp2) + phi*rho2f*cp2;
+         ^~~~~~~~
+         rhoPhi
+/home/mirco/OpenFOAM/OpenFOAM-v2106/wmake/rules/General/transform:34: recipe for target 'Make/linux64GccDPInt32Opt/interFoamHardtPhaseChange.o' failed
+make: *** [Make/linux64GccDPInt32Opt/interFoamHardtPhaseChange.o] Error 1

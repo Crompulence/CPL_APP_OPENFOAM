@@ -1,0 +1,164 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  3.0.1                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     cplIcoFoam;
+
+startFrom       startTime;
+
+startTime       0;
+
+stopAt          endTime;
+
+endTime         8500;
+
+deltaT          1.25;
+
+writeControl    runTime;
+
+writeInterval   12.5;
+
+purgeWrite      0;
+
+writeFormat     ascii;
+
+writePrecision  6;
+
+writeCompression off;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable true;
+
+graphFormat     raw;
+
+adjustTimeStep  no;
+
+maxCo           2.0;
+
+maxAlphaCo      1.0;
+
+maxDeltaT       1000;
+
+functions{
+
+  bubbleVol
+    {
+      type            volFieldValue;
+      libs            (fieldFunctionObjects);
+      writeControl    timeStep;
+      writeInterval   10.0;
+      writeFields     false;
+      log             true;
+      operation       volIntegrate;
+      fields 		(alpha.vapour);
+    }
+  
+  Taverage_bulk
+    {
+      type            volFieldValue;
+      libs            (fieldFunctionObjects);
+      
+      // Mandatory entries (runtime modifiable)
+      fields          (T);
+      operation       volAverage;
+      regionType      cellZone;
+      name            bulkZone; 
+      
+      // Optional (inherited) entries
+      writeFields     false;
+      log             true;
+      writeControl    timeStep;
+      writeInterval   10;
+    }
+
+  Taverage
+    {
+      type            volFieldValue;
+      libs            (fieldFunctionObjects);
+      
+      // Mandatory entries (runtime modifiable)
+      fields          (T);
+      operation       volAverage;
+      regionType      all;
+
+      // Optional (inherited) entries
+      writeFields     false;
+      log             true;
+      writeControl    timeStep;
+      writeInterval   10;
+    }
+
+  inletMassFlow //total mass flow rate from the bottom boundary
+    {
+      type surfaceFieldValue;
+      libs (fieldFunctionObjects);
+      fields (rhoPhi); //Kg m-2 s-1
+      operation sum;
+      regionType patch;
+      name CPLReceiveMD;
+      writeControl timeStep;
+      writeInterval 10;
+      writeFields false;
+      log true;
+    }
+
+    inletGasMassFlow //Computes the mass flow rate [kg s-1] of vapour
+    {
+      libs ("libutilityFunctionObjects.so");
+      type coded;
+      name gasMassFlow;
+      writeControl timeStep;
+      writeInterval 10;
+      active yes;
+      codeWrite
+	#{
+	const volScalarField& alpha = mesh().lookupObject<volScalarField>("alpha.vapour"); //take alpha of vapour
+      const surfaceScalarField& phi = mesh().lookupObject<surfaceScalarField>("phi"); //take fluxes phi (Uf x Sf)
+      const volScalarField& rho = mesh().lookupObject<volScalarField>("rho"); //take rho
+      const dictionary& transportProperties = mesh().lookupObject<IOdictionary> 
+       	(
+       	 "transportProperties"
+	 );
+      
+      const scalar& rho2 = transportProperties.subDict("vapour").getScalar("rho"); //Density of vapour
+      surfaceScalarField alphaRho2Phi = fvc::interpolate(alpha)*rho2*phi;
+      surfaceScalarField myRhoPhi = fvc::interpolate(rho)*phi;
+      label inletPatchi = mesh().boundaryMesh().findPatchID("CPLReceiveMD"); //Get the patch id of the bottom boundary
+      scalar massFlux = 0.0; //Initialise the massFlux
+      massFlux = Foam::sum(alphaRho2Phi.boundaryField()[inletPatchi]); //Integrate the mass flux over the bottom boundary
+      scalar intRhoPhi = 0.0;
+      intRhoPhi = Foam::sum(myRhoPhi.boundaryField()[inletPatchi]);
+      scalar bubbleM = 0.0; //Initialise Bubble volume
+      bubbleM = fvc::domainIntegrate(alpha).value()*rho2;
+      
+      reduce(massFlux, sumOp<scalar>()); //For parallel computation
+      reduce(intRhoPhi, sumOp<scalar>());
+      
+      Info<< "massFlux = " << massFlux << endl;
+      
+      if (Pstream::master()) {
+      	std::ofstream file;
+      	file.open ("inletGasMassFlow", std::ofstream::out | std::ofstream::app);
+      	file << mesh().time().value() << " " << massFlux << " " << intRhoPhi << " " << bubbleM << std::endl;
+      	file.close();
+      }
+      #};
+    }   
+};
+// ************************************************************************* //
