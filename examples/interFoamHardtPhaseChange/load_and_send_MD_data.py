@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import numpy as np
-import matplotlib.pyplot as plt
 import sys
 
 from mpi4py import MPI
@@ -28,6 +27,9 @@ if __name__ == '__main__':
     plot_grid = False
     plot_quiver = False
     savefig = False
+
+    if plot:
+        import matplotlib.pyplot as plt
 
     if plot_grid:
         from draw_grid import draw_grid
