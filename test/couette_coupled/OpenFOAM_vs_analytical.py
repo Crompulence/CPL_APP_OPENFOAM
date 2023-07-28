@@ -1,6 +1,7 @@
 import numpy as np
 import sys
 import subprocess as sp
+import time
 
 # Import symwraplib
 sys.path.insert(0, "./pyDataView/")
@@ -14,12 +15,12 @@ except ImportError:
 
 from CouetteAnalytical import CouetteAnalytical as CA
 
-def test_error(error, time):
-    if time < 35:
+def test_error(error, t):
+    if t < 35:
         assert error < 0.03, "Error in inital 30 steps greater than 30%"
-    elif time < 60:
+    elif t < 60:
         assert error < 0.01, "Error between 30 and 60 steps greater than 1%"
-    elif time > 60:
+    elif t > 60:
         assert error < 0.008, "Error after 1000 steps greater than 1.0%"
 
 def check_OpenFOAM_vs_Analytical(fdir, plotstuff = False, parallel_run=True):
@@ -66,22 +67,37 @@ def check_OpenFOAM_vs_Analytical(fdir, plotstuff = False, parallel_run=True):
         plotstuff = "False"
 
     n = 0
-    for time in range(enditer):
+    for t in range(enditer):
 
         #Plot data
-        if time%OpenFOAMwriteinterval == 0:
-            rec = int(time/float(OpenFOAMwriteinterval))
+        if t%OpenFOAMwriteinterval == 0:
+            rec = int(t/float(OpenFOAMwriteinterval))
             try:
-                OpenFOAMuObj = ppl.OpenFOAM_vField(OpenFOAMfdir, parallel_run=parallel_run)
-                y, u = OpenFOAMuObj.profile(1,startrec=rec,endrec=rec)
-                halou = OpenFOAMuObj.read_halo(startrec=rec,endrec=rec, haloname="CPLReceiveMD")
-                print(halou.shape, halou[...,0].min(),halou[...,0].max())
-                halout = OpenFOAMuObj.read_halo(startrec=rec,endrec=rec, haloname="movingWall")
-                y_anal, u_anal = CAObj.get_vprofile(time*dt, flip=True)
+                read_attempt=10
+                while True:
+                    try:
+                        OpenFOAMuObj = ppl.OpenFOAM_vField(OpenFOAMfdir, parallel_run=parallel_run)
+                        y, u = OpenFOAMuObj.profile(1,startrec=rec,endrec=rec)
+                        halou = OpenFOAMuObj.read_halo(startrec=rec,endrec=rec, haloname="CPLReceiveMD")
+                        print(halou.shape, halou[...,0].min(),halou[...,0].max())
+                        halout = OpenFOAMuObj.read_halo(startrec=rec,endrec=rec, haloname="movingWall")
+                        break
+                    except ppl.field.OutsideRecRange:
+                        if (read_attempt == 0):
+                            raise
+                        else:
+                            print("At record=", rec, "data not found", 
+                                  "read attempts left=", read_attempt, 
+                                  ". Waiting 10 seconds and trying again.")
+                            time.sleep(10.)
+                            read_attempt -= 1
+                            continue
+                            
+                y_anal, u_anal = CAObj.get_vprofile(t*dt, flip=True)
                 error = (u_anal[2:-1:2] - u[:,0])/U #/u_anal[2:-1:2]
                 #error[u_anal[2:-1:2] < 0.005] = 0.
                 if plotstuff != "False":
-                    if time in recds:
+                    if t in recds:
                         l, = ax.plot(u[:,0], y, 'ro-', 
                                      label="OpenFOAM domain from file")
                         ax.plot(np.mean(halou[:,:,:,:,0],(0,2)), y[0]-0.5*dy, 
@@ -102,19 +118,18 @@ def check_OpenFOAM_vs_Analytical(fdir, plotstuff = False, parallel_run=True):
                         plt.savefig('out{:05}.png'.format(n)); n+=1
 
                         ax.cla()
-
             
                 l2 = np.sqrt(np.sum(error[1:]**2))
                 if not np.isnan(l2):
-                    print(time, "L2 norm error =" , l2)
-                    test_error(l2, time)
+                    print(t, "L2 norm error =" , l2)
+                    test_error(l2, t)
 
             except AssertionError as e:
                 print("AssertionError ", e)
                 raise
 
             except ppl.field.OutsideRecRange:
-                print("Error result missing", time, OpenFOAMuObj.maxrec, rec)
+                print("Error result missing", t, OpenFOAMuObj.maxrec, rec)
                 raise
 
     if "summary" in plotstuff:

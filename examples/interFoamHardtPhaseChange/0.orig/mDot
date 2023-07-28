@@ -1,0 +1,58 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  plus                                  |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      mDot;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [1 -3 -1 0 0 0 0];
+
+internalField   uniform 0;
+
+boundaryField
+{
+	CPLReceiveMD
+    {
+        type        zeroGradient;
+    }
+
+    movingWall
+    {
+        type        zeroGradient;
+    }
+
+    streamwiseIn
+    {
+        type            cyclic; 
+        neighbourPatch  streamwiseOut;
+    }
+
+    streamwiseOut
+    {
+        type            cyclic; 
+        neighbourPatch  streamwiseIn;
+    }
+
+    front
+    {
+        type            cyclic;
+        neighbourPatch  back;
+    }
+
+    back 
+    {
+        type            cyclic;
+        neighbourPatch  front;
+    }
+}
+
+// ************************************************************************* //

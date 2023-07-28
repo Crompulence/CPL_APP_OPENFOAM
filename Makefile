@@ -46,6 +46,9 @@ cplinterfoam: socket
 	@wmake src/solvers/CPLinterCondensatingEvaporatingFoam/temperaturePhaseChangeTwoPhaseMixtures/
 	@wmake src/solvers/CPLinterCondensatingEvaporatingFoam/
 
+cplinterfoamhardtphasechange: socket
+	@wmake src/solvers/CPLinterFoamHardtPhaseChange/
+
 icofoam:
 	@wmake src/solvers/IcoFoam
 

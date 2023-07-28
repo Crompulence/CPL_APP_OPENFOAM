@@ -5,6 +5,7 @@ import shutil
 import numpy as np
 import subprocess as sp
 import itertools
+import time
 import glob
 
 from OpenFOAM_vs_analytical import check_OpenFOAM_vs_Analytical
@@ -88,8 +89,10 @@ def test_newtest(nx, nz, px, pz):
                                        "BOUNDARY_EXTENTS": topo})
         #Run the case
         run.setup()
-        run.execute(blocking=True, print_output=False, extra_cmds="-M")
-
+        run.execute(blocking=True, print_output=False, extra_cmds="-M -p")
+        #Blocking doesn't seem to work correctly on Actions so add wait
+        time.sleep(5.0)
+        
     resultsdir = rundir + "/cfd_data/"+inputfile
     #print("resultsdir", resultsdir, "\n\n\n")
 

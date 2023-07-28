@@ -35,8 +35,7 @@ decomposePar > log.decomposePar 2>&1
 
 SHARED_ARGS="--distribution=block:block --hint=nomultithread"
 
-srun ${SHARED_ARGS} --het-group=0 --nodes=1 --tasks-per-node=2 MD : --het-group=1 --nodes=1 --tasks-per-node=2 CPLinterCondensatingEvaporatingFoam -parallel
+srun ${SHARED_ARGS} --het-group=0 --nodes=1 --tasks-per-node=2 MD : --het-group=1 --nodes=1 --tasks-per-node=2 CPLinterFoamHardtPhaseChange -parallel
 
 reconstructPar > log.reconstructPar 2>&1
-
 

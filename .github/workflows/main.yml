@@ -34,19 +34,19 @@ jobs:
             sudo apt-get install autotools-dev cmake gawk gnuplot
             sudo apt-get install flex libfl-dev libreadline-dev zlib1g-dev
             sudo apt-get install libgmp-dev libmpfr-dev libmpc-dev
-             
+                       
+      #- name: Download OpenFOAM 2106 built for 20.04 from pCloud
+      #  run: |
+      #      curl -o built_OpenFOAM-v2106.tar.gz 'https://edef1.pcloud.com/cBZhnSn54ZFm7RbuZZZwIzkykZ2ZZGG0ZkZa4xYMZiVZeJZ90ZDFZ2JZI0Z4JZBFZ0FZu5ZH5ZvJZt0ZRFZb0pYZ5kHjDGzY59hwOzawFf4DP8ueyG0y/built_OpenFOAM-v2106_mpich_Ubuntu_20.04.tar.gz'
+
       - name: Download prebuilt OpenFOAM artifact
         id: download-artifact
         uses: dawidd6/action-download-artifact@v2
+        continue-on-error: true
         with:
           name: built_OpenFOAM-v2106_mpich_Ubuntu_20.04
-          run_id: 4285829398
-      
-      #- name: Download OpenFOAM 2106 built for 20.04 from pCloud
-      #  run: |
-      #      wget https://edef1.pcloud.com/cBZhnSn54ZFm7RbuZVJl0ZXZMHGTc7Z2ZZq4pZkZa4xYMZgZW7Z90ZjXZJ7ZnkZqkZ37Z17ZfZEZlkZK7Z1XZb0pYZXHI1JcsAY4u33JtjqATDLyb9TxXX/built_OpenFOAM-v2106_mpich_Ubuntu_20.04.tar.gz
-      #      mv built_OpenFOAM-v2106_mpich_Ubuntu_20.04.tar.gz built_OpenFOAM-v2106.tar.gz
-            
+          run_id: 5544787573
+
       - name: Check file existence
         id: check_files
         uses: andstor/file-existence-action@v1
