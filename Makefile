@@ -15,8 +15,8 @@ OpenFOAM_ETC_DIR=$(OpenFOAM_ETC_DIR)/etc
 #	echo "OpenFOAM version not known"
 #endif
 
-.PHONY: all test clean clean-test pstream socket cplicofoam cplsedifoam cplcfddemfoam
-all: cplicofoam cplsedifoam cplcfddemfoam
+.PHONY: all test clean clean-test pstream socket cplicofoam cplinterfoam #cplsedifoam cplcfddemfoam
+all: cpltestfoam cpltestsocketfoam cplicofoam cplinterfoam #cplsedifoam cplcfddemfoam
 
 
 
