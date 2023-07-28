@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
     {
 
         if (coupled){
-            std::cout << "CPL.VEL is on " << std::endl;
+            //std::cout << "CPL.VEL is on " << std::endl;
             CPL.pack(U, p, nu, mesh, CPL.VEL);
             //CPL.pack(U, p, nu, mesh, CPL.STRESS);
             CPL.send();

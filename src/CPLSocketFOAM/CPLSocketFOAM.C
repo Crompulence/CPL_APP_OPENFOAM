@@ -93,7 +93,7 @@ void CPLSocketFOAM::initCFD(const Foam::Time &runTime, const Foam::fvMesh &mesh)
     Foam::Vector<int> np = vector(simpleCoeffs.lookup("n"));
     nprocs = np.x() * np.y() * np.z();
 
-    Foam::Info << "CPLSocketFOAM::initCFD procs " << np.x() << " " << np.y() << " " << np.z() << Foam::endl;
+    //Foam::Info << "CPLSocketFOAM::initCFD procs " << np.x() << " " << np.y() << " " << np.z() << Foam::endl;
 
     // Define arrays needed by MPI & CPL cart create routines 
     npxyz[0] = np.x();
@@ -177,10 +177,10 @@ void CPLSocketFOAM::initCFD(const Foam::Time &runTime, const Foam::fvMesh &mesh)
         if (x-maxx > eps) {maxx = x; ++im;}
         if (y-maxy > eps) {maxy = y; ++jm;}
         if (z-maxz > eps) {maxz = z; ++km;}
-        Foam::Info << "CPLSocketFOAM::initCFD BoundaryfaceCntr "  
-            << rankCart << " " << I << " " << x << " " << y << " " << z 
-            << " " << maxx << " " << maxy << " " << maxz << " "
-            << im << " " << jm << " " << km << Foam::endl;
+//        Foam::Info << "CPLSocketFOAM::initCFD BoundaryfaceCntr "  
+//            << rankCart << " " << I << " " << x << " " << y << " " << z 
+//            << " " << maxx << " " << maxy << " " << maxz << " "
+//            << im << " " << jm << " " << km << Foam::endl;
 
     }
     // Global number of cells
@@ -190,8 +190,8 @@ void CPLSocketFOAM::initCFD(const Foam::Time &runTime, const Foam::fvMesh &mesh)
     if (npxyz[2] > 1) MPI_Allreduce(&km, &gkm, 1, MPI_INT, MPI_SUM, Foam::PstreamGlobals::CPLRealmComm);
     ncxyz[0] = gim; ncxyz[1] = gjm; ncxyz[2] = gkm;
 
-    Foam::Info << "CPLSocketFOAM::initCFD cells " 
-               << ncxyz[0] << " " << ncxyz[1] << " " << ncxyz[2] << Foam::endl;
+//    Foam::Info << "CPLSocketFOAM::initCFD cells " 
+//               << ncxyz[0] << " " << ncxyz[1] << " " << ncxyz[2] << Foam::endl;
 
     // Origin of the domain
     //double xyz_orig[3] = {0.0, 0.0, 0.0};
@@ -570,10 +570,10 @@ double CPLSocketFOAM::unpackVelocity(volVectorField &U, fvMesh &mesh)
 //                    if (applyBCz) rvPatch[faceI].z() = (recvvz + U[cell].z()) / 2.0;
 //                }
 
-                    std::cout  << "recvBuf " << facex << " " << facey << " " << facez << " " << cell << " "
-                                << m << " " <<  recvvx << " " << recvvy << " " << recvvz << " "
-                                << rvPatch[faceI].x() << " " << rvPatch[faceI].y() << " " << rvPatch[faceI].z() << " "
-                                << std::endl;
+//                    std::cout  << "recvBuf " << facex << " " << facey << " " << facez << " " << cell << " "
+//                                << m << " " <<  recvvx << " " << recvvy << " " << recvvz << " "
+//                                << rvPatch[faceI].x() << " " << rvPatch[faceI].y() << " " << rvPatch[faceI].z() << " "
+//                                << std::endl;
             }
 
         }
